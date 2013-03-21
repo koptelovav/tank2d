@@ -1,0 +1,240 @@
+@startuml
+
+class User {
+    -id : int
+    -firstName : String
+    -lastName : String
+    -nick : String
+    -password : String
+    -tankCollection : UserTankCollection
+    -statistic : UserStatistic
+
+    +setFirstName(newFirstName : String)
+    +getFirstName() : String
+    +setLastName(newLastName : String)
+    +getLastName() : String
+    +setNick(newNick : String)
+    +getNick() : String
+    +setPassword(newPassword : String)
+    +getPassword() : String
+    +getFullName()  : String
+    +getCollection() : TankCollection
+    +getStatistic() : UserStatistic
+}
+
+class TankCollection{
+    -selectedTank : Tank
+    -user : id
+    -tanks : array
+
+    +add(newTank : Tank)
+    +delete()
+    +selectTank(tankId : int)
+    +getSelectedTank() : Tank
+    +getList() : Array
+}
+
+class TankFactory{
+     +getTemplateByName() : JSON
+     +getTemplateList() : Array
+     +createTemplateTank(templateName : String) : Tank
+     +createCustomParamsTank(data: JSON) : Tank
+}
+
+class Tank{
+    -id : int
+    -type : String
+    -speed : double
+    -armor : double
+
+    setType(newType : String)
+    getType() : String
+    setSpeed(new Speed : String)
+    getSpeed() : String
+    setArmor(newArmor : double)
+    getArmor() : String
+}
+
+class GameTankFactory{
+    +createPlayTank(templateName :string) : Tank
+}
+
+class GameTank{
+    -user : User
+    -X : int
+    -Y : int
+    -command : int | boolean
+
+    +getPosX() : int
+    +getPosY() : int
+    +moveRight()
+    +moveLeft()
+    +moveUp()
+    +moveDown()
+    +bulletHit()
+    +init();
+    +shot();
+    -setDirection(params : Array)
+    -setY(newY : int)
+    -setX(newX : int)
+
+}
+
+class GameStorage{
+    -games : array
+
+    +getById(id : int) : Game
+    +create(templateName : string | config : JSON)
+    +destroy(id : int)
+}
+
+class GameFactory{
+    -tankController : GameTankFactory
+
+    +getTemplateByName() : structure
+    +getTemplateList() : Array
+    +createTemplateGame(templateName : String) : Game
+    +createCustomParamsGame(data: JSON) : Game
+}
+
+class Game{
+    -type
+    -tankController : GameTankController
+    -mapController : GameMapController
+    -bulletsController: GameBulletsController
+    -notifier : GameNotifier
+    -map : Map
+    -tanks : GameTankCollection
+    -tags : array
+
+    +connectUser(user : User)
+    +disconnectUser(user : User)
+    +setStatus(int)
+    +isWaiting() : boolean
+    +isStarted() : boolean
+    +isRestarting() : boolean
+    +getType() : int
+    +getStatus() : int
+    +getTags() : string
+    +addTag(newTag : string)
+    +deleteTag(tag : string)
+}
+
+class TeamGame{
+    -numberOfTeams : int
+    -teams : GameTeamCollection
+}
+
+class SingleGame{
+
+}
+
+class CaptureFlagGame{
+    -flags : GameFlagController
+}
+
+class DefencePointGame{
+    -timer : time
+
+    +setTimer(newTime : time)
+    +getTimer() : time
+    +resetTimer()
+}
+
+class GameTeamCollection{
+
+}
+
+class GameTankCollection{
+    +getById(tankId : int) : Tank
+    +getAll() : array
+}
+
+class GameTankFactory{
+    +getById(tankId : int) : Tank
+    +getAll() : array
+}
+
+class Map{
+    -name : string
+    -data : array <Tail>
+}
+
+class MapElement{
+    -type : string
+    -emptyForBullet
+    -emptyForTank
+    -destroyable
+    +bulletHit()
+}
+
+class MapTail{
+    -owner : mixed MapElement | null
+}
+
+
+
+
+User *-- TankCollection
+GameTankFactory --|> TankFactory
+TankCollection *-- "many" Tank
+TankFactory ..> Tank
+
+
+GameStorage *-- "many" Game
+
+
+GameFactory *-- GameTankFactory
+
+GameFactory ..> FragMatchGame
+GameFactory ..> TeamBattleGame
+GameFactory ..> CaptureFlagGame
+GameFactory ..> DefencePointGame
+
+
+SingleGame --|> FragMatchGame
+TeamGame --|> TeamBattleGame
+TeamGame --|> CaptureFlagGame
+TeamGame --|> DefencePointGame
+
+Game --|> SingleGame
+Game --|> TeamGame
+
+Game *-- GameTankCollection
+Game *-- GameMapController
+Game *-- GameBulletsController
+Game *-- GameTankController
+Game *-- Map
+
+Map *-- "many" MapTail
+
+MapTail *-- "one" MapElement
+
+MapStaticElementFactory ..> BrickWall
+MapStaticElementFactory ..> ArmorWall
+MapStaticElementFactory ..> Water
+MapStaticElementFactory ..> Grass
+MapStaticElementFactory ..> Ice
+
+MapMovableElement --|> MapElement
+MapStaticElement  --|> MapElement
+
+
+
+BrickWall --|> MapStaticElement
+ArmorWall --|> MapStaticElement
+Water --|> MapStaticElement
+Grass --|> MapStaticElement
+Ice --|> MapStaticElement
+GameTank --|> MapMovableElement
+
+
+CaptureFlagGame *-- GameFlagController
+TeamGame *-- GameTeamCollection
+
+GameTankFactory ..> GameTank
+
+GameTankCollection *-- "many" GameTank
+
+@enduml
+

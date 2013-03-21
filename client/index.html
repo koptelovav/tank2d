@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <!--<link rel="icon" type="image/png" href="img/common/favicon.png">-->
+    <script src="http://127.0.0.1:8000/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var socket = io.connect('http://127.0.0.1:8000');
+
+            var send = function(message){
+                socket.send(JSON.stringify(message));
+            };
+
+            var textLog = function(text){
+                var today = new Date();
+                tt = today.getHours()+':'+today.getMinutes()+':'+today.getSeconds()+'.'+today.getMilliseconds();
+                $('#text').append('<div>'+tt+' - '+text+'</div>');
+                if($('#text div').length > 10) $('#text div:first').remove();
+            }
+
+            var x = 0;
+            var y = 0;
+
+            socket.on('connect', function (data) {
+                console.log(data);
+            });
+
+            $("body").keydown(function(e) {
+                var code = (e.keyCode ? e.keyCode : e.which);
+                if(code == 38 || code == 87) { //up
+                    y++;
+                    send([5,x,y]);
+                    textLog('move');
+                }
+                else if(code == 39 || code == 68) { //right
+                    x++;
+                    send([5,x,y]);
+                    textLog('move');
+                }
+                else if(code == 40 || code == 83) { //down
+                    y--;
+                    send([5,x,y]);
+                    textLog('move');
+                }
+                else if(code == 37 || code == 65) { //left
+                    x--;
+                    send([5,x,y]);
+                    textLog('move');
+                }
+                else if(code == 17) { //fire
+                 //   send('fire');
+                }
+            });
+
+            socket.on('message', function(message){
+                var data = JSON.parse(message);
+                if(data == 'go') send([0,1]);
+                textLog(data);
+            });
+        });
+
+
+
+    </script>
+    <title>Tank2D</title>
+</head>
+<body>
+    <div id="text"></div>
+</body>
+</html>
