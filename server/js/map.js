@@ -3,8 +3,9 @@ var cls = require('./lib/class')
 path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
-    Utils = require('./utils'),
-    Checkpoint = require('./checkpoint');
+    MapElementFactory = require('./mapelement'),
+    Types = require('../../shared/js/gametypes'),
+    Utils = require('./utils');
 
 module.exports = Map = cls.Class.extend({
     init: function(filepath) {
@@ -27,9 +28,22 @@ module.exports = Map = cls.Class.extend({
     },
 
     initMap: function(map) {
-        this.width = map.width;
-        this.height = map.height;
-        this.collisions = map.collisions;
+        var self = this;
+        this.tails = [];
+
+// Поварачиваем карту для "парильного доступа к координатам"
+        for(var j, i = 0; i < map.tails.length; i++){
+            for(j = 0; j < map.tails[0].length; j++){
+                if(self.tails[j] === undefined)  self.tails[j] = [];
+                self.tails[j][map.tails.length-i-1] = map.tails[i][j];
+            }
+        }
+
+        this.width = self.tails.length;
+        this.height = self.tails[0].length;
+// -------------------------
+
+
         this.isLoaded = true;
 
         if(this.ready_func) {
@@ -41,11 +55,21 @@ module.exports = Map = cls.Class.extend({
         this.ready_func = ready_func;
     },
 
-    generateCollisionGrid: function() {
-        this.grid = [];
+    generateCollisionGrids: function() {
+        var self = this;
+// Заполняем карту объектами
+        for(var j, i = 0; i < self.height; i++) {
+            for(j = 0; j < self.width; j++) {
+                if(Types.getKindAsString(self.tails[i][j]) !== undefined)
+                    self.tails[i][j] = MapElementFactory.create(self.tails[i][j]);
+                else{
+                    self.tails[i][j] = undefined;
+                    log.error(value + " element is not defined.");
+                }
+            }
+        }
 
         if(this.isLoaded) {
-
             log.info("Collision grid generated.");
         }
     },
@@ -59,6 +83,13 @@ module.exports = Map = cls.Class.extend({
             return false;
         }
         return this.grid[y][x] === 1;
+    },
+
+    isPlayerColliding: function(x, y) {
+        if(this.isOutOfBounds(x, y)) {
+            return true;
+        }
+        return this.tails[x][y]['playerColliding'];
     }
 });
 

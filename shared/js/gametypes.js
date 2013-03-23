@@ -16,7 +16,7 @@ Types = {
     
     Entities: {
         TANK: 1,
-        
+
         // Bonuses
         LIVE: 2,
         MEDAL: 3,
@@ -29,17 +29,19 @@ Types = {
         RANDOM: 10,
 
         // Objects
-        FLAG: 30,
+        FLAG: 30
+    },
 
-        // Static
-        WALL: 40,
-        ARMORWALL: 41,
-        TREES: 42,
-        ICE: 43,
-        WATER: 44,
-        PORTAL1: 45,
-        PORTAL2: 46,
-        BASE: 47
+    MapElements: {
+        EMPTYTAIL: 0,
+        WALL: 1,
+        ARMORWALL: 2,
+        TREES: 3,
+        WATER: 4,
+        ICE: 5,
+        BASE: 6,
+        PORTAL1: 7,
+        PORTAL2: 8
     },
     
     Orientations: {
@@ -72,14 +74,15 @@ var kinds = {
 
     flag: [Types.Entities.FLAG, "object"],
 
-    wall: [Types.Entities.WALL, "static"],
-    armorwall: [Types.Entities.ARMORWALL, "static"],
-    trees: [Types.Entities.TREES, "static"],
-    ice: [Types.Entities.ICE, "static"],
-    water: [Types.Entities.WATER, "static"],
-    portal1: [Types.Entities.PORTAL1, "static"],
-    portal2: [Types.Entities.PORTAL2, "static"],
-    base: [Types.Entities.BASE, "static"],
+    wall: [Types.MapElements.WALL, "mapelement"],
+    emptyTail: [Types.MapElements.EMPTYTAIL, "mapelement"],
+    armorwall: [Types.MapElements.ARMORWALL, "mapelement"],
+    trees: [Types.MapElements.TREES, "mapelement"],
+    ice: [Types.MapElements.ICE, "mapelement"],
+    water: [Types.MapElements.WATER, "mapelement"],
+    portal1: [Types.MapElements.PORTAL1, "mapelement"],
+    portal2: [Types.MapElements.PORTAL2, "mapelement"],
+    base: [Types.MapElements.BASE, "mapelement"],
 
 
     getType: function(kind) {
@@ -90,6 +93,10 @@ var kinds = {
 
 Types.isPlayer = function(kind) {
     return kinds.getType(kind) === "player";
+};
+
+Types.isMapElement = function(kind) {
+    return kinds.getType(kind) === "mapelement";
 };
 
 Types.isObject = function(kind) {

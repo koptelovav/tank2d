@@ -2,6 +2,7 @@
 var cls = require("./lib/class"),
     _ = require("underscore"),
     Message = require('./message'),
+    Map = require('./map'),
     Types = require("../../shared/js/gametypes");
 
 // ======= GAME SERVER ========
@@ -45,15 +46,21 @@ module.exports = GameServer = cls.Class.extend({
             });
         });
 
-        setInterval(function() {
-            self.processQueues();
-        }, 1000 / this.ups);
-
         console.info('game '+ this.id +' init');
     },
 
     run: function(mapFilePath) {
-        console.info('game '+ this.id +' run');
+        var self = this;
+
+        this.map = new Map(mapFilePath);
+
+        this.map.ready(function() {
+            self.map.generateCollisionGrids();
+        });
+
+        setInterval(function() {
+            self.processQueues();
+        }, 1000 / this.ups);
     },
 
     processQueues: function() {
@@ -118,5 +125,12 @@ module.exports = GameServer = cls.Class.extend({
     removePlayer: function(player) {
         delete this.players[player.id];
         delete this.outgoingQueues[player.id];
+    },
+
+    isValidPosition: function(x, y) {
+        if(this.map && _.isNumber(x) && _.isNumber(y) && !this.map.isPlayerColliding(x, y)) {
+            return true;
+        }
+        return false;
     }
 });

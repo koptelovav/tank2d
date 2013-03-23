@@ -48,8 +48,10 @@ module.exports = Player = Tank.extend({
                 var x = message[1],
                     y = message[2];
 
+                if(self.server.isValidPosition(x, y)) {
                     self.setPosition(x, y);
                     self.broadcast(new Messages.Move(self));
+                }
             }
 
         });
