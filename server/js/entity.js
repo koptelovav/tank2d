@@ -31,6 +31,8 @@ module.exports = Entity = cls.Class.extend({
 
     /**
      * Уничтожает объект
+     *
+     * @this {Entity}
      */
     destroy: function() {
 

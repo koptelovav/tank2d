@@ -10,9 +10,6 @@ var cls = require("./lib/class"),
 
 /**
  * Класс игорового сервера
- *
- * @class MyClass
- * @constructor init
  */
 
 module.exports = GameServer = cls.Class.extend({
