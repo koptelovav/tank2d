@@ -20,7 +20,7 @@ module.exports = Entity = cls.Class.extend({
     init: function(id, type, kind, x, y) {
         this.id = parseInt(id);
         /**
-         * @todd Нахрена я ее объвил?
+         * @todo Нахрена я ее объвил?
          * @type {String}
          */
         this.type = type;
