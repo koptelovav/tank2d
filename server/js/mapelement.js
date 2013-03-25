@@ -4,20 +4,51 @@ var cls = require("./lib/class"),
     Utils = require("./utils"),
     Types = require("../../shared/js/gametypes");
 
-var MapElements = [];
+/**
+ * Объект-хранилище классов статичных объектов карты
+ */
+var MapElements = {};
+
+/**
+ * Статичный класс-фабрика статичных объектов карты
+ */
 module.exports = MapElementFactory = {
-    create: function(type){
-        return new MapElements[type](type);
+
+    /**
+     * Создает новый объет карты по типу
+     *
+     * @param {String} kind Тип объекта (Подробнее в Types.MapElements)
+     */
+    create: function(kind){
+        return new MapElements[kind](kind);
     }
 };
 
+/**
+ * Базовай класс для всех статичных объектов карты
+ */
 var MapElement = cls.Class.extend({
+    /**
+     * Конструктор класса. Инициализация объекта
+     *
+     * @this {MapElement}
+     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     * @param {boolean} tankCollision Коллиция с танком
+     * @param {boolean} bulletCollision Коллиция с пулей
+     */
     init: function(kind, tankCollision, bulletCollision){
         this.kind = kind;
         this.playerColliding = tankCollision || false;
         this.bulletColliding = bulletCollision || false;
     },
 
+    /**
+     * Приватный метод. Возвращает параметры объекта.
+     *
+     * @this {MapElement}
+     * @returns {Array} Массив параметров объекта
+     * @private
+     */
     _getBaseState: function() {
         return [
             this.kind,
@@ -26,54 +57,126 @@ var MapElement = cls.Class.extend({
         ];
     },
 
+    /**
+     * Публичный метод. Возвращает параметры объекта.
+     *
+     * @this {MapElement}
+     * @returns {Array} Массив параметров объекта
+     */
     getState: function(){
         return this._getBaseState();
     },
 
+    /**
+     * Проверяет пустая ли клетка
+     *
+     * @this {MapElement}
+     * @returns {boolean} Если пуста возвращает true, иначе, false
+     */
     isEmpty: function(){
-        return this.type === 0;
+        return this.kind === Types.MapElements.EMPTY;
     },
 
+    /**
+     * Проверяет на возможность коллизии с пулей
+     *
+     * @this {MapElement}
+     * @returns {boolean}
+     */
     isBulletColliding: function(){
         return this.bulletColliding;
     },
 
+    /**
+     * Проверяет на возможность коллизии с танком
+     *
+     * @this {MapElement}
+     * @returns {boolean}
+     */
     isTankColliding: function(){
         return this.tankColliding;
     }
 });
 
-MapElements[Types.MapElements.EMPTYTAIL] = MapElement.extend({
+/**
+ * Класс описывающий пустой тайл
+ */
+MapElements.empty = MapElement.extend({
+    /**
+     * Конструктор класса. Инициализация объекта
+     *
+     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     */
     init: function(kind) {
         this._super(kind);
     }
 });
 
-MapElements[Types.MapElements.WALL] = MapElement.extend({
+/**
+ * Класс описывающий стену
+ */
+MapElements.wall = MapElement.extend({
+    /**
+     * Конструктор класса. Инициализация объекта
+     *
+     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     */
     init: function(kind) {
         this._super(kind, true, true);
     }
 });
 
-MapElements[Types.MapElements.ARMORWALL] = MapElement.extend({
+/**
+ * Класс описывающий бронированную
+ */
+MapElements.armoredwall = MapElement.extend({
+    /**
+     * Конструктор класса. Инициализация объекта
+     *
+     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     */
     init: function(kind) {
         this._super(kind, true, true);
     }
 });
 
-MapElements[Types.MapElements.TREES] = MapElement.extend({
+/**
+ * Класс описывающий деревья
+ */
+MapElements.trees = MapElement.extend({
+    /**
+     * Конструктор класса. Инициализация объекта
+     *
+     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     */
     init: function(kind) {
         this._super(kind);
     }
 });
 
-MapElements[Types.MapElements.WATER] = MapElement.extend({
+/**
+ * Класс описывающий воду
+ */
+MapElements.water = MapElement.extend({
+    /**
+     * Конструктор класса. Инициализация объекта
+     *
+     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     */
     init: function(kind) {
         this._super(kind, true);
     }
 });
 
-MapElements[Types.MapElements.ICE] = MapElement.extend({
+/**
+ * Класс описывающий лед
+ */
+MapElements.ice = MapElement.extend({
+    /**
+     * Конструктор класса. Инициализация объекта
+     *
+     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     */
     init: function(kind) {
         this._super(kind);
     }
