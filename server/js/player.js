@@ -14,6 +14,7 @@ module.exports = Player = Tank.extend({
         this.server = game;
         this.hasEnteredGame = false;
         this.isDead = false;
+        this.orientation = undefined;
 
         this._super(this.connection.id, "player", 'TANK', 0, 0, 1, {
             "speed": 20,
@@ -35,7 +36,7 @@ module.exports = Player = Tank.extend({
 
             if(action === Types.Messages.HELLO) {
                 self.kind = Types.Entities.TANK;
-                self.orientation = 1;
+                self.setPosition(0.5,0.5);
 
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
@@ -45,8 +46,7 @@ module.exports = Player = Tank.extend({
                 self.isDead = false;
             }
             else if(action === Types.Messages.MOVE) {
-                var x = message[1],
-                    y = message[2];
+                var orientation = message[1];
 
                 if(self.server.isValidPosition(x, y)) {
                     self.setPosition(x, y);
