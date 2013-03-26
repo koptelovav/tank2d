@@ -15,27 +15,28 @@ Types = {
     },
     
     Entities: {
-        TANK: 1,
+        TANK: 100,
+        BULLET: 101,
 
         // Bonuses
-        LIVE: 2,
-        MEDAL: 3,
-        BOMB: 4,
-        WATCH: 5,
-        SHOVEL: 6,
-        HELMET: 7,
-        BOAT: 8,
-        PISTOL: 9,
-        RANDOM: 10,
+        LIVE: 102,
+        MEDAL: 103,
+        BOMB: 104,
+        WATCH: 105,
+        SHOVEL: 106,
+        HELMET: 107,
+        BOAT: 108,
+        PISTOL: 109,
+        RANDOM: 110,
 
         // Objects
-        FLAG: 30
+        FLAG: 160
     },
 
     MapElements: {
-        EMPTYTAIL: 0,
+        EMPTY: 0,
         WALL: 1,
-        ARMORWALL: 2,
+        ARMOREDWALL: 2,
         TREES: 3,
         WATER: 4,
         ICE: 5,
@@ -75,8 +76,8 @@ var kinds = {
     flag: [Types.Entities.FLAG, "object"],
 
     wall: [Types.MapElements.WALL, "mapelement"],
-    emptyTail: [Types.MapElements.EMPTYTAIL, "mapelement"],
-    armorwall: [Types.MapElements.ARMORWALL, "mapelement"],
+    empty: [Types.MapElements.EMPTY, "mapelement"],
+    armoredwall: [Types.MapElements.ARMOREDWALL, "mapelement"],
     trees: [Types.MapElements.TREES, "mapelement"],
     ice: [Types.MapElements.ICE, "mapelement"],
     water: [Types.MapElements.WATER, "mapelement"],
