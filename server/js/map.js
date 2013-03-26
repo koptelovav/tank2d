@@ -11,6 +11,7 @@ module.exports = Map = cls.Class.extend({
     init: function(filepath) {
         var self = this;
 
+        this.dinamicGrid = [];
         this.isLoaded = false;
 
         path.exists(filepath, function(exists) {
@@ -56,13 +57,14 @@ module.exports = Map = cls.Class.extend({
     },
 
     generateCollisionGrids: function() {
-        var self = this;
+        var self = this,
+            kind;
 // Заполняем карту объектами
         for(var j, i = 0; i < self.height; i++) {
             for(j = 0; j < self.width; j++) {
-                if(Types.getKindAsString(self.tails[i][j]) !== undefined)
-                    self.tails[i][j] = MapElementFactory.create(self.tails[i][j]);
-                else{
+                if((kind = Types.getKindAsString(self.tails[i][j])) !== undefined){
+                    self.tails[i][j] = MapElementFactory.create(kind);
+                }else{
                     self.tails[i][j] = undefined;
                     log.error(value + " element is not defined.");
                 }
@@ -76,13 +78,6 @@ module.exports = Map = cls.Class.extend({
 
     isOutOfBounds: function(x, y) {
         return x <= 0 || x >= this.width || y <= 0 || y >= this.height;
-    },
-
-    isColliding: function(x, y) {
-        if(this.isOutOfBounds(x, y)) {
-            return false;
-        }
-        return this.grid[y][x] === 1;
     },
 
     isPlayerColliding: function(x, y) {
