@@ -66,7 +66,7 @@ var Server = cls.Class.extend({
     /**
      * Получить подключение по индификатору
      * @param {Number} id индификатор подлючения
-     * @returns {Connection} connection объект класса Connection
+     * @returns {Connection} объект класса Connection
      */
     getConnection: function (id) {
         return this._connections[id];
