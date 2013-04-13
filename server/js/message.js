@@ -7,10 +7,17 @@ var cls = require("./lib/class"),
 var Messages = {};
 module.exports = Messages;
 
+/**
+ * Класс сообщений
+ * @type Message
+ */
 var Message = cls.Class.extend({
 });
 
-
+/**
+ * Класс сообщения. Изменение количества игроков.
+ * @type Population
+ */
 Messages.Population = Message.extend({
     init: function(game, total) {
         this.game = game;
@@ -23,6 +30,10 @@ Messages.Population = Message.extend({
     }
 });
 
+/**
+ * Класс сообщения. Движение игрока.
+ * @type Move
+ */
 Messages.Move = Message.extend({
     init: function(entity) {
         this.entity = entity;
@@ -30,11 +41,14 @@ Messages.Move = Message.extend({
     serialize: function() {
         return [Types.Messages.MOVE,
             this.entity.id,
-            this.entity.x,
-            this.entity.y];
+            this.entity.orientation];
     }
 });
 
+/**
+ * Класс сообщения. Подключение игрока к игре.
+ * @type JoinGame
+ */
 Messages.JoinGame = Message.extend({
     init: function(player) {
         this.player = player;
@@ -45,6 +59,10 @@ Messages.JoinGame = Message.extend({
     }
 });
 
+/**
+ * Класс сообщения. Выход игрока из игры.
+ * @type LeftGame
+ */
 Messages.LeftGame = Message.extend({
     init: function(player) {
         this.player = player;
