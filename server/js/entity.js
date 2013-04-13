@@ -86,14 +86,13 @@ module.exports = Entity = cls.Class.extend({
     },
 
     /**
-     * Установавливает позицию обакта
-     *
-     * @this {Entity}
-     * @param {Number} x Координата X
-     * @param {Number} y Координата Y
+     * Получть чанк объекта (4 тайла)
+     * @returns {Array}
      */
-    setPosition: function(x, y) {
-        this.x = x;
-        this.y = y;
+    getChunk: function(){
+        return [
+            [this.x-0.5, this.y-0.5],[this.x-0.5, this.y+0.5],
+            [this.x+0.5, this.y-0.5],[this.x+0.5, this.y+0.5]
+        ];
     }
 });
