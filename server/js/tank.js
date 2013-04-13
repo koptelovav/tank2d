@@ -13,7 +13,7 @@ module.exports = Tank = Entity.extend({
      * Функция конструктор. Инициализация объекта.
      * @param {Number} id Униклальный индификатор
      * @param {String} type Тип танка (player / NPC)
-     * @param {Number} kind Тип танка (ARMORED / FAST / ...)
+     * @param {Number} kind Тип объекта
      * @param {Number} x Начальныя координата X
      * @param {Number} y Начальная координата Y
      * @param {Number} orientation Ориентация в пространстве
