@@ -4,8 +4,21 @@ var cls = require("./lib/class"),
     Log = require('log');
 
 // =======  ========
-
+/**
+ * Класс описывающий танк
+ * @type {Tank}
+ */
 module.exports = Tank = Entity.extend({
+    /**
+     * Функция конструктор. Инициализация объекта.
+     * @param {Number} id Униклальный индификатор
+     * @param {String} type Тип танка (player / NPC)
+     * @param {Number} kind Тип танка (ARMORED / FAST / ...)
+     * @param {Number} x Начальныя координата X
+     * @param {Number} y Начальная координата Y
+     * @param {Number} orientation Ориентация в пространстве
+     * @param {JSON} config Параметры танка
+     */
     init: function (id, type, kind, x, y, orientation, config) {
         var self = this;
         this._super(id, type, kind, x, y);
@@ -18,6 +31,10 @@ module.exports = Tank = Entity.extend({
 
     },
 
+    /**
+     * Получить информацию о состоянии объекта
+     * @returns {Array} массив с параметрами
+     */
     getState: function() {
         var basestate = this._getBaseState(),
             state = [];
