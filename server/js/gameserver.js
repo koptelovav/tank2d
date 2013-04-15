@@ -216,19 +216,40 @@ module.exports = GameServer = cls.Class.extend({
         delete this.outgoingQueues[player.id];
     },
 
-    isValidPosition: function(x, y) {
-        if(this.map && _.isNumber(x) && _.isNumber(y) && !this.map.isPlayerColliding(x, y)) {
-            return true;
+    /**
+     * Метод ывполняет проверку возможности передвижения игрока в данном направлении
+     *
+     * @param {Player} player Пользователь для которого выполняется проверка
+     * @param {number} orientation Новое направление
+     * @returns {boolean}
+     */
+
+    isValidPlayerMove: function(player, orientation){
+        if(this.map && player) {
+            if(orientation === Types.Orientations.LEFT){
+                return !this.map.isPlayerColliding(player.x + 0.5, player.y - 1.5) &&
+                       !this.map.isPlayerColliding(player.x - 0.5, player.y - 1.5);
+            }
+            else if(orientation === Types.Orientations.UP){
+                return !this.map.isPlayerColliding(player.x - 1.5, player.y + 0.5) &&
+                    !this.map.isPlayerColliding(player.x - 1.5, player.y - 0.5);
+            }
+            else if(orientation === Types.Orientations.RIGHT){
+                return !this.map.isPlayerColliding(player.x + 0.5, player.y + 1.5) &&
+                    !this.map.isPlayerColliding(player.x - 0.5, player.y + 1.5);
+            }
+            else if(orientation === Types.Orientations.DOWN){
+                return !this.map.isPlayerColliding(player.x + 1.5, player.y + 0.5) &&
+                    !this.map.isPlayerColliding(player.x + 1.5, player.y - 0.5);
+            };
         }
-        return false;
     },
 
-    isValidPlayerDirection: function(direction){
-        if(this.map && Types.Orientations) {
+    clearProection: function(entity){
+        this.map.clearProection(entity);
+    },
 
-        !this.map.isPlayerColliding(x, y)
-            return true;
-        }
-        return false;
+    drawProection: function(entity){
+        this.map.drawProection(entity);
     }
 });
