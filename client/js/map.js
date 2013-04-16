@@ -30,7 +30,6 @@ define(['jquery', 'mapelement'], function($,MapElementFactory) {
             var filepath = '../../shared/maps/level1.json';
             $.get(filepath, function (data) {
                 self._initMap(data);
-                self._generateStaticGrid();
                 self.mapLoaded = true;
                 self._checkReady();
             }, 'json');
@@ -39,23 +38,9 @@ define(['jquery', 'mapelement'], function($,MapElementFactory) {
         _initMap: function(map) {
             this.width = map.width;
             this.height = map.height;
-            this.tails = map.tails;
-        },
-
-        _generateStaticGrid: function() {
-            var self = this,
-                kind;
-
-            for (var j, i = 0; i < self.height; i++) {
-                for (j = 0; j < self.width; j++) {
-                    if ((kind = Types.getKindAsString(self.tails[i][j])) !== undefined) {
-                        self.tails[i][j] = MapElementFactory.create(kind);
-                    } else {
-                        self.tails[i][j] = undefined;
-                    }
-                }
-            }
-            console.info("Collision grid generated.");
+            this.tiles = map.tiles;
+            this.tilesize = map.tilesize;
+            this.teamcount = map.teamcount;
         }
     });
     

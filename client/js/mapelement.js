@@ -13,7 +13,7 @@ define(function () {
             this.kind = kind;
             this.tankColliding = tankCollision || false;
             this.bulletColliding = bulletCollision || false;
-            this.owners = {};
+            this.animated = false;
         },
         isEmpty: function () {
             return this.kind === Types.MapElements.EMPTY;
@@ -39,6 +39,7 @@ define(function () {
             this._super(kind, true, true);
         }
     });
+
     MapElements.armoredwall = MapElement.extend({
         init: function (kind) {
             this._super(kind, true, true);

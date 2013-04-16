@@ -40,7 +40,6 @@ var MapElement = cls.Class.extend({
         this.kind = kind;
         this.playerColliding = tankCollision || false;
         this.bulletColliding = bulletCollision || false;
-        this.owners = {};
     },
 
     /**
@@ -55,7 +54,6 @@ var MapElement = cls.Class.extend({
             this.kind,
             this.playerColliding,
             this.bulletColliding,
-            this.owners
         ];
     },
 

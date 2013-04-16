@@ -11,7 +11,8 @@ Types = {
         POPULATION: 2,
         JOINGAME: 3,
         LEFTGAME: 4,
-        MOVE: 5
+        MOVE: 5,
+        GAMESTART: 6
     },
     
     Entities: {
