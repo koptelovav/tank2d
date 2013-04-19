@@ -33,7 +33,7 @@ module.exports = GameServer = cls.Class.extend({
         this.server = websocketServer;
         this.ups = 50;
 
-        this.isStarted = false;
+        this.isStart = false;
         this.isPlay = false;
 
         this.spawns = [];
@@ -62,8 +62,8 @@ module.exports = GameServer = cls.Class.extend({
             });
 
             player.onReady(function() {
-                if(self._checkAllStarted() && self.playerCount >= self.minPlayers){
-                    self.start();
+                if(self._checkAllStarted() && self.playerCount >= self.minPlayers && !self.isStart){
+                    this.isStart = true;
                     self.pushBroadcast(new Message.gameStart(this.id),false);
                 }
             });
@@ -79,7 +79,7 @@ module.exports = GameServer = cls.Class.extend({
             player.onLoad(function(){
                 console.log(self._checkAllLoaded(),!self.isPlay);
                 if(self._checkAllLoaded() && !self.isPlay){
-                    self.play();
+                    this.isPlay = true;
                     console.log('onLoad');
                     self.pushBroadcast(new Message.gamePlay(self.id), false);
                 }
@@ -114,11 +114,11 @@ module.exports = GameServer = cls.Class.extend({
         }, 1000 / this.ups);
     },
 
-    start: function(){
-        this.isStart = true;
-
-    },
-
+    /**
+     * Проверить все ли пользователи готовы начать игру
+     * @returns {boolean}
+     * @private
+     */
     _checkAllStarted: function(){
         var result = true;
         for(var player in this.players) {
@@ -127,10 +127,11 @@ module.exports = GameServer = cls.Class.extend({
         return result;
     },
 
-    play: function(){
-        this.isPlay = true;
-    },
-
+    /**
+     * Проверить все ли пользователи загрузили карту
+     * @returns {boolean}
+     * @private
+     */
     _checkAllLoaded: function(){
         var result = true;
         for(var player in this.players) {
