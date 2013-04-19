@@ -37,12 +37,30 @@ module.exports = Player = Tank.extend({
         this.hasEnteredGame = false;
 
         /**
+         * Команда игрока
+         * @type {null|number}
+         */
+        this.team = null;
+
+        /**
+         * Точка появления игрока
+         * @type {null|number}
+         */
+        this.spawn = null;
+
+        this.isReady = false;
+
+        this.isLoad = false;
+
+        this.isMove = false;
+
+        /**
          * Сосоянии игрока (жив / мертв)
          * @type {boolean}
          */
         this.isDead = false;
 
-        this._super(this.connection.id, "player", Types.Entities.TANK, 1.5, 1.5, Types.Orientations.UP, {
+        this._super(this.connection.id, "player", null, null, Types.Orientations.UP, {
             "speed": 20,
             "armor": 1,
             "bullet": 1
@@ -65,27 +83,45 @@ module.exports = Player = Tank.extend({
             }
 
             if(action === Types.Messages.HELLO) {
-                self.server.addPlayer(self);
-                self.server.drawProection(self);
-                self.server.enter_callback(self);
+                if(self.server.isFull()){
+                    self.send([Types.Messages.GAMEFULL, self.id]);
+                }else{
+                    self.server.addPlayer(self);
+                    self.server.setPlayerSpawnPosition(self);
+                    self.server.drawProection(self);
+                    self.server.enter_callback(self);
 
-                self.send([Types.Messages.WELCOME, self.id]);
-                self.hasEnteredGame = true;
-                self.isDead = false;
+                    self.hasEnteredGame = true;
+                    self.isDead = false;
+
+                    self.send([Types.Messages.WELCOME, self.getState()]);
+                }
             }
             else if(action === Types.Messages.MOVE) {
                 var orientation = message[1];
 
                 if(self.server.isValidPlayerMove(self, orientation)) {
-                    self.server.clearProection(self);
-                    self.orientation = orientation;
-                    self.setNewPosition();
-                    self.server.drawProection(self);
+                    self.onMoveStart(function(){
+                        self.server.clearProection(self);
+                    });
 
-//                    console.log(self.server.map.collidingGrid);
+                    self.onMoveEnd(function(){
+                        self.server.drawProection(self);
+                        self.broadcast(new Messages.Move(self));
+                    });
 
-                    self.broadcast(new Messages.Move(self));
+                    self.setOrientation(orientation);
+                    self.move();
                 }
+            }
+            else if(action === Types.Messages.IREADY) {
+                self.isReady = true;
+                self.ready_callback(self);
+                self.broadcast(new Messages.iReady(self));
+            }
+            else if(action === Types.Messages.LOADMAP){
+                self.isLoad = true;
+                self.load_callback(self);
             }
 
         });
@@ -112,12 +148,25 @@ module.exports = Player = Tank.extend({
         this.exit_callback = callback;
     },
 
+    onReady: function(callback){
+        this.ready_callback = callback;
+    },
+
+
     /**
      * Рассылка мообщения всем игрокам
      * @param callback
      */
     onBroadcast: function(callback) {
         this.broadcast_callback = callback;
+    },
+
+    onSpawn: function(callback) {
+        this.spawn_callback = callback;
+    },
+
+    onLoad: function(callback){
+        this.load_callback = callback;
     },
 
     /**
@@ -139,13 +188,46 @@ module.exports = Player = Tank.extend({
         }
     },
 
+    onMoveEnd: function(callback){
+        this.onmoveend_callback = callback;
+    },
+
+    onMoveStart: function(callback){
+        this.onmovestart_callback = callback;
+    },
+
+    setOrientation: function(newOrientation){
+        this.orientation = newOrientation;
+    },
+
     /**
      * Установить новую позицию в зависимости от текущего оринетации игрока
      */
-    setNewPosition: function(){
+    move: function(){
+        if(this.onmovestart_callback)
+            this.onmovestart_callback();
+
         if(this.orientation === Types.Orientations.LEFT) this.y--;
         else if(this.orientation === Types.Orientations.UP) this.x--;
         else if(this.orientation === Types.Orientations.RIGHT) this.y++;
         else if(this.orientation === Types.Orientations.DOWN) this.x++;
+
+        if(this.onmoveend_callback)
+            this.onmoveend_callback();
+    },
+
+    /**
+     * Получить информацию о состоянии объекта
+     * @returns {Array} массив с параметрами
+     */
+    getState: function() {
+        var basestate = this._getBaseState(),
+            state = [];
+
+        state.push(this.orientation);
+        state.push(this.team);
+        state.push(this.isReady);
+
+        return basestate.concat(state);
     }
 });

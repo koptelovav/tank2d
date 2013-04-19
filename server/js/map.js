@@ -33,9 +33,9 @@ module.exports = Map = cls.Class.extend({
         this.width = map.tiles[0].length;
         this.height = map.tiles.length;
         this.maxPlayers = map.maxplayers;
-        this.maxPlayers = map.minplayers;
+        this.minPlayers = map.minplayers;
         this.teamCount = map.teamcount;
-
+        this.spawns = map.spawns;
         this.isLoaded = true;
 
         if (this.ready_func) {
@@ -47,7 +47,7 @@ module.exports = Map = cls.Class.extend({
         this.ready_func = ready_func;
     },
 
-    generateCollisionGrids: function () {
+    generateStaticGrid: function () {
         var self = this,
             kind;
 // Заполняем карту объектами
@@ -67,6 +67,15 @@ module.exports = Map = cls.Class.extend({
         }
     },
 
+    generateCollisionGrids: function(){
+        for (var j, i = 0; i < this.height; i++) {
+            this.collidingGrid[i] = [];
+            for (j = 0; j < this.width; j++) {
+                this.collidingGrid[i][j] = [];
+            }
+        }
+    },
+
     isOutOfBounds: function (x, y) {
         return x <= 0 || x >= this.width || y <= 0 || y >= this.height;
     },
@@ -75,29 +84,29 @@ module.exports = Map = cls.Class.extend({
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        return this.tiles[x][y]['playerColliding'];
+        return this.tiles[x][y]['playerColliding'] && Boolean(this.collidingGrid[x][y]);
     },
 
     isBulletColliding: function (x, y) {
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        return this.tiles[x][y]['bulletColliding'];
+        return this.tiles[x][y]['bulletColliding'] && Boolean(this.collidingGrid[x][y]);
     },
 
     clearProection: function (entity) {
         var self = this;
 
-//        _.each(entity.getChunk(), function (pos) {
-//            delete self.tiles[pos[0]][pos[1]]['owners'][entity.id];
-//        });
+        _.each(entity.getChunk(), function (pos) {
+            delete self.collidingGrid[pos[0]][pos[1]][entity.id];
+        });
     },
 
     drawProection: function (entity) {
         var self = this;
 
-//        _.each(entity.getChunk(), function (pos) {
-//            self.tiles[pos[0]][pos[1]]['owners'][entity.id] = entity.kind;
-//        });
+       _.each(entity.getChunk(), function (pos) {
+            self.collidingGrid[pos[0]][pos[1]].push(entity.id);
+        });
     }
 });

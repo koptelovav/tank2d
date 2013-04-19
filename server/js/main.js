@@ -28,7 +28,7 @@ function main(config) {
     
     log.info("Starting Tank2D game server...");
 
-    var game = new GameServer(GameServerID(),config.game_name, config.players_per_game, server);
+    var game = new GameServer(GameServerID(),config.game_name, server);
     game.run(config.map_filepath);
     games.push(game);
     gameCount++;
@@ -41,9 +41,12 @@ function main(config) {
         log.error(Array.prototype.join.call(arguments, ", "));
     });
 
+    server.onRequestGames(function(){
+        return JSON.stringify(getGameDistribution(games));
+    });
 
     process.on('uncaughtException', function (e) {
-        log.error('uncaughtException: ' + e);
+        log.error('uncaughtException: ' + e.stack);
     });
 }
 
@@ -56,6 +59,15 @@ function getConfigFile(path, callback) {
             callback(JSON.parse(json_string));
         }
     });
+}
+
+function getGameDistribution(games) {
+    var distribution = [];
+
+    _.each(games, function(game) {
+        distribution.push(game.playerCount);
+    });
+    return distribution;
 }
 
 var defaultConfigPath = './server/config.json',

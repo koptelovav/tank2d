@@ -6,8 +6,8 @@ function(Timer) {
         init: function(game, canvas, background) {
             this.game = game;
 
-            background.width = 16 * 50;
-            background.height = 16 * 50;
+            background.width  = canvas.width  = 16 * 50;
+            background.height = canvas.height = 16 * 50;
 
             this.context = (canvas && canvas.getContext) ? canvas.getContext("2d") : null;
             this.background = (background && background.getContext) ? background.getContext("2d") : null;
@@ -31,12 +31,17 @@ function(Timer) {
             return this.canvas.height;
         },
 
-        renderFrame: function() {
+        renderFrame: function(render_callback) {
             this.clearScreen(this.context);
 
             this.context.save();
             this.drawTiles();
             this.context.restore();
+
+            if(render_callback){
+                render_callback();
+            }
+            console.log('Frame rendered');
         },
 
         clearScreen: function(ctx) {

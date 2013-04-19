@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <!--<link rel="icon" type="image/png" href="img/common/favicon.png">-->
-    <script src="http://127.0.0.1:8000/socket.io/socket.io.js"></script>
+    <script src="http://172.17.3.61:8000/socket.io/socket.io.js"></script>
     <script src="../shared/js/gametypes.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript">
         $(function(){
-            var socket = io.connect('http://127.0.0.1:8000');
+            var socket = io.connect('http://172.17.3.61:8000');
 
             var send = function(message){
                 socket.send(JSON.stringify(message));

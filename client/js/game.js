@@ -1,14 +1,21 @@
 
-define(['renderer','map','mapelement','gameclient','../../shared/js/gametypes'],
-function(Renderer,Map,MapElementFactory,GameClient) {
+define(['renderer','map','mapelement','gameclient','player','../../shared/js/gametypes'],
+function(Renderer,Map,MapElementFactory,GameClient,Player) {
 
     var Game = Class.extend({
         init: function(app) {
             this.app = app;
             this.ready = false;
             this.started = false;
+            this.connected = false;
             this.canStart = false;
+            this.isLoad = false;
 
+            this.population = 0;
+            this.maxPlayers = null;
+            this.minPlayers = null;
+
+            this.player = null;
             this.renderer = null;
 
             this.client = null;
@@ -17,14 +24,48 @@ function(Renderer,Map,MapElementFactory,GameClient) {
             this.entities = {};
         },
 
-        load: function(){
-            if(this.load_func){
-                this.load_func();
-            }
+        onLoad: function(func){
+            this.load_func = func;
         },
 
-        onRuning: function(func){
+        onRun: function(func){
             this.running_func = func;
+        },
+
+        onStart: function(func){
+            this.start_func = func;
+        },
+
+        onWait: function(func){
+            this.wait_func = func;
+        },
+
+        onChangePopulation: function(func){
+            this.changepopulation_func = func;
+        },
+
+        onPlayerJoin: function(func){
+            this.playerjoin_func = func;
+        },
+
+        onPlayerLeft: function(func){
+            this.playerleft_func = func;
+        },
+
+        onPlayerWelcome: function(func){
+            this.playerwelcome_func = func;
+        },
+
+        onPlayerReady: function(func){
+            this.playerready_func = func;
+        },
+
+        onPlayerRender: function(func){
+            this.playerrender_func = func;
+        },
+
+        onGamePlay: function(func){
+            this.gameplay_func = func;
         },
 
         loadMap: function() {
@@ -35,6 +76,7 @@ function(Renderer,Map,MapElementFactory,GameClient) {
             this.map.ready(function() {
                 self.mapGrid = self.map.tiles;
                 self.teamCount = self.map.teamcount;
+                self.generateStaticGrid();
                 console.info("Map loaded.");
             });
         },
@@ -43,6 +85,7 @@ function(Renderer,Map,MapElementFactory,GameClient) {
             this.setRenderer(new Renderer(this, canvas, background));
         },
 
+
         setRenderer: function(renderer){
             this.renderer = renderer;
         },
@@ -50,19 +93,12 @@ function(Renderer,Map,MapElementFactory,GameClient) {
         run: function(started_callback) {
             var self = this;
 
-            var wait = setInterval(function() {
-                if(self.map.isLoaded) {
-                    self.ready = true;
+            self.ready = true;
+            self.connect(started_callback);
 
-                    self.connect(started_callback);
-
-                    if(self.running_func){
-                        self.running_func();
-                    }
-
-                    clearInterval(wait);
-                }
-            }, 100);
+            if(self.running_func){
+                self.running_func();
+            }
         },
 
         generateStaticGrid: function() {
@@ -81,30 +117,116 @@ function(Renderer,Map,MapElementFactory,GameClient) {
             console.info("Collision grid generated.");
         },
 
+        wait: function(){
+            var self = this;
+
+            console.log('game wait');
+
+            if(this.wait_func)
+                this.wait_func();
+
+            var wait = setInterval(function() {
+                if(self.map && self.map.isLoaded && self.started) {
+                    self.start();
+                    clearInterval(wait);
+                }
+            }, 100);
+        },
+
         start: function(){
-            this.generateStaticGrid();
             this.tick();
             console.info("Game loop started.");
         },
 
         tick: function() {
+            var self = this;
+
             if(this.started) {
-                this.renderer.renderFrame();
+                this.renderer.renderFrame(function(){
+                    self.sendLoad()
+                });
             }
         },
 
         connect: function(connect_func){
             var self = this;
 
-            this.client = new GameClient('127.0.0.1','8000');
+            this.client = new GameClient('172.17.3.61','8000');
             this.client.connect();
 
             this.client.onConnected(function() {
-                console.info("Starting client/server handshake");
+                if(connect_func){
+                    connect_func();
+                }
 
-                self.started = true;
-                self.start();
                 self.client.sendHello();
+
+                console.info("Starting client/server handshake");
+            });
+
+            this.client.onWelcome(function(playerConfig){
+                self.player = new Player(playerConfig);
+
+                self.connected = true;
+
+                if(self.playerwelcome_func){
+                    self.playerwelcome_func(self.player);
+                }
+
+                self.wait();
+            });
+
+            this.client.onLoadGameData(function(id, population,teamCount, minPlayers, maxPlayers, players){
+                self.id = id;
+                self.setPopulation(population);
+                self.teamCount = teamCount;
+                self.minPlayers = minPlayers;
+                self.maxPlayers = maxPlayers;
+
+                _.each(players, function(playerConfig){
+                    self.entities[playerConfig.id] = new Player(playerConfig);
+                });
+
+                if(self.load_func){
+                    self.load_func();
+                }
+            });
+
+            this.client.onStarted(function(){
+                self.started = true;
+
+                if(self.start_func){
+                    self.start_func();
+                }
+
+            });
+
+            this.client.onJoinGame(function(playerConfig){
+                self.incrementPopulation();
+
+                if(self.playerjoin_func){
+                    self.playerjoin_func(playerConfig);
+                }
+            });
+
+            this.client.onLeftGame(function(playerId){
+                self.decrementPopulation();
+
+                if(self.playerleft_func){
+                    self.playerleft_func(playerId);
+                }
+            });
+
+            this.client.onReady(function(playerId){
+                if(self.playerready_func){
+                    self.playerready_func(playerId);
+                }
+            });
+
+            this.client.onGamePlay(function(){
+                if(self.gameplay_func){
+                    self.gameplay_func();
+                }
             });
         },
 
@@ -114,6 +236,30 @@ function(Renderer,Map,MapElementFactory,GameClient) {
                     callback(this.mapGrid[i][j], i, j);
                 }
             }
+        },
+
+        incrementPopulation: function(){
+            this.setPopulation(this.population+1);
+        },
+
+        decrementPopulation: function(){
+            this.setPopulation(this.population-1);
+        },
+
+        setPopulation: function(newPopulation){
+            this.population = newPopulation;
+
+            if(this.changepopulation_func){
+                this.changepopulation_func()
+            }
+        },
+
+        sendReady: function(){
+            this.client.sendReady();
+        },
+
+        sendLoad: function(){
+            this.client.sendLoad();
         }
     });
     

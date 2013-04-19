@@ -12,7 +12,12 @@ Types = {
         JOINGAME: 3,
         LEFTGAME: 4,
         MOVE: 5,
-        GAMESTART: 6
+        GAMESTART: 6,
+        IREADY: 7,
+        GAMEDATA: 8,
+        GAMEFULL: 9,
+        LOADMAP : 10,
+        GAMEPLAY: 11
     },
     
     Entities: {

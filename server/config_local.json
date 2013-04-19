@@ -3,6 +3,6 @@
     "debug_level": "debug",
     "players_per_game": 8,
     "game_name" : "level1",
-    "map_filepath": "./server/maps/level1.json",
+    "map_filepath": "./shared/maps/level1.json",
     "metrics_enabled": false
 }

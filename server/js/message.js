@@ -55,7 +55,7 @@ Messages.JoinGame = Message.extend({
     },
     serialize: function() {
         return [Types.Messages.JOINGAME,
-            this.player.id];
+            this.player.getState()];
     }
 });
 
@@ -72,3 +72,51 @@ Messages.LeftGame = Message.extend({
             this.player.id];
     }
 });
+
+Messages.iReady = Message.extend({
+    init: function(player) {
+        this.player = player;
+    },
+    serialize: function() {
+        return [Types.Messages.IREADY,
+            this.player.id];
+    }
+});
+
+Messages.gameStart = Message.extend({
+    init: function(id) {
+        this.id = id;
+    },
+    serialize: function() {
+        return [Types.Messages.GAMESTART,
+            this.id];
+    }
+});
+
+Messages.gamePlay = Message.extend({
+    init: function(id) {
+        this.id = id;
+    },
+    serialize: function() {
+        return [Types.Messages.GAMEPLAY,
+            this.id];
+    }
+});
+
+Messages.gameData = Message.extend({
+    init: function(game) {
+        this.game = game;
+    },
+    serialize: function() {
+        return [Types.Messages.GAMEDATA,
+            this.game.id,
+            this.game.playerCount,
+            this.game.teamCount,
+            this.game.maxPlayers,
+            this.game.minPlayers,
+            this.game.getPlayersInfo()
+        ];
+    }
+});
+
+

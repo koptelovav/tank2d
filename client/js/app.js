@@ -4,6 +4,9 @@ define(['jquery'], function($) {
     var App = Class.extend({
         init: function() {
             this.ready = false;
+            this.$readyButton = $('#ready-button');
+            this.playerGrid =  $('#connected-grid');
+            this.gameFrame = $('#canvas');
         },
         
         setGame: function(game) {
@@ -15,6 +18,19 @@ define(['jquery'], function($) {
             this.game.run(function() {
 
             });
+        },
+
+        onJoinPlayer: function(callback){
+            this.joinplayer_callback = callback;_
+        },
+
+        addPlayer:function(player){
+            this.getTeamById(player.team).find('.place span:empty:first').html('<div class="player" id="'+player.id+'">'+player.id+'</div>');
+            if(player.isReady) this.setReady(player.id);
+        },
+
+        setReady: function(playerId){
+            $('#'+playerId).addClass('ready');
         },
 
         canConnectingGame: function() {
@@ -29,6 +45,10 @@ define(['jquery'], function($) {
             }
 
             self.start();
+        },
+
+        getTeamById: function(id){
+            return $('#team'+id);
         },
 
         tryConnectingGame: function(starting_callback) {

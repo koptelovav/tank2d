@@ -154,7 +154,17 @@ WS.WebsocketServer = Server.extend({
         this._super(port);
 
         this._httpServer = http.createServer(function (request, response) {
-            response.writeHead(404);
+            var path = url.parse(request.url).pathname;
+            switch(path) {
+                case '/games':
+                    if(self.games_callback) {
+                        response.writeHead(200);
+                        response.write(self.games_callback());
+                        break;
+                    }
+                default:
+                    response.writeHead(404);
+            }
             response.end();
         });
 
@@ -183,6 +193,10 @@ WS.WebsocketServer = Server.extend({
         this.forEachConnection(function (connection) {
             connection.send(message);
         });
+    },
+
+    onRequestGames: function(callback){
+        this.games_callback = callback;
     },
 
     /**
