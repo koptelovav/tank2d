@@ -10,6 +10,7 @@ define(function () {
             //Modes
             this.isLoaded = false;
             this.visible = true;
+            this.setDirty();
         },
 
         setPosition: function(x, y){
@@ -85,6 +86,17 @@ define(function () {
                 [this.x, this.y  ],[this.x+1, this.y  ],
                 [this.x, this.y+1],[this.x+1, this.y+1]
             ];
+        },
+
+        setDirty: function() {
+            this.isDirty = true;
+            if(this.dirty_callback) {
+                this.dirty_callback(this);
+            }
+        },
+
+        onDirty: function(dirty_callback) {
+            this.dirty_callback = dirty_callback;
         }
     });
 

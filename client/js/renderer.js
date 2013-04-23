@@ -8,11 +8,11 @@ define(['timer', 'tile','player'],
                 background.width = entities.width = foreground.width = 16 * 50;
                 background.height = entities.height = foreground.height = 16 * 50;
 
-                this.context = (entities && entities.getContext) ? entities.getContext("2d") : null;
+                this.entities = (entities && entities.getContext) ? entities.getContext("2d") : null;
                 this.background = (background && background.getContext) ? background.getContext("2d") : null;
                 this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
-                this.entities = entities;
+                this.ecanvas = entities;
                 this.backcanvas = background;
 
                 this.images = {};
@@ -34,12 +34,18 @@ define(['timer', 'tile','player'],
             },
 
             renderFrame: function (render_callback) {
-                this.clearScreen(this.context);
+                this.clearDirtyRects();
 
-                this.context.save();
+                this.entities.save();
+                this.background.save();
+                this.foreground.save();
+
                 this.drawEntities();
                 this.drawDebugInfo();
-                this.context.restore();
+
+                this.entities.restore();
+                this.background.restore();
+                this.foreground.restore();
 
                 if (render_callback) {
                     render_callback();
@@ -67,7 +73,7 @@ define(['timer', 'tile','player'],
             },
 
             drawText: function (text, x, y, centered, color, strokeColor) {
-                var ctx = this.context;
+                var ctx = this.foreground;
 
                 if (text && x && y) {
                     ctx.save();
@@ -88,18 +94,11 @@ define(['timer', 'tile','player'],
             },
 
             drawEntity: function (entity) {
-                var sprite = entity.sprite;
-
-                if (entity instanceof Player) {
-                    this.drawImage(this.context,entity);
-                }else if (entity instanceof Tile) {
-                    this.drawImage(this[entity.layer],entity);
-                }
+                this.drawImage(this[entity.layer],entity);
             },
 
             drawImage: function(contex, entity){
                 var sprite = entity.sprite;
-
                 contex.drawImage(sprite.image,
                     entity.x * 16,
                     entity.y * 16,
@@ -111,10 +110,40 @@ define(['timer', 'tile','player'],
                 var self = this;
 
                 this.game.forEachVisibleEntity(function (entity) {
-                    if (entity.isLoaded) {
-                        self.drawEntity(entity);
+                    if (entity.isLoaded && entity.sprite.isLoaded) {
+                        if(entity.isDirty) {
+                            self.drawEntity(entity);
+                            entity.isDirty = false;
+                            entity.oldDirtyRect = entity.dirtyRect;
+                            entity.dirtyRect = null;
+                        }
                     }
                 });
+            },
+
+            clearDirtyRect: function(layer,r) {
+                this[layer].clearRect(r.x, r.y, r.w, r.h);
+            },
+
+            clearDirtyRects: function() {
+                var self = this
+
+                this.game.forEachVisibleEntity(function(entity) {
+                    if(entity.isDirty && entity.oldDirtyRect) {
+                        self.clearDirtyRect(entity.layer,entity.oldDirtyRect);
+                    }
+                });
+            },
+
+            getEntityBoundingRect: function(entity){
+                var rect = {};
+
+                rect.x = entity.x * 16;
+                rect.y = entity.y * 16;
+                rect.h = entity.sprite.height;
+                rect.w = entity.sprite.width;
+
+                return rect;
             }
         });
 
