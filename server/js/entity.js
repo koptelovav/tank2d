@@ -91,8 +91,8 @@ module.exports = Entity = cls.Class.extend({
      */
     getChunk: function(){
         return [
-            [this.x-0.5, this.y-0.5],[this.x-0.5, this.y+0.5],
-            [this.x+0.5, this.y-0.5],[this.x+0.5, this.y+0.5]
+            [this.x, this.y  ],[this.x+1, this.y  ],
+            [this.x, this.y+1],[this.x+1, this.y+1]
         ];
     }
 });

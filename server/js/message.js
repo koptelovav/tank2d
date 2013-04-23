@@ -119,4 +119,17 @@ Messages.gameData = Message.extend({
     }
 });
 
+Messages.spawn = Message.extend({
+    init: function(player) {
+        this.player = player;
+    },
+    serialize: function() {
+        return [Types.Messages.SPAWN,
+            this.player.id,
+            this.player.x,
+            this.player.y,
+            this.player.orientation
+        ];
+    }
+});
 

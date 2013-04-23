@@ -77,21 +77,22 @@ module.exports = Map = cls.Class.extend({
     },
 
     isOutOfBounds: function (x, y) {
-        return x <= 0 || x >= this.width || y <= 0 || y >= this.height;
+        return x < 0 || x > this.width || y < 0 || y > this.height;
     },
 
     isPlayerColliding: function (x, y) {
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        return this.tiles[x][y]['playerColliding'] && Boolean(this.collidingGrid[x][y]);
+
+        return this.tiles[x][y]['playerColliding'];
     },
 
     isBulletColliding: function (x, y) {
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        return this.tiles[x][y]['bulletColliding'] && Boolean(this.collidingGrid[x][y]);
+        return this.tiles[x][y]['bulletColliding'];
     },
 
     clearProection: function (entity) {

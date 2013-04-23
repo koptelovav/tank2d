@@ -15,6 +15,8 @@ define(['player'], function(Player) {
             this.handlers[Types.Messages.IREADY] = this.receivePlayerReady;
             this.handlers[Types.Messages.GAMEFULL] = this.receiveGameFull;
             this.handlers[Types.Messages.GAMEPLAY] = this.receiveGamePlay;
+            this.handlers[Types.Messages.SPAWN] = this.receiveSpawn;
+            this.handlers[Types.Messages.MOVE] = this.receiveMove;
 
             this.enable();
         },
@@ -87,11 +89,8 @@ define(['player'], function(Player) {
             var player = {
                 id: data[0],
                 kind: data[1],
-                x: data[2],
-                y: data[3],
-                orientation: data[4],
-                team: data[5],
-                isReady: data[6]
+                team: data[2],
+                isReady: data[3]
             };
 
             if(callback) {
@@ -99,9 +98,30 @@ define(['player'], function(Player) {
             }
         },
 
+        receiveSpawn:function(data){
+            var id = data[1],
+                x = data[2],
+                y = data[3],
+                orientation = data[4];
+
+            if(this.spawn_callback){
+                this.spawn_callback(id, x, y, orientation);
+            }
+        },
+
         receiveWelcome: function(data){
             this.receivePlayerInfo(data[1],this.welcome_callback);
         },
+
+        receiveMove: function(data){
+            var id = data[1],
+                orientation = data[2];
+
+            if(this.move_callback){
+                this.move_callback(id,orientation);
+            }
+        },
+
 
         receiveLoadGameData: function(data){
             var self = this,
@@ -204,6 +224,14 @@ define(['player'], function(Player) {
             this.gameplay_callback = callback;
         },
 
+        onSpawn: function(callback){
+            this.spawn_callback = callback;
+        },
+
+        onMove: function(callback){
+            this.move_callback = callback;
+        },
+
         sendHello: function(){
             this.sendMessage([Types.Messages.HELLO]);
         },
@@ -214,6 +242,10 @@ define(['player'], function(Player) {
 
         sendReady: function(){
             this.sendMessage([Types.Messages.IREADY]);
+        },
+
+        sendMove: function(orientation){
+            this.sendMessage([Types.Messages.MOVE,orientation])
         }
     });
 

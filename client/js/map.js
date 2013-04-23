@@ -1,5 +1,5 @@
 
-define(['jquery', 'mapelement'], function($,MapElementFactory) {
+define(['jquery', 'tile'], function($,TileFactory) {
     
     var Map = Class.extend({
         init: function(game) {
@@ -41,7 +41,25 @@ define(['jquery', 'mapelement'], function($,MapElementFactory) {
             this.tiles = map.tiles;
             this.tilesize = map.tilesize;
             this.teamcount = map.teamcount;
+        },
+
+        isOutOfBounds: function (x, y) {
+            return x < 0 || x > this.width || y < 0 || y > this.height;
+        },
+
+        isPlayerColliding: function (x, y) {
+            if (this.isOutOfBounds(x, y)) {
+                return true;
+            }
+
+            for(var id in this.game.tiles[x][y]){
+                if(this.game.tiles[x][y][id]['tankColliding']) return true;
+            }
+            return false;
+
+           return this.game.tiles[x][y]['tankColliding'];
         }
+
     });
     
     return Map;

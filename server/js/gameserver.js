@@ -6,6 +6,7 @@ var cls = require("./lib/class"),
     Message = require('./message'),
     Map = require('./map'),
     Utils = require('./utils'),
+    Spawn = require('./spawn'),
     Types = require("../../shared/js/gametypes");
 
 
@@ -36,8 +37,9 @@ module.exports = GameServer = cls.Class.extend({
         this.isStart = false;
         this.isPlay = false;
 
-        this.spawns = [];
+        this.spawns = {};
         this.players = {};
+        this.entities = {};
         this.teams = {};
         this.outgoingQueues = {};
 
@@ -63,7 +65,7 @@ module.exports = GameServer = cls.Class.extend({
 
             player.onReady(function() {
                 if(self._checkAllStarted() && self.playerCount >= self.minPlayers && !self.isStart){
-                    this.isStart = true;
+                    self.isStart = true;
                     self.pushBroadcast(new Message.gameStart(this.id),false);
                 }
             });
@@ -73,15 +75,20 @@ module.exports = GameServer = cls.Class.extend({
             });
 
             player.onSpawn(function(player){
-               self.setPlayerSpawnPosition(player);
+
             });
 
             player.onLoad(function(){
                 console.log(self._checkAllLoaded(),!self.isPlay);
                 if(self._checkAllLoaded() && !self.isPlay){
-                    this.isPlay = true;
-                    console.log('onLoad');
+                    self.isPlay = true;
                     self.pushBroadcast(new Message.gamePlay(self.id), false);
+
+                    setTimeout(function(){
+                        self.spawnAll();
+                    },100);
+
+                    console.log('onLoad');
                 }
             });
         });
@@ -105,8 +112,8 @@ module.exports = GameServer = cls.Class.extend({
             self.minPlayers = self.map.minPlayers;
             self.maxPlayers = self.map.maxPlayers;
             self.teamCount = self.map.teamCount;
-            self.spawns = self.map.spawns;
             self.initTeams();
+            self.initSpawns(self.map.spawns);
         });
 
         setInterval(function() {
@@ -218,6 +225,45 @@ module.exports = GameServer = cls.Class.extend({
         }
     },
 
+    initSpawns: function(spawns){
+        var self = this,
+            sId = 1;
+        _.each(spawns, function(teamSpaws, teamId){
+            self.spawns[teamId] = [];
+            _.each(teamSpaws, function(spawn){
+
+                self.spawns[teamId].push(new Spawn(sId, teamId, spawn[0], spawn[1], spawn[2]));
+                sId++;
+            });
+        });
+    },
+
+    getRandomSpawn: function(team){
+        var teamSpawns = this.spawns[team];
+
+        console.log(teamSpawns);
+
+        return teamSpawns[Math.floor(Math.random()*teamSpawns.length)];
+    },
+
+    spawnAll: function(){
+        for(var id in this.players){
+            this.playerSpawn(id);
+        }
+    },
+
+    playerSpawn: function(id){
+        var spawn;
+
+        spawn = this.getRandomSpawn(this.players[id].team);
+
+        this.players[id].x = spawn.x;
+        this.players[id].y = spawn.y;
+        this.players[id].orientation = spawn.orientation;
+
+        this.pushBroadcast(new Message.spawn(this.players[id]), false);
+    },
+
     /**
      * Отправить сообщение игроку
      * @this {GameServer}
@@ -270,18 +316,6 @@ module.exports = GameServer = cls.Class.extend({
         this.outgoingQueues[player.id] = [];
     },
 
-    setPlayerSpawnPosition: function(player){
-        var spawn;
-        spawn = this.getSpawn(player.team);
-        player.x = spawn[0];
-        player.y = spawn[1];
-    },
-
-    getSpawn: function(team){
-        var rand = Utils.random(this.spawns[team].length);
-        return this.spawns[team][rand];
-    },
-
     getPlayersInfo: function(){
         var playersInfo = [];
         _.each(this.players, function(player){
@@ -313,22 +347,23 @@ module.exports = GameServer = cls.Class.extend({
 
     isValidPlayerMove: function(player, orientation){
         if(this.map && player) {
+            var chunk = player.getChunk();
             if(orientation === Types.Orientations.LEFT){
-                return !this.map.isPlayerColliding(player.x + 0.5, player.y - 1.5) &&
-                       !this.map.isPlayerColliding(player.x - 0.5, player.y - 1.5);
+                return !this.map.isPlayerColliding.call(this.map,chunk[0][0]-1,chunk[0][1]) &&
+                    !this.map.isPlayerColliding.call(this.map,chunk[2][0]-1,chunk[2][1]);
             }
             else if(orientation === Types.Orientations.UP){
-                return !this.map.isPlayerColliding(player.x - 1.5, player.y + 0.5) &&
-                    !this.map.isPlayerColliding(player.x - 1.5, player.y - 0.5);
+                return !this.map.isPlayerColliding.call(this.map,chunk[0][0],chunk[0][1]-1) &&
+                    !this.map.isPlayerColliding.call(this.map,chunk[1][0],chunk[1][1]-1);
             }
             else if(orientation === Types.Orientations.RIGHT){
-                return !this.map.isPlayerColliding(player.x + 0.5, player.y + 1.5) &&
-                    !this.map.isPlayerColliding(player.x - 0.5, player.y + 1.5);
+                return !this.map.isPlayerColliding.call(this.map,chunk[1][0]+1,chunk[1][1]) &&
+                       !this.map.isPlayerColliding.call(this.map,chunk[3][0]+1,chunk[3][1]);
             }
             else if(orientation === Types.Orientations.DOWN){
-                return !this.map.isPlayerColliding(player.x + 1.5, player.y + 0.5) &&
-                    !this.map.isPlayerColliding(player.x + 1.5, player.y - 0.5);
-            };
+                return !this.map.isPlayerColliding.call(this.map,chunk[2][0],chunk[2][1]+1) &&
+                    !this.map.isPlayerColliding.call(this.map,chunk[3][0],chunk[3][1]+1);
+            }
         }
     },
 

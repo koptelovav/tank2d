@@ -42,12 +42,6 @@ module.exports = Player = Tank.extend({
          */
         this.team = null;
 
-        /**
-         * Точка появления игрока
-         * @type {null|number}
-         */
-        this.spawn = null;
-
         this.isReady = false;
 
         this.isLoad = false;
@@ -60,7 +54,7 @@ module.exports = Player = Tank.extend({
          */
         this.isDead = false;
 
-        this._super(this.connection.id, "player", null, null, Types.Orientations.UP, {
+        this._super(this.connection.id, "player", {
             "speed": 20,
             "armor": 1,
             "bullet": 1
@@ -87,8 +81,6 @@ module.exports = Player = Tank.extend({
                     self.send([Types.Messages.GAMEFULL, self.id]);
                 }else{
                     self.server.addPlayer(self);
-                    self.server.setPlayerSpawnPosition(self);
-                    self.server.drawProection(self);
                     self.server.enter_callback(self);
 
                     self.hasEnteredGame = true;
@@ -207,10 +199,10 @@ module.exports = Player = Tank.extend({
         if(this.onmovestart_callback)
             this.onmovestart_callback();
 
-        if(this.orientation === Types.Orientations.LEFT) this.y--;
-        else if(this.orientation === Types.Orientations.UP) this.x--;
-        else if(this.orientation === Types.Orientations.RIGHT) this.y++;
-        else if(this.orientation === Types.Orientations.DOWN) this.x++;
+        if(this.orientation === Types.Orientations.LEFT) this.x--;
+        else if(this.orientation === Types.Orientations.UP) this.y--;
+        else if(this.orientation === Types.Orientations.RIGHT) this.x++;
+        else if(this.orientation === Types.Orientations.DOWN) this.y++;
 
         if(this.onmoveend_callback)
             this.onmoveend_callback();
@@ -221,13 +213,12 @@ module.exports = Player = Tank.extend({
      * @returns {Array} массив с параметрами
      */
     getState: function() {
-        var basestate = this._getBaseState(),
-            state = [];
-
-        state.push(this.orientation);
-        state.push(this.team);
-        state.push(this.isReady);
-
-        return basestate.concat(state);
+        var state = [
+            this.id,
+            this.kind,
+            this.team,
+            this.isReady
+        ];
+        return state;
     }
 });

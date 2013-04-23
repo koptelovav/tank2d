@@ -22,14 +22,15 @@ define(['jquery', 'app'], function ($, App) {
     var initGame = function () {
         require(['game'], function (Game) {
 
-            var canvas = document.getElementById("entities"),
-                background = document.getElementById("background");
+            var entities = document.getElementById("entities"),
+                background = document.getElementById("background"),
+                foreground = document.getElementById("foreground");
 
             game = new Game(app);
             app.setGame(game);
 
             game.onStart(function(){
-                game.setup(canvas, background);
+                game.setup(entities, background, foreground);
                 game.loadMap();
             });
 
@@ -80,6 +81,25 @@ define(['jquery', 'app'], function ($, App) {
 
             game.onGamePlay(function(){
                app.gameFrame.show();
+            });
+
+            $("body").keydown(function(e) {
+                var code = (e.keyCode ? e.keyCode : e.which);
+                if(code == 38 || code == 87) { //up
+                    app.game.playerMoveUp();
+                }
+                else if(code == 39 || code == 68) { //right
+                    app.game.playerMoveRight();
+                }
+                else if(code == 40 || code == 83) { //down
+                    app.game.playerMoveDown();
+                }
+                else if(code == 37 || code == 65) { //left
+                    app.game.playerMoveLeft();
+                }
+                else if(code == 17) { //fire
+                    //   send('fire');
+                }
             });
         });
     };

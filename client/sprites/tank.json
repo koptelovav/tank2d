@@ -1,0 +1,11 @@
+{
+    "id": "tank",
+    "width": 32,
+    "height": 32,
+    "animations": {
+        "idle": {
+            "length": 1,
+            "row": 0
+        }
+    }
+}

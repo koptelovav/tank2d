@@ -17,7 +17,8 @@ Types = {
         GAMEDATA: 8,
         GAMEFULL: 9,
         LOADMAP : 10,
-        GAMEPLAY: 11
+        GAMEPLAY: 11,
+        SPAWN: 12
     },
     
     Entities: {

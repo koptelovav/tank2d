@@ -1,6 +1,6 @@
 
-define(['renderer','map','mapelement','gameclient','player','../../shared/js/gametypes'],
-function(Renderer,Map,MapElementFactory,GameClient,Player) {
+define(['renderer','map','tilefactory','gameclient','player','sprite','../../shared/js/gametypes'],
+function(Renderer,Map,TileFactory,GameClient,Player, Sprite) {
 
     var Game = Class.extend({
         init: function(app) {
@@ -10,6 +10,9 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
             this.connected = false;
             this.canStart = false;
             this.isLoad = false;
+
+
+            this.loadData = false;
 
             this.population = 0;
             this.maxPlayers = null;
@@ -22,6 +25,12 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
 
             // Game state
             this.entities = {};
+            this.sprites = {};
+            this.rendering = {};
+
+            this.animatedTiles = null;
+
+            this.spriteNames = ["armoredwall","ice","trees","wall","water","tank"]
         },
 
         onLoad: function(func){
@@ -76,13 +85,12 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
             this.map.ready(function() {
                 self.mapGrid = self.map.tiles;
                 self.teamCount = self.map.teamcount;
-                self.generateStaticGrid();
                 console.info("Map loaded.");
             });
         },
 
-        setup: function(canvas, background) {
-            this.setRenderer(new Renderer(this, canvas, background));
+        setup: function(entities, background, foreground) {
+            this.setRenderer(new Renderer(this, entities, background, foreground));
         },
 
 
@@ -90,62 +98,128 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
             this.renderer = renderer;
         },
 
-        run: function(started_callback) {
-            var self = this;
-
-            self.ready = true;
-            self.connect(started_callback);
-
-            if(self.running_func){
-                self.running_func();
-            }
-        },
-
-        generateStaticGrid: function() {
+        initMap: function() {
             var self = this,
-                kind;
+                kind,
+                element,
+                mId = 1,
+                id;
 
             for (var j, i = 0; i < self.map.height; i++) {
                 for (j = 0; j < self.map.width; j++) {
-                    if ((kind = Types.getKindAsString(self.mapGrid[i][j])) !== undefined) {
-                        self.mapGrid[i][j] = MapElementFactory.create(kind);
-                    } else {
-                        self.mapGrid[i][j] = undefined;
-                    }
+                        if ((kind = Types.getKindAsString(self.map.tiles[i][j])) !== undefined) {
+                            if(kind !== "empty"){
+                                id = 5000+mId+String(i)+String(j);
+                                element = TileFactory.create(id, kind, i, j);
+                                element.setSprite(this.sprites[kind]);
+                                self.tiles[i][j][element.id] = element;
+                                self.entities[element.id] = element;
+                                self.rendering[element.id] = element;
+                                mId++;
+                            }
+                        }else {
+                            console.error("Tile is not defined");
+                        }
+
                 }
             }
             console.info("Collision grid generated.");
         },
 
-        wait: function(){
+        initEntityGrid: function() {
+            this.entityGrid = [];
+            for(var i=0; i < this.map.height; i += 1) {
+                this.entityGrid[i] = [];
+                for(var j=0; j < this.map.width; j += 1) {
+                    this.entityGrid[i][j] = {};
+                }
+            }
+            console.info("Initialized the entity grid.");
+        },
+
+        initTilesGrid: function() {
+            this.tiles = [];
+            for(var i=0; i < this.map.height; i += 1) {
+                this.tiles[i] = [];
+                for(var j=0; j < this.map.width; j += 1) {
+                    this.tiles[i][j] = {};
+                }
+            }
+            console.info("Initialized the tiles grid.");
+        },
+
+
+        initRendering: function() {
+            this.renderingGrid = [];
+            for(var i=0; i < this.map.height; i += 1) {
+                this.renderingGrid[i] = [];
+                for(var j=0; j < this.map.width; j += 1) {
+                    this.renderingGrid[i][j] = {};
+                }
+            }
+            console.info("Initialized the rendering grid.");
+        },
+
+        addToRenderingGrid: function(entity, x, y) {
+            this.renderingGrid[entity.id] = entity;
+        },
+
+        removeFromRenderingGrid: function(entity, x, y) {
+            if(entity && this.renderingGrid[x][y] && entity.id in this.renderingGrid[y][x]) {
+                delete this.renderingGrid[x][y][entity.id];
+            }
+        },
+
+        removeFromEntityGrid: function(entity, x, y) {
+            if(this.entityGrid[y][x][entity.id]) {
+                delete this.entityGrid[y][x][entity.id];
+            }
+        },
+
+        run: function(started_callback) {
             var self = this;
 
-            console.log('game wait');
+            this.loadSprites();
+            this.ready = true;
+            this.connect(started_callback);
 
-            if(this.wait_func)
-                this.wait_func();
+            var waitGameLoadData= setInterval(function(){
+                if(self.loadData){
 
-            var wait = setInterval(function() {
-                if(self.map && self.map.isLoaded && self.started) {
-                    self.start();
-                    clearInterval(wait);
+                    if(self.wait_func)
+                        self.wait_func();
+
+                    var waitStartGame = setInterval(function() {
+                        if(self.map && self.map.isLoaded && self.started) {
+                            self.start();
+                            self.sendLoad();
+                            clearInterval(waitStartGame);
+                        }
+                    }, 1000);
+
+                    clearInterval(waitGameLoadData);
                 }
-            }, 100);
+            },100);
+
+            if(this.running_func){
+                this.running_func();
+            }
         },
 
         start: function(){
+            this.initTilesGrid();
+            this.initRendering();
+            this.initMap();
             this.tick();
+            this.sendLoad();
             console.info("Game loop started.");
         },
 
         tick: function() {
-            var self = this;
-
             if(this.started) {
-                this.renderer.renderFrame(function(){
-                    self.sendLoad()
-                });
+                this.renderer.renderFrame();
             }
+           requestAnimFrame(this.tick.bind(this));
         },
 
         connect: function(connect_func){
@@ -165,15 +239,15 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
             });
 
             this.client.onWelcome(function(playerConfig){
-                self.player = new Player(playerConfig);
+                self.player = playerConfig;
+          /*      self.player = new Player(playerConfig);
+                self.player.setSprite(self.sprites[Types.getKindAsString(self.player.kind)]);*/
 
                 self.connected = true;
 
                 if(self.playerwelcome_func){
                     self.playerwelcome_func(self.player);
                 }
-
-                self.wait();
             });
 
             this.client.onLoadGameData(function(id, population,teamCount, minPlayers, maxPlayers, players){
@@ -184,8 +258,11 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
                 self.maxPlayers = maxPlayers;
 
                 _.each(players, function(playerConfig){
-                    self.entities[playerConfig.id] = new Player(playerConfig);
+                    self.entities[playerConfig.id] = playerConfig;
+                  /*  self.entities[playerConfig.id].setSprite(self.sprites[Types.getKindAsString(self.entities[playerConfig.id].kind)]);*/
                 });
+
+                self.loadData = true;
 
                 if(self.load_func){
                     self.load_func();
@@ -202,6 +279,9 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
             });
 
             this.client.onJoinGame(function(playerConfig){
+                self.entities[playerConfig.id] = playerConfig;
+                /*self.entities[playerConfig.id] = new Player(playerConfig);
+                self.entities[playerConfig.id].setSprite(self.sprites[Types.getKindAsString(self.entities[playerConfig.id].kind)]);*/
                 self.incrementPopulation();
 
                 if(self.playerjoin_func){
@@ -211,6 +291,8 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
 
             this.client.onLeftGame(function(playerId){
                 self.decrementPopulation();
+
+                delete self.entities[playerId];
 
                 if(self.playerleft_func){
                     self.playerleft_func(playerId);
@@ -228,14 +310,35 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
                     self.gameplay_func();
                 }
             });
+
+            this.client.onSpawn(function(id, x, y, orientation){
+                if(self.entityIdExists(id)){
+                    self.entities[id] = new Player(self.entities[id]);
+                    if(id === self.player.id){
+                        self.player = self.entities[id];
+                    }
+
+                    self.entities[id].setPosition(x, y);
+                    self.entities[id].setOrientation(orientation);
+                    self.entities[id].setSprite(self.sprites[Types.getKindAsString(self.entities[id].kind)]);
+                    self.spawnEntity(self.entities[id]);
+                }
+            });
+
+            this.client.onMove(function(id, orientation){
+                console.log(id, orientation);
+                self.playerMove(id,orientation);
+            });
         },
 
-        forEachTiles: function(callback){
-            for (var j, i = 0; i < this.map.height; i++) {
-                for (j = 0; j < this.map.width; j++) {
-                    callback(this.mapGrid[i][j], i, j);
-                }
-            }
+        forEachVisibleEntity: function(callback){
+            _.each(this.rendering, function(entity){
+                callback(entity);
+            });
+        },
+
+        spawnEntity: function(entity){
+            this.rendering[entity.id] = entity;
         },
 
         incrementPopulation: function(){
@@ -260,6 +363,76 @@ function(Renderer,Map,MapElementFactory,GameClient,Player) {
 
         sendLoad: function(){
             this.client.sendLoad();
+        },
+
+        entityIdExists: function(id) {
+            return id in this.entities;
+        },
+
+        getEntityById: function(id) {
+            if(id in this.entities) {
+                return this.entities[id];
+            }
+            else {
+                log.error("Unknown entity id : " + id, true);
+            }
+        },
+
+        playerMoveUp:function(id){
+            this.playerMove(id,Types.Orientations.UP);
+        },
+        playerMoveLeft:function(id){
+            this.playerMove(id,Types.Orientations.LEFT);
+        },
+        playerMoveRight:function(id){
+            this.playerMove(id,Types.Orientations.RIGHT);
+        },
+        playerMoveDown:function(id){
+            this.playerMove(id,Types.Orientations.DOWN);
+        },
+
+        playerMove:function(id,orientation){
+            var player = id ? this.entities[id] : this.player;
+            if(this.isValidPlayerMove(player,orientation)){
+                player.setOrientation(orientation);
+                player.move();
+                if(!id){
+                    this.client.sendMove(orientation)
+                }
+            }
+        },
+
+
+        isValidPlayerMove: function(player, orientation){
+            if(this.map && player) {
+                var chunk = player.getChunk();
+
+                if(orientation === Types.Orientations.LEFT){
+                    return !this.map.isPlayerColliding.call(this.map,chunk[0][0]-1,chunk[0][1]) &&
+                        !this.map.isPlayerColliding.call(this.map,chunk[2][0]-1,chunk[2][1]);
+                }
+                else if(orientation === Types.Orientations.UP){
+                    return !this.map.isPlayerColliding.call(this.map,chunk[0][0],chunk[0][1]-1) &&
+                        !this.map.isPlayerColliding.call(this.map,chunk[1][0],chunk[1][1]-1);
+                }
+                else if(orientation === Types.Orientations.RIGHT){
+                    return !this.map.isPlayerColliding.call(this.map,chunk[1][0]+1,chunk[1][1]) &&
+                        !this.map.isPlayerColliding.call(this.map,chunk[3][0]+1,chunk[3][1]);
+                }
+                else if(orientation === Types.Orientations.DOWN){
+                    return !this.map.isPlayerColliding.call(this.map,chunk[2][0],chunk[2][1]+1) &&
+                        !this.map.isPlayerColliding.call(this.map,chunk[3][0],chunk[3][1]+1);
+                }
+            }
+        },
+
+        loadSprite: function(name) {
+            this.sprites[name] = new Sprite(name, 3);
+        },
+
+        loadSprites: function() {
+            _.map(this.spriteNames, this.loadSprite, this);
+            console.log('sprites load');
         }
     });
     

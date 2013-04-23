@@ -23,6 +23,10 @@
     background: transparent;
     z-index: 2;
 }
+#foreground{
+    background: transparent;
+    z-index: 3;
+}
 
 #connected-grid{
     display: none;
