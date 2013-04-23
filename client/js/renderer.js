@@ -5,8 +5,8 @@ define(['timer', 'tile','player'],
             init: function (game, entities, background, foreground) {
                 this.game = game;
 
-                background.width = entities.width = foreground.width = 16 * 50;
-                background.height = entities.height = foreground.height = 16 * 50;
+                background.width = entities.width = foreground.width = 16 * 48;
+                background.height = entities.height = foreground.height = 16 * 48;
 
                 this.entities = (entities && entities.getContext) ? entities.getContext("2d") : null;
                 this.background = (background && background.getContext) ? background.getContext("2d") : null;

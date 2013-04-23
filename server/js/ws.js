@@ -3,7 +3,9 @@ var cls = require("./lib/class"),
     http = require('http'),
     _ = require('underscore'),
     Utils = require('./utils'),
-    Types = require('../../shared/js/gametypes'),
+    Types = require('../../client/shared/js/gametypes'),
+    fs = require('fs'),
+    express = require('express'),
     WS = {};
 
 module.exports = WS;
@@ -153,9 +155,14 @@ WS.WebsocketServer = Server.extend({
 
         this._super(port);
 
-        this._httpServer = http.createServer(function (request, response) {
+       /* this._httpServer = http.createServer(function (request, response) {
             var path = url.parse(request.url).pathname;
             switch(path) {
+                case '/index':
+                    fs.readFile('./client/index.html', function(err, page) {
+                        response.write(page);
+                    });
+                    break;
                 case '/games':
                     if(self.games_callback) {
                         response.writeHead(200);
@@ -167,11 +174,21 @@ WS.WebsocketServer = Server.extend({
             }
             response.end();
         });
+*/
 
-        this._httpServer.listen(port, function () {
-            log.info("Server is listening on port " + port);
+        var app = express();
+        var engines = require('consolidate');
+
+        app.set('views', './client');
+        app.engine('html', engines.mustache);
+        app.use('/',express.static('./client'));
+
+        app.set('view engine', 'html');
+        app.get('/', function(req, res) {
+            res.render('index');
         });
 
+        this._httpServer = http.createServer(app).listen(port);
         var io = require('socket.io').listen(this._httpServer);
 
         io.sockets.on('connection', function (connection) {

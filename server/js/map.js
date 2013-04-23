@@ -3,7 +3,7 @@ path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
     MapElementFactory = require('./mapelement'),
-    Types = require('../../shared/js/gametypes'),
+    Types = require('../../client/shared/js/gametypes'),
     Utils = require('./utils');
 
 module.exports = Map = cls.Class.extend({
@@ -77,7 +77,7 @@ module.exports = Map = cls.Class.extend({
     },
 
     isOutOfBounds: function (x, y) {
-        return x < 0 || x > this.width || y < 0 || y > this.height;
+        return x < 0 || x >= this.width || y < 0 || y >= this.height;
     },
 
     isPlayerColliding: function (x, y) {

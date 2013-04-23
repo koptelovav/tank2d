@@ -3,7 +3,7 @@ var cls = require("./lib/class"),
     _ = require("underscore"),
     Utils = require("./utils"),
     Entity = require("./entity"),
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../client/shared/js/gametypes");
 
 /**
  * Фабричный класс.

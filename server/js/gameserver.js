@@ -7,7 +7,7 @@ var cls = require("./lib/class"),
     Map = require('./map'),
     Utils = require('./utils'),
     Spawn = require('./spawn'),
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../client/shared/js/gametypes");
 
 
 /**

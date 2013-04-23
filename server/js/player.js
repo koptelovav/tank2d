@@ -3,7 +3,7 @@ var cls = require("./lib/class"),
     BulletFactory = require("./bullet"),
     _ = require("underscore"),
     Messages = require("./message"),
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../client/shared/js/gametypes");
 
 /**
  * Класс описывающий игрока

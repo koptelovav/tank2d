@@ -2,7 +2,7 @@ var cls = require("./lib/class"),
     _ = require("underscore"),
     Entity = require("./entity"),
     Log = require('log'),
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../client/shared/js/gametypes");
 
 // =======  ========
 /**

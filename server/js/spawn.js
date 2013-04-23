@@ -2,7 +2,7 @@
 var cls = require("./lib/class"),
     _ = require("underscore"),
     Utils = require("./utils"),
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../client/shared/js/gametypes");
 
 module.exports = Spawn = cls.Class.extend({
     init: function(id, team, x, y, orientation){
