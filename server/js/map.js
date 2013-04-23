@@ -29,7 +29,8 @@ module.exports = Map = cls.Class.extend({
 
     initMap: function (map) {
         var self = this;
-        this.tiles = map.tiles;
+        this.tiles = [];
+        this.bitmap = map.tiles;
         this.width = map.tiles[0].length;
         this.height = map.tiles.length;
         this.maxPlayers = map.maxplayers;
@@ -52,8 +53,9 @@ module.exports = Map = cls.Class.extend({
             kind;
 // Заполняем карту объектами
         for (var j, i = 0; i < self.height; i++) {
+            self.tiles[i] = [];
             for (j = 0; j < self.width; j++) {
-                if ((kind = Types.getKindAsString(self.tiles[i][j])) !== undefined) {
+                if ((kind = Types.getKindAsString(self.bitmap[i][j])) !== undefined) {
                     self.tiles[i][j] = MapElementFactory.create(kind);
                 } else {
                     self.tiles[i][j] = undefined;

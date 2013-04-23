@@ -61,6 +61,9 @@ module.exports = GameServer = cls.Class.extend({
                 self.pushBroadcast(new Message.LeftGame(player), player.id);
                 self.removePlayer(player);
                 self.decrementPlayerCount();
+                if(self.playerCount == 0){
+                    self.restart();
+                }
             });
 
             player.onReady(function() {
@@ -119,6 +122,14 @@ module.exports = GameServer = cls.Class.extend({
         setInterval(function() {
             self.processQueues();
         }, 1000 / this.ups);
+    },
+
+    restart: function(){
+        console.log('restart');
+        this.isStart = false;
+        this.isPlay = false;
+        this.map.generateStaticGrid();
+        this.map.generateCollisionGrids();
     },
 
     /**
