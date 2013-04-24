@@ -58,12 +58,22 @@
     border: 1px solid #0A246A;
     height: 160px;
     overflow-y: scroll;
+    padding-bottom: 20px;
 }
 
 #chat-history > div{
     width: 380px;
 }
 
-#chat{
+#chat-input textarea{
+    width: 395px;
+    height: 40px;
+}
+#chat-wrap{
+    width: 400px;
+    overflow: hidden;
     border: 1px solid #0b97c4;
+}
+#chat{
+    width: 420px;
 }
