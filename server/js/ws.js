@@ -6,6 +6,7 @@ var cls = require("./lib/class"),
     Types = require('../../client/shared/js/gametypes'),
     fs = require('fs'),
     express = require('express'),
+    exphbs  = require('express3-handlebars'),
     WS = {};
 
 module.exports = WS;
@@ -155,40 +156,19 @@ WS.WebsocketServer = Server.extend({
 
         this._super(port);
 
-       /* this._httpServer = http.createServer(function (request, response) {
-            var path = url.parse(request.url).pathname;
-            switch(path) {
-                case '/index':
-                    fs.readFile('./client/index.html', function(err, page) {
-                        response.write(page);
-                    });
-                    break;
-                case '/games':
-                    if(self.games_callback) {
-                        response.writeHead(200);
-                        response.write(self.games_callback());
-                        break;
-                    }
-                default:
-                    response.writeHead(404);
-            }
-            response.end();
-        });
-*/
-
         var app = express();
-        var engines = require('consolidate');
-
-        app.set('views', './client');
-        app.engine('html', engines.mustache);
+        app.engine('hbs', exphbs());
+        app.set('view engine', 'hbs');
         app.use('/',express.static('./client'));
+        app.set('views', './server/views');
 
-        app.set('view engine', 'html');
-        app.get('/', function(req, res) {
-            res.render('index');
+        app.get('/', function (req, res, next) {
+            res.render('game/index');
         });
 
         this._httpServer = http.createServer(app).listen(port);
+
+
         var io = require('socket.io').listen(this._httpServer);
 
         io.sockets.on('connection', function (connection) {

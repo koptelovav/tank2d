@@ -31,8 +31,8 @@ module.exports = Map = cls.Class.extend({
         var self = this;
         this.tiles = [];
         this.bitmap = map.tiles;
-        this.width = map.tiles[0].length;
-        this.height = map.tiles.length;
+        this.width = map.width;
+        this.height = map.height;
         this.maxPlayers = map.maxplayers;
         this.minPlayers = map.minplayers;
         this.teamCount = map.teamcount;
@@ -86,7 +86,6 @@ module.exports = Map = cls.Class.extend({
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-
         return this.tiles[x][y]['playerColliding'];
     },
 

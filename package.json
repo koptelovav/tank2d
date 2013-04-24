@@ -9,6 +9,6 @@
     , "socket.io": ">0"
     , "memcache": ">0"
     , "express": ">0"
-    , "consolidate": ">0"
+    , "express3-handlebars" : "0.4.1"
   }
 }
