@@ -7,6 +7,8 @@ define(['jquery'], function($) {
             this.$readyButton = $('#ready-button');
             this.playerGrid =  $('#connected-grid');
             this.gameFrame = $('#canvas');
+            this.$chatInput = $('#chat-input input');
+            this.$chatHistory = $('#chat-history');
         },
         
         setGame: function(game) {
@@ -20,8 +22,17 @@ define(['jquery'], function($) {
             });
         },
 
+        sendChatMessage: function(message){
+            this.game.sendChatMessage(message);
+        },
+
+        addChatMessage: function(playerId, message){
+            this.$chatHistory.append("<div>"+playerId+": "+message+"</div>");
+            this.$chatHistory.scrollTop = this.$chatHistory.scrollHeight;
+        },
+
         onJoinPlayer: function(callback){
-            this.joinplayer_callback = callback;_
+            this.joinplayer_callback = callback;
         },
 
         addPlayer:function(player){

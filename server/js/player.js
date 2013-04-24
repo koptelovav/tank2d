@@ -81,6 +81,7 @@ module.exports = Player = Tank.extend({
                     self.send([Types.Messages.GAMEFULL, self.id]);
                 }else{
                     self.server.addPlayer(self);
+//                    self.server.addToCollidingGrid(self);
                     self.server.enter_callback(self);
 
                     self.hasEnteredGame = true;
@@ -92,19 +93,17 @@ module.exports = Player = Tank.extend({
             else if(action === Types.Messages.MOVE) {
                 var orientation = message[1];
 
+                self.setOrientation(orientation);
+
                 if(self.server.isValidPlayerMove(self, orientation)) {
-                    self.onMoveStart(function(){
-                        self.server.clearProection(self);
+                    self.onBeforeMove(function(){
+                        self.server.removeFromCollidingGrid(self);
                     });
-
-                    self.onMoveEnd(function(){
-                        self.server.drawProection(self);
-                        self.broadcast(new Messages.Move(self));
-                    });
-
-                    self.setOrientation(orientation);
                     self.move();
+                    self.server.addToCollidingGrid(self);
                 }
+
+                self.broadcast(new Messages.Move(self));
             }
             else if(action === Types.Messages.IREADY) {
                 self.isReady = true;
@@ -115,7 +114,9 @@ module.exports = Player = Tank.extend({
                 self.isLoad = true;
                 self.load_callback(self);
             }
-
+            else if(action === Types.Messages.CHAT){
+                self.broadcast(new Messages.chat(self.id,message[1]),false);
+            }
         });
         /**
          * Устонавливаем callback при отключении от игры
@@ -171,8 +172,8 @@ module.exports = Player = Tank.extend({
 
     /**
      * Рассылка мообщения всем игрокам
-     * @param {Array} message Сообщение для отправки
-     * @param {Number} ignoreSelf ID игрока, который будет исключниз рассылки
+     * @param message Сообщение для отправки
+     * @param ignoreSelf ID игрока, который будет исключниз рассылки
      */
     broadcast: function(message, ignoreSelf) {
         if(this.broadcast_callback) {
@@ -180,12 +181,8 @@ module.exports = Player = Tank.extend({
         }
     },
 
-    onMoveEnd: function(callback){
-        this.onmoveend_callback = callback;
-    },
-
-    onMoveStart: function(callback){
-        this.onmovestart_callback = callback;
+    onBeforeMove: function(callback){
+        this.beforemove_callback = callback;
     },
 
     setOrientation: function(newOrientation){
@@ -196,16 +193,13 @@ module.exports = Player = Tank.extend({
      * Установить новую позицию в зависимости от текущего оринетации игрока
      */
     move: function(){
-        if(this.onmovestart_callback)
-            this.onmovestart_callback();
+        if(this.beforemove_callback)
+            this.beforemove_callback();
 
         if(this.orientation === Types.Orientations.LEFT) this.x--;
         else if(this.orientation === Types.Orientations.UP) this.y--;
         else if(this.orientation === Types.Orientations.RIGHT) this.x++;
         else if(this.orientation === Types.Orientations.DOWN) this.y++;
-
-        if(this.onmoveend_callback)
-            this.onmoveend_callback();
     },
 
     /**

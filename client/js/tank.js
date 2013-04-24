@@ -11,6 +11,10 @@ define(['entity'], function (Entity) {
             this.speed = self._params['speed'];
             this.armor = self._params['armor'];
             this.bullet = self._params['bullet'];
+
+            //colliding
+            this.tankColliding = true;
+            this.bulletColliding = true;
         },
 
         move: function(){

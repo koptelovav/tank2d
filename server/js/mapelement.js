@@ -1,6 +1,7 @@
 
 var cls = require("./lib/class"),
     _ = require("underscore"),
+    Entity = require("./entity"),
     Utils = require("./utils"),
     Types = require("../../client/shared/js/gametypes");
 
@@ -19,26 +20,29 @@ module.exports = MapElementFactory = {
      *
      * @param {String} kind Тип объекта (Подробнее в Types.MapElements)
      */
-    create: function(kind){
-        return new MapElements[kind](kind);
+    create: function(id, kind, x, y){
+        return new MapElements[kind](id, kind, x, y);
     }
 };
 
 /**
  * Базовай класс для всех статичных объектов карты
  */
-var MapElement = cls.Class.extend({
+var MapElement = Entity.extend({
     /**
      * Конструктор класса. Инициализация объекта
      *
      * @this {MapElement}
      * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     * @param x
+     * @param y
      * @param {boolean} tankCollision Коллиция с танком
      * @param {boolean} bulletCollision Коллиция с пулей
      */
-    init: function(kind, tankCollision, bulletCollision){
+    init: function(id, kind, x, y, tankCollision, bulletCollision){
+        this._super(id, 'tile',kind,x, y);
         this.kind = kind;
-        this.playerColliding = tankCollision || false;
+        this.tankColliding = tankCollision || false;
         this.bulletColliding = bulletCollision || false;
     },
 
@@ -52,7 +56,7 @@ var MapElement = cls.Class.extend({
     _getBaseState: function() {
         return [
             this.kind,
-            this.playerColliding,
+            this.tankColliding,
             this.bulletColliding,
         ];
     },
@@ -95,20 +99,10 @@ var MapElement = cls.Class.extend({
      */
     isTankColliding: function(){
         return this.tankColliding;
-    }
-});
+    },
 
-/**
- * Класс описывающий пустой тайл
- */
-MapElements.empty = MapElement.extend({
-    /**
-     * Конструктор класса. Инициализация объекта
-     *
-     * @param {String} kind Тип объекта (подробнее в Types.MapElements)
-     */
-    init: function(kind) {
-        this._super(kind);
+    getChunk: function(){
+        return [[this.x, this.y]];
     }
 });
 
@@ -120,9 +114,11 @@ MapElements.wall = MapElement.extend({
      * Конструктор класса. Инициализация объекта
      *
      * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     * @param x
+     * @param y
      */
-    init: function(kind) {
-        this._super(kind, true, true);
+    init: function(id, kind, x, y) {
+        this._super(id, kind, x, y, true, true);
     }
 });
 
@@ -134,9 +130,11 @@ MapElements.armoredwall = MapElement.extend({
      * Конструктор класса. Инициализация объекта
      *
      * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     * @param x
+     * @param y
      */
-    init: function(kind) {
-        this._super(kind, true, true);
+    init: function(id, kind, x, y) {
+        this._super(id, kind, x, y, true, true);
     }
 });
 
@@ -148,9 +146,11 @@ MapElements.trees = MapElement.extend({
      * Конструктор класса. Инициализация объекта
      *
      * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     * @param x
+     * @param y
      */
-    init: function(kind) {
-        this._super(kind);
+    init: function(id, kind, x, y) {
+        this._super(id, kind, x, y);
     }
 });
 
@@ -162,9 +162,11 @@ MapElements.water = MapElement.extend({
      * Конструктор класса. Инициализация объекта
      *
      * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     * @param x
+     * @param y
      */
-    init: function(kind) {
-        this._super(kind, true);
+    init: function(id, kind, x, y) {
+        this._super(id, kind, x, y, true);
     }
 });
 
@@ -176,8 +178,10 @@ MapElements.ice = MapElement.extend({
      * Конструктор класса. Инициализация объекта
      *
      * @param {String} kind Тип объекта (подробнее в Types.MapElements)
+     * @param x
+     * @param y
      */
-    init: function(kind) {
-        this._super(kind);
+    init: function(id, kind, x, y) {
+        this._super(id, kind, x, y);
     }
 });

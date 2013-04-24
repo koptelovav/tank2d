@@ -17,6 +17,10 @@ define(['entity'], function (Entity) {
 
         isTankColliding: function () {
             return this.tankColliding;
+        },
+
+        getChunk:function(){
+            return [[this.x, this.y]];
         }
     });
 

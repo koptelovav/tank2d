@@ -52,12 +52,10 @@ define(['jquery', 'tile'], function($,TileFactory) {
                 return true;
             }
 
-            for(var id in this.game.tiles[x][y]){
-                if(this.game.tiles[x][y][id]['tankColliding']) return true;
+            for(var id in this.game.entityGrid[x][y]){
+                if(this.game.entityGrid[x][y][id]['tankColliding']) return true;
             }
             return false;
-
-           return this.game.tiles[x][y]['tankColliding'];
         }
 
     });

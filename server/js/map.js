@@ -7,13 +7,13 @@ path = require('path'),
     Utils = require('./utils');
 
 module.exports = Map = cls.Class.extend({
-    init: function (filepath) {
+    init: function (game, filepath) {
         var self = this;
 
-        this.collidingGrid = [];
+        this.game = game;
         this.isLoaded = false;
 
-        path.exists(filepath, function (exists) {
+        fs.exists(filepath, function (exists) {
             if (!exists) {
                 log.error(filepath + " doesn't exist.");
                 return;
@@ -28,7 +28,6 @@ module.exports = Map = cls.Class.extend({
     },
 
     initMap: function (map) {
-        var self = this;
         this.tiles = [];
         this.bitmap = map.tiles;
         this.width = map.width;
@@ -48,67 +47,29 @@ module.exports = Map = cls.Class.extend({
         this.ready_func = ready_func;
     },
 
-    generateStaticGrid: function () {
-        var self = this,
-            kind;
-// Заполняем карту объектами
-        for (var j, i = 0; i < self.height; i++) {
-            self.tiles[i] = [];
-            for (j = 0; j < self.width; j++) {
-                if ((kind = Types.getKindAsString(self.bitmap[i][j])) !== undefined) {
-                    self.tiles[i][j] = MapElementFactory.create(kind);
-                } else {
-                    self.tiles[i][j] = undefined;
-                    log.error(value + " element is not defined.");
-                }
-            }
-        }
-
-        if (this.isLoaded) {
-            log.info("Collision grid generated.");
-        }
-    },
-
-    generateCollisionGrids: function(){
-        for (var j, i = 0; i < this.height; i++) {
-            this.collidingGrid[i] = [];
-            for (j = 0; j < this.width; j++) {
-                this.collidingGrid[i][j] = [];
-            }
-        }
-    },
-
     isOutOfBounds: function (x, y) {
         return x < 0 || x >= this.width || y < 0 || y >= this.height;
     },
 
-    isPlayerColliding: function (x, y) {
+    isTankColliding: function (x, y) {
+        var self = this;
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        return this.tiles[x][y]['playerColliding'];
+        for(var id in this.game.collidingGrid[x][y]){
+            if(self.game.collidingGrid[x][y][id]['tankColliding']) return true;
+        }
+        return false;
     },
 
     isBulletColliding: function (x, y) {
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        return this.tiles[x][y]['bulletColliding'];
-    },
 
-    clearProection: function (entity) {
-        var self = this;
-
-        _.each(entity.getChunk(), function (pos) {
-            delete self.collidingGrid[pos[0]][pos[1]][entity.id];
-        });
-    },
-
-    drawProection: function (entity) {
-        var self = this;
-
-       _.each(entity.getChunk(), function (pos) {
-            self.collidingGrid[pos[0]][pos[1]].push(entity.id);
-        });
+        for(var id in this.game.collidingGrid[x][y]){
+            if(this.game.collidingGrid[x][y][id]['bulletColliding']) return true;
+        }
+        return false;
     }
 });

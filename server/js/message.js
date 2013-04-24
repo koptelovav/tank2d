@@ -133,3 +133,16 @@ Messages.spawn = Message.extend({
     }
 });
 
+Messages.chat = Message.extend({
+    init: function(id, message) {
+        this.id = id;
+        this.message = message;
+    },
+    serialize: function() {
+        return [Types.Messages.CHAT,
+            this.id,
+            this.message,
+        ];
+    }
+});
+
