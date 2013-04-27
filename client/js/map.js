@@ -44,7 +44,7 @@ define(['jquery', 'tile'], function($,TileFactory) {
         },
 
         isOutOfBounds: function (x, y) {
-            return x < 0 || x > this.width || y < 0 || y > this.height;
+            return x < 0 || x >= this.width || y < 0 || y >= this.height;
         },
 
         isPlayerColliding: function (x, y) {
