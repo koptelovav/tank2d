@@ -2,7 +2,8 @@ Types = {
     Prefixes: {
         PLAYER: 1,
         GAMESERVER: 2,
-        CONNECTION: 3
+        CONNECTION: 3,
+        TAIL: 4
     },
 
     Messages: {
@@ -18,7 +19,8 @@ Types = {
         GAMEFULL: 9,
         LOADMAP : 10,
         GAMEPLAY: 11,
-        SPAWN: 12
+        SPAWN: 12,
+        CHAT: 13
     },
     
     Entities: {
@@ -82,15 +84,15 @@ var kinds = {
 
     flag: [Types.Entities.FLAG, "object"],
 
-    wall: [Types.MapElements.WALL, "mapelement"],
-    empty: [Types.MapElements.EMPTY, "mapelement"],
-    armoredwall: [Types.MapElements.ARMOREDWALL, "mapelement"],
-    trees: [Types.MapElements.TREES, "mapelement"],
-    ice: [Types.MapElements.ICE, "mapelement"],
-    water: [Types.MapElements.WATER, "mapelement"],
-    portal1: [Types.MapElements.PORTAL1, "mapelement"],
-    portal2: [Types.MapElements.PORTAL2, "mapelement"],
-    base: [Types.MapElements.BASE, "mapelement"],
+    wall: [Types.MapElements.WALL, "tile"],
+    empty: [Types.MapElements.EMPTY, "tile"],
+    armoredwall: [Types.MapElements.ARMOREDWALL, "tile"],
+    trees: [Types.MapElements.TREES, "tile"],
+    ice: [Types.MapElements.ICE, "tile"],
+    water: [Types.MapElements.WATER, "tile"],
+    portal1: [Types.MapElements.PORTAL1, "tile"],
+    portal2: [Types.MapElements.PORTAL2, "tile"],
+    base: [Types.MapElements.BASE, "tile"],
 
 
     getType: function(kind) {

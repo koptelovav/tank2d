@@ -76,6 +76,10 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
                 this.gameplay_func = func;
             },
 
+            onChatMessage: function(func){
+                this.chatmessage_func = func;
+            },
+
             loadMap: function () {
                 var self = this;
 
@@ -111,9 +115,8 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
                                 id = 5000 + mId + String(i) + String(j);
                                 element = TileFactory.create(id, kind, i, j);
                                 element.setSprite(this.sprites[kind]);
-                                self.tiles[i][j][element.id] = element;
+                                self.registerEntityDualPosition(element);
                                 self.addEntity(element);
-                                self.spawnEntity(element);
                                 mId++;
                             }
                         } else {
@@ -127,9 +130,9 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
 
             initEntityGrid: function () {
                 this.entityGrid = [];
-                for (var i = 0; i < this.map.height; i += 1) {
+                for (var i = 0; i < this.map.height; i++) {
                     this.entityGrid[i] = [];
-                    for (var j = 0; j < this.map.width; j += 1) {
+                    for (var j = 0; j < this.map.width; j++) {
                         this.entityGrid[i][j] = {};
                     }
                 }
@@ -138,9 +141,9 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
 
             initTilesGrid: function () {
                 this.tiles = [];
-                for (var i = 0; i < this.map.height; i += 1) {
+                for (var i = 0; i < this.map.height; i++) {
                     this.tiles[i] = [];
-                    for (var j = 0; j < this.map.width; j += 1) {
+                    for (var j = 0; j < this.map.width; j++) {
                         this.tiles[i][j] = {};
                     }
                 }
@@ -150,9 +153,9 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
 
             initRendering: function () {
                 this.renderingGrid = [];
-                for (var i = 0; i < this.map.height; i += 1) {
+                for (var i = 0; i < this.map.height; i++) {
                     this.renderingGrid[i] = [];
-                    for (var j = 0; j < this.map.width; j += 1) {
+                    for (var j = 0; j < this.map.width; j++) {
                         this.renderingGrid[i][j] = {};
                     }
                 }
@@ -160,7 +163,9 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
             },
 
             addToRenderingGrid: function (entity, x, y) {
-                this.renderingGrid[entity.id] = entity;
+                if (this.entityGrid[x][y][entity.id]) {
+                    this.renderingGrid[x][y][entity.id] = entity;
+                }
             },
 
             removeFromRenderingGrid: function (entity, x, y) {
@@ -170,10 +175,33 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
             },
 
             removeFromEntityGrid: function (entity, x, y) {
-                if (this.entityGrid[y][x][entity.id]) {
-                    delete this.entityGrid[y][x][entity.id];
+                if (this.entityGrid[x][y][entity.id]) {
+                    delete this.entityGrid[x][y][entity.id];
                 }
             },
+
+            unregisterEntityPosition: function(entity) {
+                var self = this;
+                if(entity) {
+                    _.each(entity.getChunk(), function(pos){
+                        self.removeFromEntityGrid(entity, pos[0], pos[1]);
+                    });
+
+                    this.removeFromRenderingGrid(entity, entity.x, entity.y);
+                }
+            },
+
+            registerEntityDualPosition: function(entity) {
+                var self = this;
+
+                if(entity) {
+                    _.each(entity.getChunk(), function(pos){
+                        self.entityGrid[pos[0]][pos[1]][entity.id] = entity;
+                    });
+                    this.addToRenderingGrid(entity, entity.x, entity.y);
+                }
+            },
+
 
             run: function (started_callback) {
                 var self = this;
@@ -208,6 +236,7 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
             start: function () {
                 this.initTilesGrid();
                 this.initRendering();
+                this.initEntityGrid();
                 this.initMap();
                 this.tick();
                 this.sendLoad();
@@ -224,7 +253,7 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
             connect: function (connect_func) {
                 var self = this;
 
-                this.client = new GameClient('127.0.0.1', '8000');
+                this.client = new GameClient('172.17.3.61', '8000');
                 this.client.connect();
 
                 this.client.onConnected(function () {
@@ -313,13 +342,18 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
                         player.setPosition(x, y);
                         player.setOrientation(orientation);
                         player.setSprite(self.sprites[Types.getKindAsString(player.kind)]);
+                        self.registerEntityDualPosition(player);
                         self.addEntity(player);
-                        self.spawnEntity(player);
+                    }
+                });
+
+                this.client.onChatMessage(function(id, message){
+                    if(self.chatmessage_func){
+                        self.chatmessage_func(id, message);
                     }
                 });
 
                 this.client.onMove(function (id, orientation) {
-                    console.log(id, orientation);
                     self.playerMove(id, orientation);
                 });
             },
@@ -331,17 +365,39 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
                 entity.dirtyRect = self.renderer.getEntityBoundingRect(entity);
                 entity.onDirty(function (e) {
                     e.dirtyRect = self.renderer.getEntityBoundingRect(e);
+                    self.checkOtherDirtyRects(entity);
                 });
+            },
+
+            checkOtherDirtyRects: function(source){
+                /**
+                 * @TODO Обязательно переделать!!!!!!!!!!!
+                 */
+                var self = this;
+                for (var i = source.x-2; i < source.x+3; i++) {
+                    for (var j = source.y-2; j < source.y+3; j++) {
+                        if(!this.map.isOutOfBounds(i,j)){
+                            _.each(this.renderingGrid[i][j], function (entity) {
+                                if(entity.id !== source.id && entity.layer === source.layer){
+                                    console.log('check');
+                                    entity.dirtyRect = self.renderer.getEntityBoundingRect(entity);
+                                    entity.isDirty = true;
+                                }
+                            });
+                        }
+                    }
+                }
             },
 
             forEachVisibleEntity: function (callback) {
-                _.each(this.rendering, function (entity) {
-                    callback(entity);
-                });
-            },
+                for (var i = 0; i < this.map.height; i++) {
+                    for (var j = 0; j < this.map.width; j++) {
+                        _.each(this.renderingGrid[i][j], function (entity) {
+                            callback(entity);
+                        });
+                    }
+                }
 
-            spawnEntity: function (entity) {
-                this.rendering[entity.id] = entity;
             },
 
             incrementPopulation: function () {
@@ -366,6 +422,10 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
 
             sendLoad: function () {
                 this.client.sendLoad();
+            },
+
+            sendChatMessage: function (message) {
+                this.client.sendChatMessage(message);
             },
 
             entityIdExists: function (id) {
@@ -397,11 +457,13 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
             playerMove: function (id, orientation) {
                 var player = id ? this.entities[id] : this.player;
                 if (this.isValidPlayerMove(player, orientation)) {
+                    this.unregisterEntityPosition(player);
                     player.setOrientation(orientation);
                     player.move();
-                    if (!id) {
-                        this.client.sendMove(orientation)
-                    }
+                    this.registerEntityDualPosition(player);
+                }
+                if (!id) {
+                    this.client.sendMove(orientation)
                 }
             },
 

@@ -17,6 +17,7 @@ define(['player'], function(Player) {
             this.handlers[Types.Messages.GAMEPLAY] = this.receiveGamePlay;
             this.handlers[Types.Messages.SPAWN] = this.receiveSpawn;
             this.handlers[Types.Messages.MOVE] = this.receiveMove;
+            this.handlers[Types.Messages.CHAT] = this.receiveChatMessage;
 
             this.enable();
         },
@@ -117,6 +118,10 @@ define(['player'], function(Player) {
             var id = data[1],
                 orientation = data[2];
 
+            if(this.beforemove_callback){
+                this.beforemove_callback(id);
+            }
+
             if(this.move_callback){
                 this.move_callback(id,orientation);
             }
@@ -184,6 +189,15 @@ define(['player'], function(Player) {
             }
         },
 
+        receiveChatMessage: function(data){
+            var id = data[1],
+                message = data[2];
+
+            if(this.chatmessage_callback){
+                this.chatmessage_callback(id, message);
+            }
+        },
+
         sendMessage: function(message) {
             this.connection.send(JSON.stringify(message));
         },
@@ -232,6 +246,14 @@ define(['player'], function(Player) {
             this.move_callback = callback;
         },
 
+        onBeforeMove: function(callback){
+            this.beforemove_callback = callback;
+        },
+
+        onChatMessage: function(callback){
+            this.chatmessage_callback = callback;
+        },
+
         sendHello: function(){
             this.sendMessage([Types.Messages.HELLO]);
         },
@@ -246,6 +268,10 @@ define(['player'], function(Player) {
 
         sendMove: function(orientation){
             this.sendMessage([Types.Messages.MOVE,orientation])
+        },
+
+        sendChatMessage: function(message){
+            this.sendMessage([Types.Messages.CHAT,message])
         }
     });
 

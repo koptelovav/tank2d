@@ -53,3 +53,17 @@
 [id^="team"] .player{
     display: inline-block;
 }
+
+#chat-history{
+    border: 1px solid #0A246A;
+    height: 160px;
+    overflow-y: scroll;
+}
+
+#chat-history > div{
+    width: 380px;
+}
+
+#chat{
+    border: 1px solid #0b97c4;
+}

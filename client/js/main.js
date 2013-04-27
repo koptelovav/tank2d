@@ -83,6 +83,10 @@ define(['jquery', 'app'], function ($, App) {
                app.gameFrame.show();
             });
 
+            game.onChatMessage(function(palyerId,message){
+                app.addChatMessage(palyerId,message);
+            });
+
             $("body").keydown(function(e) {
                 var code = (e.keyCode ? e.keyCode : e.which);
                 if(code == 38 || code == 87) { //up
@@ -99,6 +103,14 @@ define(['jquery', 'app'], function ($, App) {
                 }
                 else if(code == 17) { //fire
                     //   send('fire');
+                }
+            });
+
+            $("body").keydown(function(e) {
+                var code = (e.keyCode ? e.keyCode : e.which);
+                if(code == 13 && app.$chatInput.val()) {
+                    app.sendChatMessage(app.$chatInput.val());
+                    app.$chatInput.val('');
                 }
             });
         });

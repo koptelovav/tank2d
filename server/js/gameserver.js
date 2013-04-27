@@ -5,6 +5,7 @@ var cls = require("./lib/class"),
     _ = require("underscore"),
     Message = require('./message'),
     Map = require('./map'),
+    MapElementFactory = require('./mapelement'),
     Utils = require('./utils'),
     Spawn = require('./spawn'),
     Types = require("../../client/shared/js/gametypes");
@@ -42,6 +43,7 @@ module.exports = GameServer = cls.Class.extend({
         this.entities = {};
         this.teams = {};
         this.outgoingQueues = {};
+        this.collidingGrid = [];
 
         this.playerCount = 0;
 
@@ -107,14 +109,14 @@ module.exports = GameServer = cls.Class.extend({
     run: function(mapFilePath) {
         var self = this;
 
-        this.map = new Map(mapFilePath);
+        this.map = new Map(this, mapFilePath);
 
         this.map.ready(function() {
-            self.map.generateStaticGrid();
-            self.map.generateCollisionGrids();
             self.minPlayers = self.map.minPlayers;
             self.maxPlayers = self.map.maxPlayers;
             self.teamCount = self.map.teamCount;
+            self.initCollidingGrid();
+            self.initMapTails();
             self.initTeams();
             self.initSpawns(self.map.spawns);
         });
@@ -128,8 +130,60 @@ module.exports = GameServer = cls.Class.extend({
         console.log('restart');
         this.isStart = false;
         this.isPlay = false;
-        this.map.generateStaticGrid();
-        this.map.generateCollisionGrids();
+        this.initCollidingGrid();
+        this.initMapTails();
+    },
+
+    initCollidingGrid: function(){
+        for (var j, i = 0; i < this.map.height; i++) {
+            this.collidingGrid[i] = [];
+            for (j = 0; j < this.map.width; j++) {
+                    this.collidingGrid[i][j] = {};
+                }
+            }
+    },
+
+    initMapTails: function(){
+        var id,
+            kind,
+            tail,
+            mId = 1;
+        for (var j, i = 0; i < this.map.height; i++) {
+            for (j = 0; j < this.map.width; j++) {
+                if (this.map.bitmap[i][j] !==0 && (kind = Types.getKindAsString(this.map.bitmap[i][j])) !== undefined) {
+                    id = 5000 + mId + String(i) + String(j);
+                    tail = MapElementFactory.create(id, kind, i, j);
+                    this.entities[tail.id] = tail;
+                    this.addToCollidingGrid(tail);
+                    mId++;
+                }
+            }
+        }
+        if (this.isLoaded) {
+            console.info("Collision grid generated.");
+        }
+    },
+
+    addEntity: function(entity){
+        this.entities[entity.id] = entity;
+    },
+
+    addToCollidingGrid: function(entity){
+        var self = this;
+        if(this.entities[entity.id]){
+            _.each(entity.getChunk(), function(pos){
+                self.collidingGrid[pos[0]][pos[1]][entity.id] = entity;
+            });
+        }
+    },
+
+    removeFromCollidingGrid: function(entity){
+        var self = this;
+        if(this.entities[entity.id]){
+            _.each(entity.getChunk(), function(pos){
+                delete self.collidingGrid[pos[0]][pos[1]][entity.id];
+            });
+        }
     },
 
     /**
@@ -271,6 +325,7 @@ module.exports = GameServer = cls.Class.extend({
         this.players[id].x = spawn.x;
         this.players[id].y = spawn.y;
         this.players[id].orientation = spawn.orientation;
+        this.addToCollidingGrid(this.players[id]);
 
         this.pushBroadcast(new Message.spawn(this.players[id]), false);
     },
@@ -324,6 +379,7 @@ module.exports = GameServer = cls.Class.extend({
         player.team = parseInt(selectedTeam);
         this.teams[player.team].push(player.id);
         this.players[player.id] = player;
+        this.entities[player.id] = player;
         this.outgoingQueues[player.id] = [];
     },
 
@@ -360,30 +416,18 @@ module.exports = GameServer = cls.Class.extend({
         if(this.map && player) {
             var chunk = player.getChunk();
             if(orientation === Types.Orientations.LEFT){
-                return !this.map.isPlayerColliding.call(this.map,chunk[0][0]-1,chunk[0][1]) &&
-                    !this.map.isPlayerColliding.call(this.map,chunk[2][0]-1,chunk[2][1]);
+                return !this.map.isTankColliding.call(this.map,chunk[0][0]-1,chunk[0][1]) && !this.map.isTankColliding.call(this.map,chunk[2][0]-1,chunk[2][1]);
             }
             else if(orientation === Types.Orientations.UP){
-                return !this.map.isPlayerColliding.call(this.map,chunk[0][0],chunk[0][1]-1) &&
-                    !this.map.isPlayerColliding.call(this.map,chunk[1][0],chunk[1][1]-1);
+                return !this.map.isTankColliding.call(this.map,chunk[0][0],chunk[0][1]-1) && !this.map.isTankColliding.call(this.map,chunk[1][0],chunk[1][1]-1);
             }
             else if(orientation === Types.Orientations.RIGHT){
-                return !this.map.isPlayerColliding.call(this.map,chunk[1][0]+1,chunk[1][1]) &&
-                       !this.map.isPlayerColliding.call(this.map,chunk[3][0]+1,chunk[3][1]);
+                return !this.map.isTankColliding.call(this.map,chunk[1][0]+1,chunk[1][1]) && !this.map.isTankColliding.call(this.map,chunk[3][0]+1,chunk[3][1]);
             }
             else if(orientation === Types.Orientations.DOWN){
-                return !this.map.isPlayerColliding.call(this.map,chunk[2][0],chunk[2][1]+1) &&
-                    !this.map.isPlayerColliding.call(this.map,chunk[3][0],chunk[3][1]+1);
+                return !this.map.isTankColliding.call(this.map,chunk[2][0],chunk[2][1]+1) && !this.map.isTankColliding.call(this.map,chunk[3][0],chunk[3][1]+1);
             }
         }
-    },
-
-    clearProection: function(entity){
-        this.map.clearProection(entity);
-    },
-
-    drawProection: function(entity){
-        this.map.drawProection(entity);
     },
 
     isFull: function(){

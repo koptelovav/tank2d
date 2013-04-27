@@ -26,7 +26,8 @@ module.exports = Tank = Entity.extend({
         this.armor = self._params['armor'];
         this.bullet = self._params['bullet'];
 
-
+        this.tankColliding = true;
+        this.bulletColliding = true;
     },
 
     /**
