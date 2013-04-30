@@ -3,7 +3,7 @@ path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
     MapElementFactory = require('./mapelement'),
-    Types = require('../../client/shared/js/gametypes'),
+    Types = require('../../shared/js/gametypes'),
     Utils = require('./utils');
 
 module.exports = Map = cls.Class.extend({

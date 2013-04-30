@@ -3,7 +3,7 @@ var cls = require("./lib/class"),
     _ = require("underscore"),
     Entity = require("./entity"),
     Utils = require("./utils"),
-    Types = require("../../client/shared/js/gametypes");
+    Types = require("../../shared/js/gametypes");
 
 /**
  * Объект-хранилище классов статичных объектов карты

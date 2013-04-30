@@ -253,7 +253,7 @@ define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../
             connect: function (connect_func) {
                 var self = this;
 
-                this.client = new GameClient('172.17.3.61', '8000');
+                this.client = new GameClient('127.0.0.1', '8000');
                 this.client.connect();
 
                 this.client.onConnected(function () {

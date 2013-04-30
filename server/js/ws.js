@@ -3,7 +3,7 @@ var cls = require("./lib/class"),
     http = require('http'),
     _ = require('underscore'),
     Utils = require('./utils'),
-    Types = require('../../client/shared/js/gametypes'),
+    Types = require('../../shared/js/gametypes'),
     fs = require('fs'),
     express = require('express'),
     exphbs  = require('express3-handlebars'),
@@ -160,6 +160,7 @@ WS.WebsocketServer = Server.extend({
         app.engine('hbs', exphbs());
         app.set('view engine', 'hbs');
         app.use('/',express.static('./client'));
+        app.use('/shared',express.static('./shared'));
         app.set('views', './server/views');
 
         app.get('/', function (req, res, next) {

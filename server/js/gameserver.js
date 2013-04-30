@@ -8,7 +8,7 @@ var cls = require("./lib/class"),
     MapElementFactory = require('./mapelement'),
     Utils = require('./utils'),
     Spawn = require('./spawn'),
-    Types = require("../../client/shared/js/gametypes");
+    Types = require("../../shared/js/gametypes");
 
 
 /**
