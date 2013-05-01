@@ -3,27 +3,12 @@ var Utils = require("./utils"),
     Entity = require("./entity"),
     Types = require("../../shared/js/gametypes");
 
-/**
- * Фабричный класс.
- * @type {{create: Function}}
- */
 module.exports = BulletFactory = {
-    /**
-     * Фабрика пуль
-     * @param {Tank} owner Владелец пули
-     * @param {Number} speed скорасть пули
-     * @param {Number} damage урон от пули
-     * @returns {Bullet} пуля
-     */
     create: function(owner, speed, damage){
         return new Bullet(owner, speed, damage);
     }
 };
 
-/**
- * Класс описывющий пулю
- * @type {Bullet}
- */
 var Bullet = Entity.extend({
     /**
      * Функция конструктор. Инициализация объекта

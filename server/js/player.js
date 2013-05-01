@@ -40,7 +40,8 @@ module.exports = Player = Tank.extend({
                    // self.send([Types.Messages.GAMEFULL, self.id]);
                 }else{
                     self.server.addPlayer(self);
-                    self.server.enter_callback(self);
+
+                    self.server.emit('playerEnter',self);
 
                     self.hasEnteredGame = true;
                     self.isDead = false;

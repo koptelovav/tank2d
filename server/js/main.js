@@ -39,7 +39,7 @@ function main(config) {
     server.onConnect(function(WebSocketIO) {
         WebSocketIO.room = game.id;
         WebSocketIO.join(game.id);
-        game.connect_callback(new Player(WebSocketIO, game));
+        game.emit('playerConnect',new Player(WebSocketIO, game));
     });
 
     server.onError(function() {

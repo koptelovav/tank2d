@@ -45,10 +45,11 @@ module.exports = GameServer = Model.extend({
 
         this.playerCount = 0;
 
-        this.onPlayerConnect(function(player) {
+        this.on('playerConnect',function(player){
+
         });
 
-        this.onPlayerEnter(function(player) {
+        this.on('playerEnter',function(player) {
             log.info("Player has joined "+ self.id);
 
             self.incrementPlayerCount();
@@ -79,13 +80,9 @@ module.exports = GameServer = Model.extend({
                     setTimeout(function(){
                         self.spawnAll();
                     },100);
-
-                    console.log('onLoad');
                 }
             });
         });
-
-        console.info('game '+ this.id +' init');
     },
 
     run: function(mapFilePath) {
@@ -109,7 +106,6 @@ module.exports = GameServer = Model.extend({
     },
 
     restart: function(){
-        console.log('restart');
         this.isStart = false;
         this.isPlay = false;
         this.initCollidingGrid();
@@ -188,14 +184,6 @@ module.exports = GameServer = Model.extend({
         return result;
     },
 
-    onPlayerConnect: function(callback) {
-        this.connect_callback = callback;
-    },
-
-    onPlayerEnter: function(callback) {
-        this.enter_callback = callback;
-    },
-
     setPlayerCount: function(count) {
         this.playerCount = count;
     },
@@ -231,9 +219,6 @@ module.exports = GameServer = Model.extend({
 
     getRandomSpawn: function(team){
         var teamSpawns = this.spawns[team];
-
-        console.log(teamSpawns);
-
         return teamSpawns[Math.floor(Math.random()*teamSpawns.length)];
     },
 
