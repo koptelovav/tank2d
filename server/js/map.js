@@ -56,8 +56,8 @@ module.exports = Map = cls.Class.extend({
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        for(var id in this.game.collidingGrid[x][y]){
-            if(self.game.collidingGrid[x][y][id]['tankColliding']) return true;
+        for (var id in this.game.collidingGrid[x][y]) {
+            if (self.game.collidingGrid[x][y][id]['tankColliding']) return true;
         }
         return false;
     },
@@ -67,8 +67,8 @@ module.exports = Map = cls.Class.extend({
             return true;
         }
 
-        for(var id in this.game.collidingGrid[x][y]){
-            if(this.game.collidingGrid[x][y][id]['bulletColliding']) return true;
+        for (var id in this.game.collidingGrid[x][y]) {
+            if (this.game.collidingGrid[x][y][id]['bulletColliding']) return true;
         }
         return false;
     }

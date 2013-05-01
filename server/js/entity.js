@@ -1,51 +1,11 @@
-var cls = require("./lib/class"),
+var Model = require("./model"),
     _ = require("underscore"),
     Log = require('log');
 
 /**
  * Базовый класс для динамических объектов находящихся на карте
  */
-module.exports = Entity = cls.Class.extend({
-
-    /**
-     * Конструктор класса (Инициализация объекта)
-     *
-     * @this {Entity}
-     * @param {Number} id ID объекта
-     * @param {String} type Хрен знает, нужно отрефаеторить
-     * @param {String} kind Тип объекта (Подробнее в Types.Entities)
-     * @param {Number} x Координата X
-     * @param {Number} y Координата Y
-     */
-    init: function(id, type, kind, x, y) {
-        this.id = parseInt(id);
-        /**
-         * @todo Нахрена я ее объвил?
-         * @type {String}
-         */
-        this.type = type;
-        this.kind = kind;
-        this.x = x;
-        this.y = y;
-    },
-
-    /**
-     * Уничтожает объект
-     *
-     * @this {Entity}
-     */
-    destroy: function() {
-
-    },
-
-    /**
-     * Приватный метод. Возвращает информацию об объекте.
-     * Переопределяется в дочерних классах при необходимости
-     *
-     * @this {Entity}
-     * @returns {Array} Массив параметров объекта
-     * @private
-     */
+module.exports = Entity = Model.extend({
     _getBaseState: function() {
         return [
             parseInt(this.id),

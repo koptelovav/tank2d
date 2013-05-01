@@ -34,7 +34,7 @@ function main(config) {
     gameCount++;
     
     server.onConnect(function(connection) {
-        game.connect_callback(new Player(connection, game));
+        game.connect_callback(new Player({connection: connection, game:game}));
     });
 
     server.onError(function() {

@@ -1,6 +1,3 @@
-/*
-*  Используемые модули
-* */
 var cls = require("./lib/class"),
     _ = require("underscore"),
     Message = require('./message'),
@@ -46,6 +43,8 @@ module.exports = GameServer = cls.Class.extend({
         this.collidingGrid = [];
 
         this.playerCount = 0;
+
+        this.error = false;
 
         this.onPlayerConnect(function(player) {
         });
@@ -219,17 +218,20 @@ module.exports = GameServer = cls.Class.extend({
      */
     processQueues: function() {
         var connection;
-
+        if(! this.error){
         for(var id in this.outgoingQueues) {
             if(this.outgoingQueues[id].length > 0) {
                 console.log(this.outgoingQueues[id]);
                 connection = this.server.getConnection(id);
 
-                if(connection === undefined) console.log(id);
+                if(connection === undefined){
+                    this.error = true;
+                }
 
                 connection.send(this.outgoingQueues[id]);
                 this.outgoingQueues[id] = [];
             }
+        }
         }
     },
 
@@ -377,10 +379,11 @@ module.exports = GameServer = cls.Class.extend({
             }
         }
         player.team = parseInt(selectedTeam);
-        this.teams[player.team].push(player.id);
-        this.players[player.id] = player;
-        this.entities[player.id] = player;
-        this.outgoingQueues[player.id] = [];
+        player.set('team', parseInt(selectedTeam));
+        this.teams[player.attributes.team].push(player.attributes.id);
+        this.players[player.attributes.id] = player;
+        this.entities[player.attributes.id] = player;
+        this.outgoingQueues[player.attributes.id] = [];
     },
 
     getPlayersInfo: function(){
