@@ -1,7 +1,6 @@
-var cls = require("./lib/class"),
+var Model = require('./model'),
     url = require('url'),
     http = require('http'),
-    _ = require('underscore'),
     Utils = require('./utils'),
     Types = require('../../shared/js/gametypes'),
     fs = require('fs'),
@@ -15,7 +14,7 @@ module.exports = WS;
  * Абстрактный класс серввера
  */
 
-var Server = cls.Class.extend({
+var Server = Model.extend({
     init: function (port) {
         this.port = port;
     },
@@ -79,7 +78,7 @@ var Server = cls.Class.extend({
 /**
  * Абстрактынй класс подключения
  */
-var Connection = cls.Class.extend({
+var Connection = Model.extend({
     /**
      * Инициализация подключения
      * @param {Number} id индификатор подлючения

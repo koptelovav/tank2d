@@ -1,12 +1,10 @@
-var cls = require('./lib/class')
-path = require('path'),
+var Model = require("./model"),
+    path = require('path'),
     fs = require('fs'),
-    _ = require('underscore'),
-    MapElementFactory = require('./mapelement'),
     Types = require('../../shared/js/gametypes'),
     Utils = require('./utils');
 
-module.exports = Map = cls.Class.extend({
+module.exports = Map = Model.extend({
     init: function (game, filepath) {
         var self = this;
 

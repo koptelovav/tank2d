@@ -1,11 +1,10 @@
-var cls = require("./lib/class"),
-    _ = require("underscore"),
+var Model = require("./model"),
     Log = require('log');
 
 /**
  * Базовый класс для динамических объектов находящихся на карте
  */
-module.exports = Entity = cls.Class.extend({
+module.exports = Entity = Model.extend({
 
     /**
      * Конструктор класса (Инициализация объекта)

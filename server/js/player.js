@@ -1,7 +1,5 @@
-var cls = require("./lib/class"),
-    Tank = require("./tank"),
+var Tank = require("./tank"),
     BulletFactory = require("./bullet"),
-    _ = require("underscore"),
     Messages = require("./message"),
     Types = require("../../shared/js/gametypes");
 
@@ -107,6 +105,8 @@ module.exports = Player = Tank.extend({
             }
             else if(action === Types.Messages.IREADY) {
                 self.isReady = true;
+                self.emit('ready');
+
                 self.ready_callback(self);
                 self.broadcast(new Messages.iReady(self));
             }

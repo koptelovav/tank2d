@@ -1,6 +1,5 @@
 
-var cls = require("./lib/class"),
-    _ = require("underscore"),
+var Model = require("./model"),
     Utils = require("./utils"),
     Types = require("../../shared/js/gametypes");
 
@@ -11,7 +10,7 @@ module.exports = Messages;
  * Класс сообщений
  * @type Message
  */
-var Message = cls.Class.extend({
+var Message = Model.extend({
 });
 
 /**

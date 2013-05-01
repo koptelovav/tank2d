@@ -1,8 +1,7 @@
 /*
 *  Используемые модули
 * */
-var cls = require("./lib/class"),
-    _ = require("underscore"),
+var Model = require("./model"),
     Message = require('./message'),
     Map = require('./map'),
     MapElementFactory = require('./mapelement'),
@@ -15,7 +14,7 @@ var cls = require("./lib/class"),
  * Класс игорового сервера
  */
 
-module.exports = GameServer = cls.Class.extend({
+module.exports = GameServer = Model.extend({
 
     /**
      * Конструктор класса (инициализация игрового сервера)
@@ -66,6 +65,10 @@ module.exports = GameServer = cls.Class.extend({
                 if(self.playerCount == 0){
                     self.restart();
                 }
+            });
+
+            player.on('ready',function(){
+                console.log('!!!!!!!!!!!!!!!!!!!');
             });
 
             player.onReady(function() {

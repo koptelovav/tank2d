@@ -1,10 +1,9 @@
 
-var cls = require("./lib/class"),
-    _ = require("underscore"),
+var Model = require("./model"),
     Utils = require("./utils"),
     Types = require("../../shared/js/gametypes");
 
-module.exports = Spawn = cls.Class.extend({
+module.exports = Spawn = Model.extend({
     init: function(id, team, x, y, orientation){
         this.id = id;
         this.team = team;

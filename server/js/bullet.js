@@ -1,7 +1,5 @@
 
-var cls = require("./lib/class"),
-    _ = require("underscore"),
-    Utils = require("./utils"),
+var Utils = require("./utils"),
     Entity = require("./entity"),
     Types = require("../../shared/js/gametypes");
 

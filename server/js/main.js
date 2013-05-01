@@ -1,3 +1,7 @@
+GLOBAL.LIBPATH = '../../shared/lib';
+GLOBAL.SHAREDPATH = '../../shared';
+GLOBAL._ = require("underscore");
+
 
 var fs = require('fs');
 
@@ -7,7 +11,6 @@ function main(config) {
         Utils = require("./utils"),
         GameServer = require("./gameserver"),
         Log = require('log'),
-        _ = require('underscore'),
         Player = require('./player'),
         server = new ws.WebsocketServer(config.port),
         games = [];
