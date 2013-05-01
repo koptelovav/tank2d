@@ -108,16 +108,16 @@ module.exports = GameServer = cls.Class.extend({
     run: function(mapFilePath) {
         var self = this;
 
-        this.map = new Map(this, mapFilePath);
+        this.map = new Map({game:this, filePath:mapFilePath});
 
         this.map.ready(function() {
-            self.minPlayers = self.map.minPlayers;
-            self.maxPlayers = self.map.maxPlayers;
-            self.teamCount = self.map.teamCount;
+            self.minPlayers = self.map.get('minPlayers');
+            self.maxPlayers = self.map.get('maxPlayers');
+            self.teamCount = self.map.get('teamCount');
             self.initCollidingGrid();
             self.initMapTails();
             self.initTeams();
-            self.initSpawns(self.map.spawns);
+            self.initSpawns(self.map.get('spawns'));
         });
 
         setInterval(function() {
@@ -134,9 +134,9 @@ module.exports = GameServer = cls.Class.extend({
     },
 
     initCollidingGrid: function(){
-        for (var j, i = 0; i < this.map.height; i++) {
+        for (var j, i = 0; i < this.map.get('height'); i++) {
             this.collidingGrid[i] = [];
-            for (j = 0; j < this.map.width; j++) {
+            for (j = 0; j < this.map.get('width'); j++) {
                     this.collidingGrid[i][j] = {};
                 }
             }
@@ -169,9 +169,12 @@ module.exports = GameServer = cls.Class.extend({
 
     addToCollidingGrid: function(entity){
         var self = this;
-        if(this.entities[entity.id]){
+
+
+
+        if(this.entities[entity.get('id')]){
             _.each(entity.getChunk(), function(pos){
-                self.collidingGrid[pos[0]][pos[1]][entity.id] = entity;
+                self.collidingGrid[pos[0]][pos[1]][entity.get('id')] = entity;
             });
         }
     },
@@ -307,9 +310,6 @@ module.exports = GameServer = cls.Class.extend({
 
     getRandomSpawn: function(team){
         var teamSpawns = this.spawns[team];
-
-        console.log(teamSpawns);
-
         return teamSpawns[Math.floor(Math.random()*teamSpawns.length)];
     },
 
@@ -320,16 +320,22 @@ module.exports = GameServer = cls.Class.extend({
     },
 
     playerSpawn: function(id){
-        var spawn;
+        var spawn,
+            player = this.getPlayerById(id);
 
-        spawn = this.getRandomSpawn(this.players[id].team);
+        spawn = this.getRandomSpawn(player.get('team'));
 
-        this.players[id].x = spawn.x;
-        this.players[id].y = spawn.y;
-        this.players[id].orientation = spawn.orientation;
-        this.addToCollidingGrid(this.players[id]);
+        player.set('x',spawn.x);
+        player.set('y',spawn.y);
+        player.set('orientation',spawn.orientation);
 
-        this.pushBroadcast(new Message.spawn(this.players[id]), false);
+        this.addToCollidingGrid(player);
+
+        this.pushBroadcast(new Message.spawn(player), false);
+    },
+
+    getPlayerById: function(id){
+        return this.players[id];
     },
 
     /**
@@ -378,12 +384,11 @@ module.exports = GameServer = cls.Class.extend({
                 minTeamCount = this.teams[id].length;
             }
         }
-        player.team = parseInt(selectedTeam);
         player.set('team', parseInt(selectedTeam));
-        this.teams[player.attributes.team].push(player.attributes.id);
-        this.players[player.attributes.id] = player;
-        this.entities[player.attributes.id] = player;
-        this.outgoingQueues[player.attributes.id] = [];
+        this.teams[player.get('team')].push(player.get('id'));
+        this.players[player.get('id')] = player;
+        this.entities[player.get('id')] = player;
+        this.outgoingQueues[player.get('id')] = [];
     },
 
     getPlayersInfo: function(){
@@ -402,10 +407,10 @@ module.exports = GameServer = cls.Class.extend({
      */
 
     removePlayer: function(player) {
-        console.log('remove '+player.id);
-        delete this.players[player.id];
-        delete this.outgoingQueues[player.id];
-        this.teams[player.team].splice(this.teams[player.team].indexOf(player.id),1);
+        console.log('remove '+player.get('id'));
+        delete this.players[player.get('id')];
+        delete this.outgoingQueues[player.get('id')];
+        this.teams[player.get('team')].splice(this.teams[player.get('team')].indexOf(player.get('id')),1);
     },
 
     /**

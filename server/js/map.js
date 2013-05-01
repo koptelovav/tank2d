@@ -1,25 +1,23 @@
-var cls = require('./lib/class')
-path = require('path'),
+var Backbone = require("backbone"),
+    path = require('path'),
     fs = require('fs'),
-    _ = require('underscore'),
-    MapElementFactory = require('./mapelement'),
     Types = require('../../shared/js/gametypes'),
     Utils = require('./utils');
 
-module.exports = Map = cls.Class.extend({
-    init: function (game, filepath) {
+module.exports = Map = Backbone.Model.extend({
+    defaults:{
+        "isLoaded": false
+    },
+    initialize: function () {
         var self = this;
 
-        this.game = game;
-        this.isLoaded = false;
-
-        fs.exists(filepath, function (exists) {
+        fs.exists(this.get('filePath'), function (exists) {
             if (!exists) {
-                log.error(filepath + " doesn't exist.");
+                log.error(self.get('filePath') + " doesn't exist.");
                 return;
             }
 
-            fs.readFile(filepath, function (err, file) {
+            fs.readFile(self.get('filePath'), function (err, file) {
                 var json = JSON.parse(file.toString());
 
                 self.initMap(json);
@@ -28,15 +26,15 @@ module.exports = Map = cls.Class.extend({
     },
 
     initMap: function (map) {
-        this.tiles = [];
-        this.bitmap = map.tiles;
-        this.width = map.width;
-        this.height = map.height;
-        this.maxPlayers = map.maxplayers;
-        this.minPlayers = map.minplayers;
-        this.teamCount = map.teamcount;
-        this.spawns = map.spawns;
-        this.isLoaded = true;
+        this.set('tiles',[]);
+        this.set('bitmap',map.tiles);
+        this.set('width',map.width);
+        this.set('height',map.height);
+        this.set('maxPlayers',map.maxplayers);
+        this.set('minPlayers',map.minplayers);
+        this.set('teamCount',map.teamcount);
+        this.set('spawns',map.spawns);
+        this.set('isLoaded',map.true);
 
         if (this.ready_func) {
             this.ready_func();
@@ -56,7 +54,7 @@ module.exports = Map = cls.Class.extend({
         if (this.isOutOfBounds(x, y)) {
             return true;
         }
-        for (var id in this.game.collidingGrid[x][y]) {
+        for (var id in this.get('game').collidingGrid[x][y]) {
             if (self.game.collidingGrid[x][y][id]['tankColliding']) return true;
         }
         return false;
@@ -67,7 +65,7 @@ module.exports = Map = cls.Class.extend({
             return true;
         }
 
-        for (var id in this.game.collidingGrid[x][y]) {
+        for (var id in this.get('game').collidingGrid[x][y]) {
             if (this.game.collidingGrid[x][y][id]['bulletColliding']) return true;
         }
         return false;

@@ -12,7 +12,11 @@ module.exports = Tank = Entity.extend({
         "bulletCollision": true
     },
 
-    init: function (id, type, config) {
+    set: function(attributes, options) {
+        Entity.prototype.set.call(this, attributes, options);
+    },
+
+ /*   init: function (id, type, config) {
         var self = this;
         this._super(id, type, Types.Entities.TANK, 0, 0);
         this.id = parseInt(id);
@@ -24,7 +28,7 @@ module.exports = Tank = Entity.extend({
 
         this.tankColliding = true;
         this.bulletColliding = true;
-    },
+    },*/
 
     getState: function() {
         var basestate = this._getBaseState(),

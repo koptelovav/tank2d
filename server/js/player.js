@@ -16,7 +16,7 @@ module.exports = Player = Tank.extend({
     initialize: function(){
         var self = this;
 
-        this.set('id',this.get('connection').id);
+        this.set('id',parseInt(this.get('connection').id));
 
         this.get('connection').listen(function(message) {
             var action = parseInt(message[0]);
