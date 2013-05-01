@@ -37,7 +37,7 @@ module.exports = Player = Tank.extend({
 
             if(action === Types.Messages.HELLO) {
                 if(self.server.isFull()){
-                    self.send([Types.Messages.GAMEFULL, self.id]);
+                   // self.send([Types.Messages.GAMEFULL, self.id]);
                 }else{
                     self.server.addPlayer(self);
                     self.server.enter_callback(self);
@@ -45,7 +45,7 @@ module.exports = Player = Tank.extend({
                     self.hasEnteredGame = true;
                     self.isDead = false;
 
-                    self.send([Types.Messages.WELCOME, self.getState()]);
+                    self.send(new Messages.welcome(self));
                 }
             }
             else if(action === Types.Messages.MOVE) {
@@ -91,7 +91,7 @@ module.exports = Player = Tank.extend({
     },
 
     send: function(message){
-        this.connection.send(message);
+        this.connection.send(message.serialize());
     },
 
     sendAll: function(message){

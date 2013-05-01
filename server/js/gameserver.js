@@ -41,7 +41,6 @@ module.exports = GameServer = Model.extend({
         this.players = {};
         this.entities = {};
         this.teams = {};
-        this.outgoingQueues = {};
         this.collidingGrid = [];
 
         this.playerCount = 0;
@@ -54,7 +53,7 @@ module.exports = GameServer = Model.extend({
 
             self.incrementPlayerCount();
             player.broadcast(new Message.JoinGame(player));
-            self.pushToPlayer(player, new Message.gameData(self));
+            player.send(new Message.gameData(self));
 
             player.on('exit',function() {
                 player.broadcast(new Message.LeftGame(player));
@@ -73,8 +72,6 @@ module.exports = GameServer = Model.extend({
             });
 
             player.on('load',function(){
-                console.log(self._checkAllLoaded(),!self.isPlay);
-
                 if(self._checkAllLoaded() && !self.isPlay){
                     self.isPlay = true;
                     player.sendAll(new Message.gamePlay(self.id));
@@ -91,11 +88,6 @@ module.exports = GameServer = Model.extend({
         console.info('game '+ this.id +' init');
     },
 
-    /**
-     * Запуск игрового сервера (выполняется после инициализации)
-     * @this {GameServer}
-     * @param {string} mapFilePath ID игрового сервера
-     */
     run: function(mapFilePath) {
         var self = this;
 
@@ -112,7 +104,7 @@ module.exports = GameServer = Model.extend({
         });
 
         setInterval(function() {
-            self.processQueues();
+            //game loop
         }, 1000 / this.ups);
     },
 
@@ -176,11 +168,6 @@ module.exports = GameServer = Model.extend({
         }
     },
 
-    /**
-     * Проверить все ли пользователи готовы начать игру
-     * @returns {boolean}
-     * @private
-     */
     _checkAllStarted: function(){
         var result = true;
         for(var player in this.players) {
@@ -189,11 +176,6 @@ module.exports = GameServer = Model.extend({
         return result;
     },
 
-    /**
-     * Проверить все ли пользователи загрузили карту
-     * @returns {boolean}
-     * @private
-     */
     _checkAllLoaded: function(){
         var result = true;
         _.each(this.players,function(player){
@@ -206,75 +188,28 @@ module.exports = GameServer = Model.extend({
         return result;
     },
 
-    /**
-     * Обработка очереди.
-     * Метод-рассыльщик сообщений пользователям
-     * @this {GameServer}
-     */
-    processQueues: function() {
-        var connection;
-
-        for(var id in this.outgoingQueues) {
-            if(this.outgoingQueues[id].length > 0) {
-                console.log(this.outgoingQueues[id]);
-                connection = this.server.getConnection(id);
-                connection.send(this.outgoingQueues[id]);
-                this.outgoingQueues[id] = [];
-            }
-        }
-    },
-
-    /**
-     * Функция-колбэк.
-     * Вызыватеся при подключении пользователя к игровому серверу
-     * @this {GameServer}
-     * @param {function} callback
-     */
     onPlayerConnect: function(callback) {
         this.connect_callback = callback;
     },
 
-    /**
-     * Функция-колбэк.
-     * Вызывается после успешного подключения пользователя у игромому серверу
-     * @this {GameServer}
-     * @param {function} callback
-     */
     onPlayerEnter: function(callback) {
         this.enter_callback = callback;
     },
 
-    /**
-     * Устанавливает новое значенеие игровков на игровом сервере
-     * @this {GameServer}
-     * @param {number} count новое количество игроков на игровом сервере
-     */
     setPlayerCount: function(count) {
         this.playerCount = count;
     },
 
-    /**
-     * Увеличивает на 1 количество инроков на игровом сервере
-     * @this {GameServer}
-     */
     incrementPlayerCount: function() {
         this.setPlayerCount(this.playerCount + 1);
     },
 
-    /**
-     * Уменьшает на 1 количество инроков на игровом сервере
-     * @this {GameServer}
-     */
     decrementPlayerCount: function() {
         if(this.playerCount > 0) {
             this.setPlayerCount(this.playerCount - 1);
         }
     },
 
-    /**
-     * Игициализируем массивы комманд
-     * @this {GameServer}
-     */
     initTeams: function(){
         for(var i=0; i < this.teamCount; i++){
               this.teams[i] = [];
@@ -317,6 +252,7 @@ module.exports = GameServer = Model.extend({
         player.x = spawn.x;
         player.y = spawn.y;
         player.orientation = spawn.orientation;
+
         this.addToCollidingGrid(player);
 
         player.sendAll(new Message.spawn(player));
@@ -326,26 +262,6 @@ module.exports = GameServer = Model.extend({
         return this.players[id];
     },
 
-    /**
-     * Отправить сообщение игроку
-     * @this {GameServer}
-     * @param {Player} player Пользователь-получатель сообщения
-     * @param {Message} message Сообщение для отправки
-     */
-    pushToPlayer: function(player, message) {
-        if(player && player.id in this.outgoingQueues) {
-            this.outgoingQueues[player.id].push(message.serialize());
-        } else {
-            log.error("pushToPlayer: player was undefined");
-        }
-    },
-
-    /**
-     * Добавить игрока в к игровому серверу.
-     * Создает индекс в объекте очереди и сохранет игрока в массив игрков данного игрового сервера
-     * @this {GameServer}
-     * @param {Player} player Новый игрок
-     */
     addPlayer: function(player) {
         var selectedTeam = null,
             minTeamCount = 0;
@@ -356,11 +272,11 @@ module.exports = GameServer = Model.extend({
                 minTeamCount = this.teams[id].length;
             }
         }
+
         player.team = parseInt(selectedTeam);
         this.teams[player.team].push(player.id);
         this.players[player.id] = player;
         this.entities[player.id] = player;
-        this.outgoingQueues[player.id] = [];
     },
 
     getPlayersInfo: function(){
@@ -371,26 +287,11 @@ module.exports = GameServer = Model.extend({
         return playersInfo;
     },
 
-    /**
-     * Удалить игрока с игорового сервера.
-     * Удаляет индекс в объекте очереди и игрока из массива игрков данного игрового сервера
-     * @this {GameServer}
-     * @param {Player} player Игрок для удаления
-     */
-
     removePlayer: function(player) {
-        console.log('remove '+player.id);
         delete this.players[player.id];
-        delete this.outgoingQueues[player.id];
         this.teams[player.team].splice(this.teams[player.team].indexOf(player.id),1);
+        this.removeFromCollidingGrid(player);
     },
-
-    /**
-     * Метод ывполняет проверку возможности передвижения игрока в данном направлении
-     * @param {Player} player Пользователь для которого выполняется проверка
-     * @param {number} orientation Новое направление
-     * @returns {boolean}
-     */
 
     isValidPlayerMove: function(player, orientation){
         if(this.map && player) {

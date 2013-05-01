@@ -2,21 +2,10 @@ var Entity = require("./entity"),
     Log = require('log'),
     Types = require("../../shared/js/gametypes");
 
-/**
- * Класс описывающий танк
- * @type {Tank}
- */
+
 module.exports = Tank = Entity.extend({
-    defaults: {
-        "tankCollision": true,
-        "bulletCollision": true
-    },
 
-    set: function(attributes, options) {
-        Entity.prototype.set.call(this, attributes, options);
-    },
-
- /*   init: function (id, type, config) {
+    init: function (id, type, config) {
         var self = this;
         this._super(id, type, Types.Entities.TANK, 0, 0);
         this.id = parseInt(id);
@@ -28,7 +17,7 @@ module.exports = Tank = Entity.extend({
 
         this.tankColliding = true;
         this.bulletColliding = true;
-    },*/
+    },
 
     getState: function() {
         var basestate = this._getBaseState(),

@@ -124,10 +124,10 @@ Messages.spawn = Message.extend({
     },
     serialize: function() {
         return [Types.Messages.SPAWN,
-            this.player.get('id'),
-            this.player.get('x'),
-            this.player.get('y'),
-            this.player.get('orientation')
+            this.player.id,
+            this.player.x,
+            this.player.y,
+            this.player.orientation
         ];
     }
 });
@@ -142,6 +142,18 @@ Messages.chat = Message.extend({
             this.id,
             this.message,
         ];
+    }
+});
+
+
+Messages.welcome = Message.extend({
+    init: function(player) {
+        this.player = player;
+    },
+    serialize: function() {
+        return [Types.Messages.WELCOME,
+            this.player.getState()
+        ]
     }
 });
 
