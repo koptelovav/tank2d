@@ -39,14 +39,10 @@ module.exports = Player = Tank.extend({
                 if(self.server.isFull()){
                    // self.send([Types.Messages.GAMEFULL, self.id]);
                 }else{
-                    self.server.addPlayer(self);
-
-                    self.server.emit('playerEnter',self);
-
                     self.hasEnteredGame = true;
                     self.isDead = false;
 
-                    self.send(new Messages.welcome(self));
+                    self.server.emit('playerEnter',self);
                 }
             }
             else if(action === Types.Messages.MOVE) {
@@ -59,20 +55,18 @@ module.exports = Player = Tank.extend({
                     self.server.addToCollidingGrid(self);
                 }
 
-                self.broadcast(new Messages.Move(self));
+                self.emit('move');
             }
             else if(action === Types.Messages.IREADY) {
                 self.isReady = true;
                 self.emit('ready');
-
-                self.broadcast(new Messages.iReady(self));
             }
             else if(action === Types.Messages.LOADMAP){
                 self.isLoad = true;
                 self.emit('load');
             }
             else if(action === Types.Messages.CHAT){
-                self.server.send(new Messages.chat(self.id,message[1]));
+                self.emit('chatMessage',message[1]);
             }
         });
 

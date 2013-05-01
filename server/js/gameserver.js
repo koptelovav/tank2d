@@ -1,6 +1,3 @@
-/*
-*  Используемые модули
-* */
 var Model = require("./model"),
     Message = require('./message'),
     Map = require('./map'),
@@ -32,7 +29,7 @@ module.exports = GameServer = Model.extend({
         this.maxPlayers = null;
         this.teamCount = null;
         this.server = websocketServer;
-        this.ups = 50;
+        this.ups = 60;
 
         this.isStart = false;
         this.isPlay = false;
@@ -52,9 +49,14 @@ module.exports = GameServer = Model.extend({
         this.on('playerEnter',function(player) {
             log.info("Player has joined "+ self.id);
 
+            self.addPlayer(player);
+
             self.incrementPlayerCount();
+
+            player.send(new Message.welcome(player));
             player.broadcast(new Message.JoinGame(player));
             player.send(new Message.gameData(self));
+
 
             player.on('exit',function() {
                 player.broadcast(new Message.LeftGame(player));
@@ -66,6 +68,8 @@ module.exports = GameServer = Model.extend({
             });
 
             player.on('ready',function(){
+                player.broadcast(new Message.iReady(player));
+
                 if(self._checkAllStarted() && self.playerCount >= self.minPlayers && !self.isStart){
                     self.isStart = true;
                     self.send(new Message.gameStart(self.id));
@@ -83,8 +87,16 @@ module.exports = GameServer = Model.extend({
                 }
             });
 
+            player.on('move',function(){
+                player.broadcast(new Message.Move(player));
+            });
+
             player.on('beforeMove',function(player){
                 self.removeFromCollidingGrid(player);
+            });
+
+            player.on('chatMessage',function(message){
+                self.send(new Message.chat(player.id,message));
             });
         });
     },
