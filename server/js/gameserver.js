@@ -53,13 +53,11 @@ module.exports = GameServer = Model.extend({
             log.info("Player has joined "+ self.id);
 
             self.incrementPlayerCount();
-
-//            self.pushBroadcast(new Message.Population(self.id, self.playerCount), player.id);
-            self.pushBroadcast(new Message.JoinGame(player), player.id);
+            player.broadcast(new Message.JoinGame(player));
             self.pushToPlayer(player, new Message.gameData(self));
 
-            player.onExit(function() {
-                self.pushBroadcast(new Message.LeftGame(player), player.id);
+            player.on('exit',function() {
+                player.broadcast(new Message.LeftGame(player));
                 self.removePlayer(player);
                 self.decrementPlayerCount();
                 if(self.playerCount == 0){
@@ -68,29 +66,18 @@ module.exports = GameServer = Model.extend({
             });
 
             player.on('ready',function(){
-                console.log('!!!!!!!!!!!!!!!!!!!');
-            });
-
-            player.onReady(function() {
                 if(self._checkAllStarted() && self.playerCount >= self.minPlayers && !self.isStart){
                     self.isStart = true;
-                    self.pushBroadcast(new Message.gameStart(this.id),false);
+                    player.sendAll(new Message.gameStart(self.id));
                 }
             });
 
-            player.onBroadcast(function(message, ignoreSelf) {
-                self.pushBroadcast(message, ignoreSelf ? player.id : null);
-            });
-
-            player.onSpawn(function(player){
-
-            });
-
-            player.onLoad(function(){
+            player.on('load',function(){
                 console.log(self._checkAllLoaded(),!self.isPlay);
+
                 if(self._checkAllLoaded() && !self.isPlay){
                     self.isPlay = true;
-                    self.pushBroadcast(new Message.gamePlay(self.id), false);
+                    player.sendAll(new Message.gamePlay(self.id));
 
                     setTimeout(function(){
                         self.spawnAll();
@@ -209,9 +196,13 @@ module.exports = GameServer = Model.extend({
      */
     _checkAllLoaded: function(){
         var result = true;
-        for(var player in this.players) {
-            result = result && (this.players[player].isLoad === true);
-        }
+        _.each(this.players,function(player){
+            if(player.isLoad !== true){
+                console.log(player.id);
+            }
+            result = result && (player.isLoad === true);
+        });
+
         return result;
     },
 
@@ -227,9 +218,6 @@ module.exports = GameServer = Model.extend({
             if(this.outgoingQueues[id].length > 0) {
                 console.log(this.outgoingQueues[id]);
                 connection = this.server.getConnection(id);
-
-                if(connection === undefined) console.log(id);
-
                 connection.send(this.outgoingQueues[id]);
                 this.outgoingQueues[id] = [];
             }
@@ -321,16 +309,21 @@ module.exports = GameServer = Model.extend({
     },
 
     playerSpawn: function(id){
-        var spawn;
+        var spawn,
+            player = this.getPlayerById(id);
 
-        spawn = this.getRandomSpawn(this.players[id].team);
+        spawn = this.getRandomSpawn(player.team);
 
-        this.players[id].x = spawn.x;
-        this.players[id].y = spawn.y;
-        this.players[id].orientation = spawn.orientation;
-        this.addToCollidingGrid(this.players[id]);
+        player.x = spawn.x;
+        player.y = spawn.y;
+        player.orientation = spawn.orientation;
+        this.addToCollidingGrid(player);
 
-        this.pushBroadcast(new Message.spawn(this.players[id]), false);
+        player.sendAll(new Message.spawn(player));
+    },
+
+    getPlayerById: function(id){
+        return this.players[id];
     },
 
     /**
@@ -344,22 +337,6 @@ module.exports = GameServer = Model.extend({
             this.outgoingQueues[player.id].push(message.serialize());
         } else {
             log.error("pushToPlayer: player was undefined");
-        }
-    },
-
-
-    /**
-     * Отправить сообщение нескольким игрокам, подключенных к данному игровому серверу.
-     * Возможно исключить одного пользователя, как правило отправителя сообщения.
-     * @this {GameServer}
-     * @param {Message} message Сообщение для отправки
-     * @param {number|boolean} ignoredPlayer ID исключаемого игрока
-     */
-    pushBroadcast: function(message, ignoredPlayer) {
-        for(var id in this.outgoingQueues) {
-            if(id != ignoredPlayer) {
-                this.outgoingQueues[id].push(message.serialize());
-            }
         }
     },
 

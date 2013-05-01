@@ -36,8 +36,10 @@ function main(config) {
     games.push(game);
     gameCount++;
     
-    server.onConnect(function(connection) {
-        game.connect_callback(new Player(connection, game));
+    server.onConnect(function(WebSocketIO) {
+        WebSocketIO.room = game.id;
+        WebSocketIO.join(game.id);
+        game.connect_callback(new Player(WebSocketIO, game));
     });
 
     server.onError(function() {

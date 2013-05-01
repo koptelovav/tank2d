@@ -89,6 +89,7 @@ var Connection = Model.extend({
         this._connection = connection;
         this._server = server;
         this.id = id;
+        this.room = null;
     },
 
     /**
@@ -136,22 +137,14 @@ var Connection = Model.extend({
  * WebSocket-сервер
  */
 WS.WebsocketServer = Server.extend({
-    /**
-     * Коллекция активных подключений
-     */
-    _connections: {},
 
-    /**
-     * количество подключений к серверу
-     */
-    _counter: 0,
 
-    /**
-     * Инициализация срвера
-     * @param {Number} port Порт по которому будет доступен сервер
-     */
     init: function (port) {
         var self = this;
+
+        this._connections = {};
+        this._counter = 0;
+
 
         this._super(port);
 
@@ -182,10 +175,6 @@ WS.WebsocketServer = Server.extend({
         });
     },
 
-    /**
-     * Рассылка сообшения всем клиентам
-     * @param {JSON} message cообщение для отправки
-     */
     broadcast: function (message) {
         this.forEachConnection(function (connection) {
             connection.send(message);
@@ -196,9 +185,6 @@ WS.WebsocketServer = Server.extend({
         this.games_callback = callback;
     },
 
-    /**
-     * Приватная функция. Генерирует уникальный ID подключения
-     */
     _createId: function() {
         return Types.Prefixes.CONNECTION + '' + Utils.random(99) + '' + (this._counter++);
     }
@@ -235,12 +221,23 @@ WS.WebSocketConnection = Connection.extend({
         });
     },
 
-    /**
-     * Отправка соообщения клиенту
-     * @param {JSON} message cообщение для отправки
-     */
+    join: function(room){
+        this._connection.join(room);
+    },
+
     send: function (message) {
         this._connection.send(
+            JSON.stringify(message)
+        );
+    },
+
+    sendAll: function (message) {
+        this.broadcast(message);
+        this.send(message);
+    },
+
+    broadcast: function (message) {
+        this._connection.broadcast.to(this.room).send(
             JSON.stringify(message)
         );
     }
