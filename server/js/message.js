@@ -124,10 +124,10 @@ Messages.spawn = Message.extend({
     },
     serialize: function() {
         return [Types.Messages.SPAWN,
-            this.player.id,
-            this.player.x,
-            this.player.y,
-            this.player.orientation
+            this.player.get('id'),
+            this.player.get('x'),
+            this.player.get('y'),
+            this.player.get('orientation')
         ];
     }
 });
