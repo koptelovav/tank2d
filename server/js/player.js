@@ -23,7 +23,7 @@ module.exports = Player = Tank.extend({
             "bullet": 1
         });
 
-        this.connection.listen(function(message) {
+        this.connection.on('listen',function(message) {
            var action = parseInt(message[0]);
 
             if(!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
@@ -55,9 +55,6 @@ module.exports = Player = Tank.extend({
                 self.setOrientation(orientation);
 
                 if(self.server.isValidPlayerMove(self, orientation)) {
-                    self.onBeforeMove(function(){
-                        self.server.removeFromCollidingGrid(self);
-                    });
                     self.move();
                     self.server.addToCollidingGrid(self);
                 }
@@ -78,10 +75,8 @@ module.exports = Player = Tank.extend({
                 self.sendAll(new Messages.chat(self.id,message[1]));
             }
         });
-        /**
-         * Устонавливаем callback при отключении от игры
-         */
-        this.connection.onClose(function() {
+
+        this.connection.on('close',function() {
             self.emit('exit');
         });
 
@@ -103,10 +98,6 @@ module.exports = Player = Tank.extend({
         this.connection.broadcast(message.serialize());
     },
 
-    onBeforeMove: function(callback){
-        this.beforemove_callback = callback;
-    },
-
     setOrientation: function(newOrientation){
         this.orientation = newOrientation;
     },
@@ -115,8 +106,7 @@ module.exports = Player = Tank.extend({
      * Установить новую позицию в зависимости от текущего оринетации игрока
      */
     move: function(){
-        if(this.beforemove_callback)
-            this.beforemove_callback();
+        this.emit('beforeMove', this);
 
         if(this.orientation === Types.Orientations.LEFT) this.x--;
         else if(this.orientation === Types.Orientations.UP) this.y--;

@@ -19,22 +19,6 @@ var Server = Model.extend({
         this.port = port;
     },
     /**
-     * Функция вызывается при подключении клиента к серверу
-     * @param callback функция-callback
-     */
-    onConnect: function (callback) {
-        this.connection_callback = callback;
-    },
-
-    /**
-     * Функция вызывается при ошибке
-     * @param callback функция-callback
-     */
-    onError: function (callback) {
-        this.error_callback = callback;
-    },
-
-    /**
      * Рассылка сообшения всем клиентам
      * @param {JSON} message cообщение для отправки
      */
@@ -90,22 +74,6 @@ var Connection = Model.extend({
         this._server = server;
         this.id = id;
         this.room = null;
-    },
-
-    /**
-     * Функция вызывается при закрытии соединения
-     * @param callback функция-callback
-     */
-    onClose: function (callback) {
-        this.close_callback = callback;
-    },
-
-    /**
-     * Функция вызывается получении сообщения от клиента
-     * @param callback функция-callback
-     */
-    listen: function (callback) {
-        this.listen_callback = callback;
     },
 
     /**
@@ -166,11 +134,7 @@ WS.WebsocketServer = Server.extend({
 
         io.sockets.on('connection', function (connection) {
             var WebSocketIO = new WS.WebSocketConnection(self._createId(), connection, self);
-
-            if(self.connection_callback){
-                self.connection_callback(WebSocketIO);
-            }
-
+            self.emit('connect',WebSocketIO);
             self.addConnection(WebSocketIO);
         });
     },
@@ -203,20 +167,11 @@ WS.WebSocketConnection = Connection.extend({
         this._super(id, connection, server);
 
         this._connection.on('message', function (message) {
-            if(self.listen_callback){
-               self.listen_callback(
-                   JSON.parse(message)
-               );
-            }
+            self.emit('listen',JSON.parse(message));
         });
 
         this._connection.on('disconnect', function () {
-            log.info('disconnect');
-
-            if(self.close_callback) {
-                self.close_callback();
-            }
-
+            self.emit('close');
             delete self._server.removeConnection(self.id);
         });
     },

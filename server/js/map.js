@@ -36,13 +36,7 @@ module.exports = Map = Model.extend({
         this.spawns = map.spawns;
         this.isLoaded = true;
 
-        if (this.ready_func) {
-            this.ready_func();
-        }
-    },
-
-    ready: function (ready_func) {
-        this.ready_func = ready_func;
+        this.emit('init');
     },
 
     isOutOfBounds: function (x, y) {

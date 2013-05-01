@@ -36,13 +36,13 @@ function main(config) {
     games.push(game);
     gameCount++;
     
-    server.onConnect(function(WebSocketIO) {
+    server.on('connect',function(WebSocketIO) {
         WebSocketIO.room = game.id;
         WebSocketIO.join(game.id);
         game.emit('playerConnect',new Player(WebSocketIO, game));
     });
 
-    server.onError(function() {
+    server.on('error',function() {
         log.error(Array.prototype.join.call(arguments, ", "));
     });
 

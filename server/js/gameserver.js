@@ -82,6 +82,10 @@ module.exports = GameServer = Model.extend({
                     },100);
                 }
             });
+
+            player.on('beforeMove',function(player){
+                self.removeFromCollidingGrid(player);
+            });
         });
     },
 
@@ -90,7 +94,7 @@ module.exports = GameServer = Model.extend({
 
         this.map = new Map(this, mapFilePath);
 
-        this.map.ready(function() {
+        this.map.on('init',function() {
             self.minPlayers = self.map.minPlayers;
             self.maxPlayers = self.map.maxPlayers;
             self.teamCount = self.map.teamCount;
