@@ -130,9 +130,9 @@ WS.WebsocketServer = Server.extend({
         this._httpServer = http.createServer(app).listen(port);
 
 
-        var io = require('socket.io').listen(this._httpServer);
+        this.ws = require('socket.io').listen(this._httpServer);
 
-        io.sockets.on('connection', function (connection) {
+        this.ws.sockets.on('connection', function (connection) {
             var WebSocketIO = new WS.WebSocketConnection(self._createId(), connection, self);
             self.emit('connect',WebSocketIO);
             self.addConnection(WebSocketIO);
@@ -145,8 +145,8 @@ WS.WebsocketServer = Server.extend({
         });
     },
 
-    onRequestGames: function(callback){
-        this.games_callback = callback;
+    sendToRoom: function(room, message){
+        this.ws.sockets.in(room).send(JSON.stringify(message));
     },
 
     _createId: function() {
@@ -184,11 +184,6 @@ WS.WebSocketConnection = Connection.extend({
         this._connection.send(
             JSON.stringify(message)
         );
-    },
-
-    sendAll: function (message) {
-        this.broadcast(message);
-        this.send(message);
     },
 
     broadcast: function (message) {

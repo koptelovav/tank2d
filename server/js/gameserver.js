@@ -68,14 +68,14 @@ module.exports = GameServer = Model.extend({
             player.on('ready',function(){
                 if(self._checkAllStarted() && self.playerCount >= self.minPlayers && !self.isStart){
                     self.isStart = true;
-                    player.sendAll(new Message.gameStart(self.id));
+                    self.send(new Message.gameStart(self.id));
                 }
             });
 
             player.on('load',function(){
                 if(self._checkAllLoaded() && !self.isPlay){
                     self.isPlay = true;
-                    player.sendAll(new Message.gamePlay(self.id));
+                    self.send(new Message.gamePlay(self.id));
 
                     setTimeout(function(){
                         self.spawnAll();
@@ -244,7 +244,7 @@ module.exports = GameServer = Model.extend({
 
         this.addToCollidingGrid(player);
 
-        player.sendAll(new Message.spawn(player));
+        this.send(new Message.spawn(player));
     },
 
     getPlayerById: function(id){
@@ -302,6 +302,10 @@ module.exports = GameServer = Model.extend({
 
     isFull: function(){
         return this.playerCount === this.maxPlayers;
+    },
+
+    send: function(message){
+        this.server.sendToRoom(this.id,message.serialize());
     }
 
 });

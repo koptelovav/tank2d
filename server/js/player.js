@@ -72,7 +72,7 @@ module.exports = Player = Tank.extend({
                 self.emit('load');
             }
             else if(action === Types.Messages.CHAT){
-                self.sendAll(new Messages.chat(self.id,message[1]));
+                self.server.send(new Messages.chat(self.id,message[1]));
             }
         });
 
@@ -88,10 +88,6 @@ module.exports = Player = Tank.extend({
 
     send: function(message){
         this.connection.send(message.serialize());
-    },
-
-    sendAll: function(message){
-        this.connection.sendAll(message.serialize());
     },
 
     broadcast: function(message) {

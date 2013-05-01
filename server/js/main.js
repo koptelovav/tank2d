@@ -46,7 +46,7 @@ function main(config) {
         log.error(Array.prototype.join.call(arguments, ", "));
     });
 
-    server.onRequestGames(function(){
+    server.on('requestGames',function(){
         return JSON.stringify(getGameDistribution(games));
     });
 
