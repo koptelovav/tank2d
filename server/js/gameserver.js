@@ -1,5 +1,5 @@
-define(['model', 'utils', 'message', '../../shared/js/map', 'mapelement', 'spawn','fs'],
-    function (Model, Utils, Message, Map, MapElementFactory, Spawn, fs) {
+define(['model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs'],
+    function (Model, Utils, Message, Map, TileFactory, Spawn, fs) {
 
     var GameServer = Model.extend({
 
@@ -144,7 +144,7 @@ define(['model', 'utils', 'message', '../../shared/js/map', 'mapelement', 'spawn
                 for (j = 0; j < this.map.width; j++) {
                     if (this.map.tiles[i][j] !== 0 && (kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
                         id = 5000 + mId + String(i) + String(j);
-                        tail = MapElementFactory.create(id, kind, i, j);
+                        tail = TileFactory.create(id, kind, i, j);
                         this.entities[tail.id] = tail;
                         this.addToEntityGrid(tail);
                         mId++;
