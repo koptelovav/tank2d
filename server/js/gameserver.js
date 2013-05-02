@@ -49,10 +49,12 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
 
 
                 player.on('exit', function () {
+                    console.log('player exit '+player.id);
                     self.broadcastFromPlayer(player.id, new Message.LeftGame(player));
                     self.removePlayer(player);
                     self.decrementPlayerCount();
-                    if (self.playerCount == 0) {
+
+                    if (self.playerCount === 0) {
                         self.restart();
                     }
                 });
@@ -114,6 +116,7 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
         restart: function () {
             this.isStart = false;
             this.isPlay = false;
+            this.playerCount = 0;
             this.initCollidingGrid();
             this.initMapTails();
         },
@@ -163,7 +166,7 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
 
         removeFromCollidingGrid: function (entity) {
             var self = this;
-            if (this.entities[entity.id]) {
+            if (this.entities[entity.id] && _.isNumber(entity.x) && _.isNumber(entity.y)) {
                 _.each(entity.getChunk(), function (pos) {
                     delete self.collidingGrid[pos[0]][pos[1]][entity.id];
                 });
@@ -240,8 +243,7 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
 
             spawn = this.getRandomSpawn(player.team);
 
-            player.x = spawn.x;
-            player.y = spawn.y;
+            player.setPosition(spawn.x, spawn.y);
             player.orientation = spawn.orientation;
 
             this.addToCollidingGrid(player);
@@ -279,9 +281,9 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
         },
 
         removePlayer: function (player) {
+            this.removeFromCollidingGrid(player);
             delete this.players[player.id];
             this.teams[player.team].splice(this.teams[player.team].indexOf(player.id), 1);
-            this.removeFromCollidingGrid(player);
         },
 
         isValidPlayerMove: function (player, orientation) {
