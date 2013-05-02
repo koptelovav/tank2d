@@ -162,7 +162,6 @@ define(['model','player'], function(Model, Player) {
 
         receiveLeftGame: function(data){
             var playerId = data[1];
-            console.log('left player');
 
             if(this.leftgame_callback)
                 this.leftgame_callback(playerId)

@@ -44,32 +44,9 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
                 this.start_func = func;
             },
 
-            onWait: function (func) {
-                this.wait_func = func;
-            },
-
-            onChangePopulation: function (func) {
-                this.changepopulation_func = func;
-            },
-
-            onPlayerJoin: function (func) {
-                this.playerjoin_func = func;
-            },
-
-            onPlayerLeft: function (func) {
-                this.playerleft_func = func;
-            },
-
-            onPlayerWelcome: function (func) {
-                this.playerwelcome_func = func;
-            },
 
             onPlayerReady: function (func) {
                 this.playerready_func = func;
-            },
-
-            onPlayerRender: function (func) {
-                this.playerrender_func = func;
             },
 
             onGamePlay: function (func) {
@@ -213,9 +190,6 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
                 var waitGameLoadData = setInterval(function () {
                     if (self.loadData) {
 
-                        if (self.wait_func)
-                            self.wait_func();
-
                         var waitStartGame = setInterval(function () {
                             if (self.map && self.map.isLoaded && self.started) {
                                 self.start();
@@ -270,9 +244,7 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
                     self.player = playerConfig;
                     self.connected = true;
 
-                    if (self.playerwelcome_func) {
-                        self.playerwelcome_func(self.player);
-                    }
+                    self.emit('playerWelcome',self.player);
                 });
 
                 this.client.onLoadGameData(function (id, population, teamCount, minPlayers, maxPlayers, players) {
@@ -306,9 +278,7 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
                     self.entities[playerConfig.id] = playerConfig;
                     self.incrementPopulation();
 
-                    if (self.playerjoin_func) {
-                        self.playerjoin_func(playerConfig);
-                    }
+                    self.emit('playerJoin',playerConfig)
                 });
 
                 this.client.onLeftGame(function (playerId) {
@@ -316,21 +286,15 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
 
                     delete self.entities[playerId];
 
-                    if (self.playerleft_func) {
-                        self.playerleft_func(playerId);
-                    }
+                    self.emit('playerLeft',playerId);
                 });
 
                 this.client.onReady(function (playerId) {
-                    if (self.playerready_func) {
-                        self.playerready_func(playerId);
-                    }
+                    self.emit('playerReady',playerId);
                 });
 
                 this.client.onGamePlay(function () {
-                    if (self.gameplay_func) {
-                        self.gameplay_func();
-                    }
+                    self.emit('play');
                 });
 
                 this.client.onSpawn(function (id, x, y, orientation) {
@@ -348,9 +312,7 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
                 });
 
                 this.client.onChatMessage(function(id, message){
-                    if(self.chatmessage_func){
-                        self.chatmessage_func(id, message);
-                    }
+                    self.emit('chatMessage',id, message);
                 });
 
                 this.client.onMove(function (id, orientation) {
@@ -410,10 +372,7 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
 
             setPopulation: function (newPopulation) {
                 this.population = newPopulation;
-
-                if (this.changepopulation_func) {
-                    this.changepopulation_func()
-                }
+                this.emit('changePopulation', this.population);
             },
 
             sendReady: function () {

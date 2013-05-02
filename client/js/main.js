@@ -53,37 +53,35 @@ define(['jquery', 'app'], function ($, App) {
                 });
             });
 
-            game.onPlayerWelcome(function(player){
-                app.$readyButton.bind('click',function(){
-                    app.$readyButton.unbind('click');
-                    app.game.sendReady();
-                    app.setReady(player.id);
-                });
-
+            game.on('playerWelcome',function(player){
+                 app.$readyButton.bind('click',function(){
+                     app.$readyButton.unbind('click');
+                     app.game.sendReady();
+                     app.setReady(player.id);
+                 });
             });
 
-            game.onChangePopulation(function(){
-                $('#population span').text(app.game.population);
+            game.on('changePopulation',function(newPopulation){
+                $('#population span').text(newPopulation);
             });
 
-            game.onPlayerJoin(function(playerConfig){
+            game.on('playerJoin',function(playerConfig){
                 app.addPlayer(playerConfig);
             });
 
-            game.onPlayerLeft(function(id){
-                console.log('player left');
+            game.on('playerLeft',function(id){
                 app.playerGrid.find('#'+id).remove();
             });
-
-            game.onPlayerReady(function(playerId){
+/////////////////////////////////////
+            game.on('playerReady',function(playerId){
                 app.setReady(playerId);
             });
 
-            game.onGamePlay(function(){
+            game.on('play',function(){
                app.gameFrame.show();
             });
 
-            game.onChatMessage(function(palyerId,message){
+            game.on('chatMessage',function(palyerId,message){
                 app.addChatMessage(palyerId,message);
             });
 
