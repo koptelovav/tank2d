@@ -1,7 +1,7 @@
-define(['timer', 'tile','player'],
-    function (Timer, Tile,Player) {
+define(['model','timer', 'tile','player'],
+    function (Model,Timer, Tile,Player) {
 
-        var Renderer = Class.extend({
+        var Renderer = Model.extend({
             init: function (game, entities, background, foreground) {
                 this.game = game;
 

@@ -1,7 +1,7 @@
-define(['renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../../shared/js/gametypes'],
-    function (Renderer, Map, TileFactory, GameClient, Player, Sprite) {
+define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../../shared/js/gametypes'],
+    function (Model,Renderer, Map, TileFactory, GameClient, Player, Sprite) {
 
-        var Game = Class.extend({
+        var Game = Model.extend({
             init: function (app) {
                 this.app = app;
                 this.ready = false;

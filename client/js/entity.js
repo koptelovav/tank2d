@@ -1,5 +1,5 @@
-define(function () {
-    var Entity = Class.extend({
+define(['model'],function (Model) {
+    var Entity = Model.extend({
         init: function (id, kind) {
             this.id = parseInt(id);
             this.kind = kind;

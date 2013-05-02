@@ -1,7 +1,7 @@
 
-define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
+define(['jquery', 'model', 'animation', 'sprites'], function($, Model, Animation, sprites) {
 
-    var Sprite = Class.extend({
+    var Sprite = Model.extend({
         init: function(name) {
         	this.name = name;
         	this.isLoaded = false;

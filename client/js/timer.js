@@ -1,7 +1,7 @@
 
-define(function() {
+define(['model'],function(Model) {
 
-    var Timer = Class.extend({
+    var Timer = Model.extend({
         init: function(duration, startTime) {
             this.lastTime = startTime || 0;
             this.duration = duration;

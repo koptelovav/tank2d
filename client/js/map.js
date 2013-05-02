@@ -1,7 +1,7 @@
 
-define(['jquery', 'tile'], function($,TileFactory) {
+define(['jquery', 'model', 'tile'], function($,Model,TileFactory) {
     
-    var Map = Class.extend({
+    var Map = Model.extend({
         init: function(game) {
             this.game = game;
         	this.data = [];

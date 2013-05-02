@@ -1,5 +1,5 @@
-define(['player'], function(Player) {
-    var GameClient = Class.extend({
+define(['model','player'], function(Model, Player) {
+    var GameClient = Model.extend({
         init: function(host, port) {
             this.connection = null;
             this.host = host;
