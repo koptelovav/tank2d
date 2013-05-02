@@ -1,5 +1,5 @@
 
-define(['model'],function(Model) {
+define(['../../shared/js/model'],function(Model) {
 
     var Timer = Model.extend({
         init: function(duration, startTime) {

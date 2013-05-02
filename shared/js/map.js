@@ -1,4 +1,4 @@
-define(['model'],
+define(['../../shared/js/model'],
     function (Model) {
 
         var Map = Model.extend({

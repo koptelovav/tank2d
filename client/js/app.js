@@ -1,5 +1,5 @@
 
-define(['jquery','model'], function($,Model) {
+define(['jquery','../../shared/js/model'], function($,Model) {
 
     var App = Model.extend({
         init: function() {

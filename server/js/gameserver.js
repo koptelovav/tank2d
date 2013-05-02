@@ -1,4 +1,4 @@
-define(['model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs'],
+define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs'],
     function (Model, Utils, Message, Map, TileFactory, Spawn, fs) {
 
     var GameServer = Model.extend({

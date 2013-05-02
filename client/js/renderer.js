@@ -1,4 +1,4 @@
-define(['model','timer', '../../shared/js/tile','player'],
+define(['../../shared/js/model','timer', '../../shared/js/tile','player'],
     function (Model,Timer, Tile,Player) {
 
         var Renderer = Model.extend({

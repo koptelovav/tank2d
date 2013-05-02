@@ -1,4 +1,4 @@
-define(['model', 'utils'],
+define(['../../shared/js/model', 'utils'],
     function (Model, Utils) {
 
     var Spawn = Model.extend({

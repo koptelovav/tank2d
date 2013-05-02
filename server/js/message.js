@@ -1,4 +1,4 @@
-define(['model', 'utils'], function (Model, Utils) {
+define(['../../shared/js/model', 'utils'], function (Model, Utils) {
     var Messages = {};
 
     /**

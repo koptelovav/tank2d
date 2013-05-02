@@ -1,5 +1,5 @@
 
-define(['jquery', 'model', 'animation', 'sprites'], function($, Model, Animation, sprites) {
+define(['jquery', '../../shared/js/model', 'animation', 'sprites'], function($, Model, Animation, sprites) {
 
     var Sprite = Model.extend({
         init: function(name) {
