@@ -22,7 +22,7 @@
 var isArray = Array.isArray;
 var domain;
 
-function EventEmitter() {
+EventEmitter = function() {
     this.domain = null;
     if (exports.usingDomains) {
         // if there is an active domain, then attach to it.

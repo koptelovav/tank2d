@@ -1,4 +1,4 @@
-define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprite', '../../shared/js/gametypes'],
+define(['model','renderer', '../../shared/js/map', 'tilefactory', 'gameclient', 'player', 'sprite', '../../shared/js/gametypes'],
     function (Model,Renderer, Map, TileFactory, GameClient, Player, Sprite) {
 
         var Game = Model.extend({
@@ -48,13 +48,21 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
             loadMap: function () {
                 var self = this;
 
-                this.map = new Map(this);
+                var filePath = '../../shared/maps/level1.json';
 
-                this.map.ready(function () {
-                    self.mapGrid = self.map.tiles;
-                    self.teamCount = self.map.teamcount;
-                    console.info("Map loaded.");
-                });
+                $.get(filePath, function (data) {
+                    self.map = new Map(self);
+
+                    self.map.on('init',function () {
+                        self.mapGrid = self.map.tiles;
+                        self.teamCount = self.map.teamCount;
+                        console.info("Map loaded.");
+                    });
+
+                    self.map.setData(data);
+                }, 'json');
+
+
             },
 
             setup: function (entities, background, foreground) {
@@ -420,16 +428,16 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
                     var chunk = player.getChunk();
 
                     if (orientation === Types.Orientations.LEFT) {
-                        return !this.map.isPlayerColliding.call(this.map, chunk[0][0] - 1, chunk[0][1]) && !this.map.isPlayerColliding.call(this.map, chunk[2][0] - 1, chunk[2][1]);
+                        return !this.map.isTankColliding.call(this.map, chunk[0][0] - 1, chunk[0][1]) && !this.map.isTankColliding.call(this.map, chunk[2][0] - 1, chunk[2][1]);
                     }
                     else if (orientation === Types.Orientations.UP) {
-                        return !this.map.isPlayerColliding.call(this.map, chunk[0][0], chunk[0][1] - 1) && !this.map.isPlayerColliding.call(this.map, chunk[1][0], chunk[1][1] - 1);
+                        return !this.map.isTankColliding.call(this.map, chunk[0][0], chunk[0][1] - 1) && !this.map.isTankColliding.call(this.map, chunk[1][0], chunk[1][1] - 1);
                     }
                     else if (orientation === Types.Orientations.RIGHT) {
-                        return !this.map.isPlayerColliding.call(this.map, chunk[1][0] + 1, chunk[1][1]) && !this.map.isPlayerColliding.call(this.map, chunk[3][0] + 1, chunk[3][1]);
+                        return !this.map.isTankColliding.call(this.map, chunk[1][0] + 1, chunk[1][1]) && !this.map.isTankColliding.call(this.map, chunk[3][0] + 1, chunk[3][1]);
                     }
                     else if (orientation === Types.Orientations.DOWN) {
-                        return !this.map.isPlayerColliding.call(this.map, chunk[2][0], chunk[2][1] + 1) && !this.map.isPlayerColliding.call(this.map, chunk[3][0], chunk[3][1] + 1);
+                        return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1);
                     }
                 }
             },
@@ -442,6 +450,8 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
                 _.map(this.spriteNames, this.loadSprite, this);
                 console.log('sprites load');
             }
+
+
         });
 
         return Game;

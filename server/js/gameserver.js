@@ -1,5 +1,5 @@
-define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
-    function (Model, Utils, Message, Map, MapElementFactory, Spawn) {
+define(['model', 'utils', 'message', '../../shared/js/map', 'mapelement', 'spawn','fs'],
+    function (Model, Utils, Message, Map, MapElementFactory, Spawn, fs) {
 
     var GameServer = Model.extend({
 
@@ -28,7 +28,7 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
             this.players = {};
             this.entities = {};
             this.teams = {};
-            this.collidingGrid = [];
+            this.entityGrid = [];
 
             this.playerCount = 0;
 
@@ -84,7 +84,7 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
                 });
 
                 player.on('beforeMove', function (player) {
-                    self.removeFromCollidingGrid(player);
+                    self.removeFromEntityGrid(player);
                 });
 
                 player.on('chatMessage', function (message) {
@@ -93,20 +93,25 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
             });
         },
 
-        run: function (mapFilePath) {
-            var self = this;
+        run: function (filePath) {
+            var self = this,
+                data = fs.readFileSync(filePath, 'utf-8');
 
-            this.map = new Map(this, mapFilePath);
+
+            this.map = new Map(self);
 
             this.map.on('init', function () {
                 self.minPlayers = self.map.minPlayers;
                 self.maxPlayers = self.map.maxPlayers;
                 self.teamCount = self.map.teamCount;
-                self.initCollidingGrid();
+                self.initEntityGrid();
                 self.initMapTails();
                 self.initTeams();
                 self.initSpawns(self.map.spawns);
             });
+
+            this.map.setData(JSON.parse(data));
+
 
             setInterval(function () {
                 //game loop
@@ -117,15 +122,15 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
             this.isStart = false;
             this.isPlay = false;
             this.playerCount = 0;
-            this.initCollidingGrid();
+            this.initEntityGrid();
             this.initMapTails();
         },
 
-        initCollidingGrid: function () {
+        initEntityGrid: function () {
             for (var j, i = 0; i < this.map.height; i++) {
-                this.collidingGrid[i] = [];
+                this.entityGrid[i] = [];
                 for (j = 0; j < this.map.width; j++) {
-                    this.collidingGrid[i][j] = {};
+                    this.entityGrid[i][j] = {};
                 }
             }
         },
@@ -137,11 +142,11 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
                 mId = 1;
             for (var j, i = 0; i < this.map.height; i++) {
                 for (j = 0; j < this.map.width; j++) {
-                    if (this.map.bitmap[i][j] !== 0 && (kind = Types.getKindAsString(this.map.bitmap[i][j])) !== undefined) {
+                    if (this.map.tiles[i][j] !== 0 && (kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
                         id = 5000 + mId + String(i) + String(j);
                         tail = MapElementFactory.create(id, kind, i, j);
                         this.entities[tail.id] = tail;
-                        this.addToCollidingGrid(tail);
+                        this.addToEntityGrid(tail);
                         mId++;
                     }
                 }
@@ -155,20 +160,20 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
             this.entities[entity.id] = entity;
         },
 
-        addToCollidingGrid: function (entity) {
+        addToEntityGrid: function (entity) {
             var self = this;
             if (this.entities[entity.id]) {
                 _.each(entity.getChunk(), function (pos) {
-                    self.collidingGrid[pos[0]][pos[1]][entity.id] = entity;
+                    self.entityGrid[pos[0]][pos[1]][entity.id] = entity;
                 });
             }
         },
 
-        removeFromCollidingGrid: function (entity) {
+        removeFromEntityGrid: function (entity) {
             var self = this;
             if (this.entities[entity.id] && _.isNumber(entity.x) && _.isNumber(entity.y)) {
                 _.each(entity.getChunk(), function (pos) {
-                    delete self.collidingGrid[pos[0]][pos[1]][entity.id];
+                    delete self.entityGrid[pos[0]][pos[1]][entity.id];
                 });
             }
         },
@@ -246,7 +251,7 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
             player.setPosition(spawn.x, spawn.y);
             player.orientation = spawn.orientation;
 
-            this.addToCollidingGrid(player);
+            this.addToEntityGrid(player);
 
             this.send(new Message.spawn(player));
         },
@@ -281,7 +286,7 @@ define(['model', 'utils', 'message', 'map', 'mapelement', 'spawn'],
         },
 
         removePlayer: function (player) {
-            this.removeFromCollidingGrid(player);
+            this.removeFromEntityGrid(player);
             delete this.players[player.id];
             this.teams[player.team].splice(this.teams[player.team].indexOf(player.id), 1);
         },

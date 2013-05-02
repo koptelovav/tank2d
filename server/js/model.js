@@ -1,5 +1,5 @@
-define(['util','events','../../shared/lib/class'], function (util,Events) {
+define(['util','../../shared/lib/class','../../shared/lib/events'], function (util) {
     var Model = Class.extend({});
-    util.inherits(Model, Events.EventEmitter);
+    util.inherits(Model, EventEmitter);
     return Model;
 });

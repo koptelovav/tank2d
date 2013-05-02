@@ -50,7 +50,7 @@ define(['../../shared/js/tank', 'message'], function (Tank, Messages) {
 
                     if (self.server.isValidPlayerMove(self, orientation)) {
                         self.move();
-                        self.server.addToCollidingGrid(self);
+                        self.server.addToEntityGrid(self);
                     }
 
                     self.emit('move');
