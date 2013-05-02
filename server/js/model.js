@@ -1,11 +1,5 @@
-var EventEmitter = require(LIBPATH+'/events').EventEmitter,
-    cls = require(LIBPATH+'/class'),
-    util = require('util');
-
-// =======  ========
-
-var Model = cls.Class.extend({});
-util.inherits(Model, EventEmitter);
-
-module.exports = Model;
-
+define(['util','events','../../shared/lib/class'], function (util,Events) {
+    var Model = Class.extend({});
+    util.inherits(Model, Events.EventEmitter);
+    return Model;
+});

@@ -1,15 +1,9 @@
-/**
- * Модуль вспомогательных функций
- */
-var Utils = {};
+define(function () {
+    var Utils = {};
 
-module.exports = Utils;
+    Utils.random = function (range) {
+        return Math.floor(Math.random() * range);
+    };
 
-/**
- *
- * @param {number} range Диапазон для выборки случайного числа
- * @returns {number} Случайное число
- */
-Utils.random = function(range) {
-    return Math.floor(Math.random() * range);
-};
+    return Utils;
+});

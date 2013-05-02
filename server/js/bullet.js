@@ -3,7 +3,7 @@ var Utils = require("./utils"),
     Entity = require("./entity"),
     Types = require("../../shared/js/gametypes");
 
-module.exports = BulletFactory = {
+return BulletFactory = {
     create: function(owner, speed, damage){
         return new Bullet(owner, speed, damage);
     }

@@ -1,5 +1,3 @@
-GLOBAL.LIBPATH = '../../shared/lib';
-GLOBAL.SHAREDPATH = '../../shared';
 GLOBAL._ = require("underscore");
 
 var requirejs = require('requirejs');
@@ -8,7 +6,7 @@ requirejs.config({
     nodeRequire: require
 });
 
-requirejs(['./ws','utils','fs','gameserver','log','player',],function(ws, Utils, fs, GameServer, Log, Player) {
+requirejs(['./ws','utils','fs','gameserver','log','player', '../../shared/js/gametypes'],function(ws, Utils, fs, GameServer, Log, Player) {
     function main(config) {
         var server = new ws.WebsocketServer(config.port),
             games = [];
@@ -94,5 +92,4 @@ requirejs(['./ws','utils','fs','gameserver','log','player',],function(ws, Utils,
             }
         });
     });
-
 });

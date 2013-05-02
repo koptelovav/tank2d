@@ -1,109 +1,110 @@
-var Tank = require("./tank"),
-    Messages = require("./message"),
-    Types = require("../../shared/js/gametypes");
+define(['tank', 'message'], function (Tank, Messages) {
 
-module.exports = Player = Tank.extend({
-    init: function(connection, game) {
-        var self = this;
+    var Player = Tank.extend({
+        init: function (connection, game) {
+            var self = this;
 
-        this.connection = connection;
-        this.server = game;
+            this.connection = connection;
+            this.server = game;
 
-        this.team = null;
+            this.team = null;
 
-        this.hasEnteredGame = false;
-        this.isReady = false;
-        this.isLoad = false;
-        this.isMove = false;
-        this.isDead = false;
+            this.hasEnteredGame = false;
+            this.isReady = false;
+            this.isLoad = false;
+            this.isMove = false;
+            this.isDead = false;
 
-        this._super(this.connection.id, "player", {
-            "speed": 20,
-            "armor": 1,
-            "bullet": 1
-        });
+            this._super(this.connection.id, "player", {
+                "speed": 20,
+                "armor": 1,
+                "bullet": 1
+            });
 
-        this.connection.on('listen',function(message) {
-           var action = parseInt(message[0]);
+            this.connection.on('listen', function (message) {
+                var action = parseInt(message[0]);
 
-            if(!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
-                self.connection.close("Invalid handshake message: "+message);
-                return;
-            }
-            if(self.hasEnteredGame && !self.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
-               self.connection.close("Cannot initiate handshake twice: "+message);
-                return;
-            }
-
-            if(action === Types.Messages.HELLO) {
-                if(self.server.isFull()){
-                   // self.send([Types.Messages.GAMEFULL, self.id]);
-                }else{
-                    self.hasEnteredGame = true;
-                    self.isDead = false;
-
-                    self.server.emit('playerEnter',self);
+                if (!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
+                    self.connection.close("Invalid handshake message: " + message);
+                    return;
                 }
-            }
-            else if(action === Types.Messages.MOVE) {
-                var orientation = message[1];
-
-                self.setOrientation(orientation);
-
-                if(self.server.isValidPlayerMove(self, orientation)) {
-                    self.move();
-                    self.server.addToCollidingGrid(self);
+                if (self.hasEnteredGame && !self.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
+                    self.connection.close("Cannot initiate handshake twice: " + message);
+                    return;
                 }
 
-                self.emit('move');
-            }
-            else if(action === Types.Messages.IREADY) {
-                self.isReady = true;
-                self.emit('ready');
-            }
-            else if(action === Types.Messages.LOADMAP){
-                self.isLoad = true;
-                self.emit('load');
-            }
-            else if(action === Types.Messages.CHAT){
-                self.emit('chatMessage',message[1]);
-            }
-        });
+                if (action === Types.Messages.HELLO) {
+                    if (self.server.isFull()) {
+                        // self.send([Types.Messages.GAMEFULL, self.id]);
+                    } else {
+                        self.hasEnteredGame = true;
+                        self.isDead = false;
 
-        this.connection.on('close',function() {
-            self.emit('exit');
-        });
+                        self.server.emit('playerEnter', self);
+                    }
+                }
+                else if (action === Types.Messages.MOVE) {
+                    var orientation = message[1];
 
-        this.connection.send('go');
-    },
+                    self.setOrientation(orientation);
 
-    setOrientation: function(newOrientation){
-        this.orientation = newOrientation;
-    },
+                    if (self.server.isValidPlayerMove(self, orientation)) {
+                        self.move();
+                        self.server.addToCollidingGrid(self);
+                    }
 
-    /**
-     * Установить новую позицию в зависимости от текущего оринетации игрока
-     */
-    move: function(){
-        this.emit('beforeMove', this);
+                    self.emit('move');
+                }
+                else if (action === Types.Messages.IREADY) {
+                    self.isReady = true;
+                    self.emit('ready');
+                }
+                else if (action === Types.Messages.LOADMAP) {
+                    self.isLoad = true;
+                    self.emit('load');
+                }
+                else if (action === Types.Messages.CHAT) {
+                    self.emit('chatMessage', message[1]);
+                }
+            });
 
-        if(this.orientation === Types.Orientations.LEFT) this.x--;
-        else if(this.orientation === Types.Orientations.UP) this.y--;
-        else if(this.orientation === Types.Orientations.RIGHT) this.x++;
-        else if(this.orientation === Types.Orientations.DOWN) this.y++;
-    },
+            this.connection.on('close', function () {
+                self.emit('exit');
+            });
 
-    /**
-     * Получить информацию о состоянии объекта
-     * @returns {Array} массив с параметрами
-     */
-    getState: function() {
-        var state = [
-            this.id,
-            this.kind,
-            this.team,
-            this.isReady
-        ];
-        return state;
-    }
+            this.connection.send('go');
+        },
+
+        setOrientation: function (newOrientation) {
+            this.orientation = newOrientation;
+        },
+
+        /**
+         * Установить новую позицию в зависимости от текущего оринетации игрока
+         */
+        move: function () {
+            this.emit('beforeMove', this);
+
+            if (this.orientation === Types.Orientations.LEFT) this.x--;
+            else if (this.orientation === Types.Orientations.UP) this.y--;
+            else if (this.orientation === Types.Orientations.RIGHT) this.x++;
+            else if (this.orientation === Types.Orientations.DOWN) this.y++;
+        },
+
+        /**
+         * Получить информацию о состоянии объекта
+         * @returns {Array} массив с параметрами
+         */
+        getState: function () {
+            var state = [
+                this.id,
+                this.kind,
+                this.team,
+                this.isReady
+            ];
+            return state;
+        }
+    });
+
+    return Player;
 });
