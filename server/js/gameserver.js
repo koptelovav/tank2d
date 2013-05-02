@@ -53,13 +53,13 @@ module.exports = GameServer = Model.extend({
 
             self.incrementPlayerCount();
 
-            player.send(new Message.welcome(player));
-            player.broadcast(new Message.JoinGame(player));
-            player.send(new Message.gameData(self));
+            self.sendToPlayer(player.id, new Message.welcome(player));
+            self.broadcastFromPlayer(player.id, new Message.JoinGame(player));
+            self.sendToPlayer(player.id, new Message.gameData(self));
 
 
             player.on('exit',function() {
-                player.broadcast(new Message.LeftGame(player));
+                self.broadcastFromPlayer(player.id, new Message.LeftGame(player));
                 self.removePlayer(player);
                 self.decrementPlayerCount();
                 if(self.playerCount == 0){
@@ -68,7 +68,7 @@ module.exports = GameServer = Model.extend({
             });
 
             player.on('ready',function(){
-                player.broadcast(new Message.iReady(player));
+                self.broadcastFromPlayer(player.id, new Message.iReady(player));
 
                 if(self._checkAllStarted() && self.playerCount >= self.minPlayers && !self.isStart){
                     self.isStart = true;
@@ -88,7 +88,7 @@ module.exports = GameServer = Model.extend({
             });
 
             player.on('move',function(){
-                player.broadcast(new Message.Move(player));
+                self.broadcastFromPlayer(player.id, new Message.Move(player));
             });
 
             player.on('beforeMove',function(player){
@@ -318,6 +318,15 @@ module.exports = GameServer = Model.extend({
 
     send: function(message){
         this.server.sendToRoom(this.id,message.serialize());
-    }
+    },
 
+    sendToPlayer: function(playerId, message){
+        var connection = this.server.getConnection(playerId);
+        connection.send(message.serialize());
+    },
+
+    broadcastFromPlayer: function(playerId, message){
+        var connection = this.server.getConnection(playerId);
+        connection.broadcast(message.serialize());
+    }
 });

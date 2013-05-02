@@ -74,18 +74,7 @@ module.exports = Player = Tank.extend({
             self.emit('exit');
         });
 
-        /**
-         * Отсылаем сообщение что можно начинать игру
-         */
         this.connection.send('go');
-    },
-
-    send: function(message){
-        this.connection.send(message.serialize());
-    },
-
-    broadcast: function(message) {
-        this.connection.broadcast(message.serialize());
     },
 
     setOrientation: function(newOrientation){
