@@ -6,7 +6,7 @@ requirejs.config({
     nodeRequire: require
 });
 
-requirejs(['./ws','utils','fs','gameserver','log','player', '../../shared/js/gametypes'],function(ws, Utils, fs, GameServer, Log, Player) {
+requirejs(['ws','utils','fs','gameserver','log','player', '../../shared/js/gametypes'],function(ws, Utils, fs, GameServer, Log, Player) {
     function main(config) {
         var server = new ws.WebsocketServer(config.port),
             games = [];
