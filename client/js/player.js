@@ -1,4 +1,4 @@
-define(['tank'], function (Tank) {
+define(['../../shared/js/tank'], function (Tank) {
     var Player = Tank.extend({
         init: function(config) {
             this.team = config.team;

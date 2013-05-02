@@ -1,9 +1,9 @@
-define(['entity'], function (Entity) {
+define(['../../shared/js/entity'], function (Entity) {
 
     var Tank = Entity.extend({
         init: function (id, type, kind, config) {
             var self = this;
-            this._super(id, kind);
+            this._super(id, type, kind);
 
             this.id = parseInt(id);
             this.orientation = 0;
@@ -12,13 +12,8 @@ define(['entity'], function (Entity) {
             this.armor = self._params['armor'];
             this.bullet = self._params['bullet'];
 
-            //colliding
             this.tankColliding = true;
             this.bulletColliding = true;
-        },
-
-        move: function(){
-
         },
 
         setOrientation: function(orientation) {

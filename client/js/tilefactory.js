@@ -9,35 +9,35 @@ define(['tile','animatedtile'],function (Tile,AnimatedTile) {
 
     Tiles.empty = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, kind, x, y, 'background');
+            this._super(id, 'tile', kind, x, y, 'background');
         }
     });
 
     Tiles.wall = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, kind, x, y, 'background', true, true);
+            this._super(id, 'tile', kind, x, y, 'background', true, true);
         }
     });
 
     Tiles.armoredwall = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, kind, x, y, 'background', true, true);
+            this._super(id, 'tile', kind, x, y, 'background', true, true);
         }
     });
     Tiles.trees = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, kind, x, y, 'foreground');
+            this._super(id, 'tile', kind, x, y, 'foreground');
         }
     });
     Tiles.water = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, kind, x, y, 'background', true);
+            this._super(id, 'tile', kind, x, y, 'background', true);
         }
     });
 
     Tiles.ice = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, kind, x, y, 'background');
+            this._super(id, 'tile', kind, x, y, 'background');
         }
     });
 

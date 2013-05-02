@@ -1,4 +1,4 @@
-define(['entity', 'utils'], function (Entity, Utils) {
+define(['../../shared/js/entity', 'utils'], function (Entity, Utils) {
     var MapElements = {};
 
     /**
@@ -15,7 +15,8 @@ define(['entity', 'utils'], function (Entity, Utils) {
      */
     var MapElement = Entity.extend({
         init: function (id, kind, x, y, tankCollision, bulletCollision) {
-            this._super(id, 'tile', kind, x, y);
+            this._super(id, 'tile', kind);
+            this.setPosition(x, y);
             this.kind = kind;
             this.tankColliding = tankCollision || false;
             this.bulletColliding = bulletCollision || false;

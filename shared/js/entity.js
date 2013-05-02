@@ -1,8 +1,9 @@
 define(['model'],function (Model) {
     var Entity = Model.extend({
-        init: function (id, kind) {
+        init: function (id, type, kind) {
             this.id = parseInt(id);
             this.kind = kind;
+            this.type = type;
             this.sprite = null;
             this.animations = null;
             this.currentAnimation = null;

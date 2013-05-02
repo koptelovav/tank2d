@@ -1,4 +1,4 @@
-define(['tank', 'message'], function (Tank, Messages) {
+define(['../../shared/js/tank', 'message'], function (Tank, Messages) {
 
     var Player = Tank.extend({
         init: function (connection, game) {
@@ -15,7 +15,7 @@ define(['tank', 'message'], function (Tank, Messages) {
             this.isMove = false;
             this.isDead = false;
 
-            this._super(this.connection.id, "player", {
+            this._super(this.connection.id, "player", Types.Entities.TANK, {
                 "speed": 20,
                 "armor": 1,
                 "bullet": 1

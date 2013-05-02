@@ -45,18 +45,6 @@ define(['model','renderer', 'map', 'tilefactory', 'gameclient', 'player', 'sprit
             },
 
 
-            onPlayerReady: function (func) {
-                this.playerready_func = func;
-            },
-
-            onGamePlay: function (func) {
-                this.gameplay_func = func;
-            },
-
-            onChatMessage: function(func){
-                this.chatmessage_func = func;
-            },
-
             loadMap: function () {
                 var self = this;
 
