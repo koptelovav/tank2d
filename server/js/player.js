@@ -9,8 +9,8 @@ define(['../../shared/js/tank'], function (Tank) {
             this.hasEnteredGame = false;
             this.isReady = false;
             this.isLoad = false;
-            this.isMove = false;
             this.isDead = false;
+            this.isPlay = false;
 
             this._super(this.connection.id, "player", Types.Entities.TANK, {
                 "speed": 20,

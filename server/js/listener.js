@@ -1,11 +1,11 @@
-define(['../../shared/js/model'],function(Model){
-    var Listener  = Model.extend({
-        init: function(game, player){
+define(['../../shared/js/model'], function (Model) {
+    var Listener = Model.extend({
+        init: function (game, player) {
             this.game = game;
             this.player = player;
             this.connection = player.connection;
 
-            this.connection.on('listen',function(message){
+            this.connection.on('listen', function (message) {
                 var action = parseInt(message[0]);
 
                 if (!player.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
@@ -26,6 +26,19 @@ define(['../../shared/js/model'],function(Model){
 
                         game.emit('playerEnter', player);
                     }
+                }else if (action === Types.Messages.CHAT) {
+                    player.emit('chatMessage', message[1]);
+                }
+                else if (action === Types.Messages.IREADY) {
+                    player.isReady = true;
+                    player.emit('ready');
+                }
+                else if (action === Types.Messages.LOADMAP) {
+                    player.isLoad = true;
+                    player.emit('load');
+                }
+                else if (!player.isPlay){
+                    return;
                 }
                 else if (action === Types.Messages.MOVE) {
                     var orientation = message[1];
@@ -38,17 +51,6 @@ define(['../../shared/js/model'],function(Model){
                     }
 
                     player.emit('move');
-                }
-                else if (action === Types.Messages.IREADY) {
-                    player.isReady = true;
-                    player.emit('ready');
-                }
-                else if (action === Types.Messages.LOADMAP) {
-                    player.isLoad = true;
-                    player.emit('load');
-                }
-                else if (action === Types.Messages.CHAT) {
-                    player.emit('chatMessage', message[1]);
                 }
             });
 
