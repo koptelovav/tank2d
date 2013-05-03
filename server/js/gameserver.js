@@ -1,5 +1,5 @@
-define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs'],
-    function (Model, Utils, Message, Map, TileFactory, Spawn, fs) {
+define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','listener'],
+    function (Model, Utils, Message, Map, TileFactory, Spawn, fs, Listener) {
 
     var GameServer = Model.extend({
 
@@ -33,14 +33,13 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             this.playerCount = 0;
 
             this.on('playerConnect', function (player) {
-
+                self.addPlayerListener(player);
             });
 
             this.on('playerEnter', function (player) {
                 log.info("Player has joined " + self.id);
 
                 self.addPlayer(player);
-
                 self.incrementPlayerCount();
 
                 self.sendToPlayer(player.id, new Message.welcome(player));
@@ -307,6 +306,8 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                     return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1);
                 }
             }
+
+            return false;
         },
 
         isFull: function () {
@@ -325,6 +326,10 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
         broadcastFromPlayer: function (playerId, message) {
             var connection = this.server.getConnection(playerId);
             connection.broadcast(message.serialize());
+        },
+
+        addPlayerListener: function(player){
+            player.listener = new Listener(this, player);
         }
     });
     return GameServer;
