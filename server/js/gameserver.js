@@ -70,7 +70,6 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                 player.on('load', function () {
                     if (self._checkAllLoaded() && !self.isPlay) {
                         self.isPlay = true;
-                        player.isPlay = true;
 
                         self.send(new Message.gamePlay(self.id));
 
@@ -251,6 +250,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
             player.setPosition(spawn.x, spawn.y);
             player.orientation = spawn.orientation;
+            player.isPlay = true;
 
             this.addToEntityGrid(player);
 
