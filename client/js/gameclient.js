@@ -1,4 +1,4 @@
-define(['../../shared/js/model','player'], function(Model, Player) {
+define(['../../shared/js/model'], function(Model) {
     var GameClient = Model.extend({
         init: function(host, port) {
             this.connection = null;

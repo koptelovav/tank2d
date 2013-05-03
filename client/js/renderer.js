@@ -1,5 +1,5 @@
-define(['../../shared/js/model','timer', '../../shared/js/tile','player'],
-    function (Model,Timer, Tile,Player) {
+define(['../../shared/js/model'],
+    function (Model) {
 
         var Renderer = Model.extend({
             init: function (game, entities, background, foreground) {

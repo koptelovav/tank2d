@@ -1,19 +1,18 @@
 define(['../../shared/js/tank'], function (Tank) {
     var Player = Tank.extend({
-        init: function (connection, game) {
-            this.connection = connection;
-            this.server = game;
-
-            this.team = null;
+        init: function(config) {
+            this.team = config.team;
+            this.isReady = config.isReady;
 
             this.hasEnteredGame = false;
-            this.isReady = false;
             this.isLoad = false;
             this.isDead = false;
             this.isPlay = false;
 
-            this._super(this.connection.id, "player", Types.Entities.TANK, {
-                "speed": 20,
+            this.layer = 'entities';
+
+            this._super(config.id, "player", config.kind, {
+                "speed": 200,
                 "armor": 1,
                 "bullet": 1
             });
@@ -23,13 +22,14 @@ define(['../../shared/js/tank'], function (Tank) {
             this.orientation = newOrientation;
         },
 
-        move: function () {
+        move: function() {
             this.emit('beforeMove', this);
 
             if (this.orientation === Types.Orientations.LEFT) this.x--;
             else if (this.orientation === Types.Orientations.UP) this.y--;
             else if (this.orientation === Types.Orientations.RIGHT) this.x++;
             else if (this.orientation === Types.Orientations.DOWN) this.y++;
+            this.setDirty();
         },
 
         getState: function () {

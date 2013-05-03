@@ -6,7 +6,7 @@ requirejs.config({
     nodeRequire: require
 });
 
-requirejs(['ws','utils','fs','gameserver','log','player', '../../shared/js/gametypes'],function(ws, Utils, fs, GameServer, Log, Player) {
+requirejs(['ws','utils','fs','gameserver','log', '../../shared/js/gametypes'],function(ws, Utils, fs, GameServer, Log) {
     function main(config) {
         var server = new ws.WebsocketServer(config.port),
             games = [];
@@ -35,7 +35,7 @@ requirejs(['ws','utils','fs','gameserver','log','player', '../../shared/js/gamet
         server.on('connect',function(WebSocketIO) {
             WebSocketIO.room = game.id;
             WebSocketIO.join(game.id);
-            game.emit('playerConnect',new Player(WebSocketIO, game));
+            game.emit('playerConnect',WebSocketIO);
         });
 
         server.on('error',function() {

@@ -1,5 +1,5 @@
-define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','listener'],
-    function (Model, Utils, Message, Map, TileFactory, Spawn, fs, Listener) {
+define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','listener', '../../shared/js/player'],
+    function (Model, Utils, Message, Map, TileFactory, Spawn, fs, Listener, Player) {
 
     var GameServer = Model.extend({
 
@@ -32,8 +32,16 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
             this.playerCount = 0;
 
-            this.on('playerConnect', function (player) {
-                self.addPlayerListener(player);
+            this.on('playerConnect', function (connection) {
+                var player = new Player({
+                    id: connection.id,
+                    kind: Types.Entities.TANK,
+                    team: self.getPlayerTeam(),
+                    isReady: false
+                });
+
+                player.connection = connection;
+                player.listener = new Listener(this, player);
             });
 
             this.on('playerEnter', function (player) {
@@ -262,6 +270,12 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
         },
 
         addPlayer: function (player) {
+            this.teams[player.team].push(player.id);
+            this.players[player.id] = player;
+            this.entities[player.id] = player;
+        },
+
+        getPlayerTeam: function(){
             var selectedTeam = null,
                 minTeamCount = 0;
 
@@ -271,11 +285,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                     minTeamCount = this.teams[id].length;
                 }
             }
-
-            player.team = parseInt(selectedTeam);
-            this.teams[player.team].push(player.id);
-            this.players[player.id] = player;
-            this.entities[player.id] = player;
+            return parseInt(selectedTeam);
         },
 
         getPlayersInfo: function () {
@@ -329,10 +339,6 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             var connection = this.server.getConnection(playerId);
             connection.broadcast(message.serialize());
         },
-
-        addPlayerListener: function(player){
-            player.listener = new Listener(this, player);
-        }
     });
     return GameServer;
 });

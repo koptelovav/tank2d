@@ -1,4 +1,4 @@
-define(['../../shared/js/model','renderer', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', 'player', 'sprite', '../../shared/js/gametypes'],
+define(['../../shared/js/model','renderer', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', 'sprite', '../../shared/js/gametypes'],
     function (Model,Renderer, Map, TileFactory, GameClient, Player, Sprite) {
 
         var Game = Model.extend({
