@@ -1,4 +1,3 @@
-
-define(['../../shared/js/model', 'lib/underscore.min', 'lib/stacktrace', 'util'], function() {
+define(['lib/underscore.min', 'util'], function() {
     require(["main"]);
 });
