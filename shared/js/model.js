@@ -1,15 +1,13 @@
 define(['../../shared/lib/class','../../shared/lib/events'], function () {
-    var Model = Class.extend({});
-
-    Model.super_ = EventEmitter;
-    Model.prototype = Object.create(EventEmitter.prototype, {
+    Class.super_ = Events;
+    Class.prototype = Object.create(Events.prototype, {
         constructor: {
-            value: Model,
+            value: Class,
             enumerable: false,
             writable: true,
             configurable: true
         }
     });
 
-    return Model;
+    return Class;
 });
