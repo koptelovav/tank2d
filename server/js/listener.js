@@ -49,8 +49,6 @@ define(['../../shared/js/model'], function (Model) {
                         player.move();
                         game.addToEntityGrid(player);
                     }
-
-                    player.emit('move');
                 }
             });
 

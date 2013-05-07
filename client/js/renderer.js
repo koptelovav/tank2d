@@ -2,59 +2,28 @@ define(['../../shared/js/model'],
     function (Model) {
 
         var Renderer = Model.extend({
-            init: function (game, entities, background, foreground) {
-                this.game = game;
-
-                background.width = entities.width = foreground.width = 16 * 48;
-                background.height = entities.height = foreground.height = 16 * 48;
-
-                this.entities = (entities && entities.getContext) ? entities.getContext("2d") : null;
-                this.background = (background && background.getContext) ? background.getContext("2d") : null;
-                this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
-
-                this.ecanvas = entities;
-                this.backcanvas = background;
+            init: function (scene) {
+                this.scene = scene;
 
                 this.images = {};
 
                 this.tilesize = 16;
 
+
+                //debug
                 this.lastTime = new Date();
                 this.frameCount = 0;
-                this.maxFPS = 50;
                 this.realFPS = 0;
             },
 
-            getWidth: function () {
-                return this.entities.width;
-            },
-
-            getHeight: function () {
-                return this.entities.height;
-            },
-
-            renderFrame: function (render_callback) {
-                this.clearDirtyRects();
-
-                this.entities.save();
-                this.background.save();
-                this.foreground.save();
-
-                this.drawEntities();
+            renderFrame: function () {
                 this.drawDebugInfo();
 
-                this.entities.restore();
-                this.background.restore();
-                this.foreground.restore();
+                _.each(this.scene.layers, function(layer){
+                    this.renderLayer(layer);
+                }, this);
 
-                if (render_callback) {
-                    render_callback();
-                }
                 console.log('Frame rendered');
-            },
-
-            clearScreen: function (ctx) {
-                ctx.clearRect(0, 0, this.entities.width, this.entities.height);
             },
 
             drawFPS: function () {
@@ -73,7 +42,7 @@ define(['../../shared/js/model'],
             },
 
             drawText: function (text, x, y, centered, color, strokeColor) {
-                var ctx = this.foreground;
+                var ctx = this.scene.layers['foreground'].ctx;
 
                 if (text && x && y) {
                     ctx.save();
@@ -93,46 +62,21 @@ define(['../../shared/js/model'],
                 this.drawFPS();
             },
 
-            drawEntity: function (entity) {
-                this.drawImage(this[entity.layer],entity);
+            drawEntity: function (entity,layer) {
+                this.drawImage(layer,entity);
             },
 
-            drawImage: function(contex, entity){
+            drawImage: function(layer, entity){
                 var sprite = entity.sprite;
-                contex.drawImage(sprite.image,
+                layer.ctx.drawImage(sprite.image,
                     entity.x * 16,
                     entity.y * 16,
                     sprite.width,
                     sprite.height);
             },
 
-            drawEntities: function () {
-                var self = this;
-
-                this.game.forEachVisibleEntity(function (entity) {
-                    if (entity.isLoaded && entity.sprite.isLoaded) {
-                        if(entity.isDirty) {
-                            self.drawEntity(entity);
-                            entity.isDirty = false;
-                            entity.oldDirtyRect = entity.dirtyRect;
-                            entity.dirtyRect = null;
-                        }
-                    }
-                });
-            },
-
             clearDirtyRect: function(layer,r) {
-                this[layer].clearRect(r.x, r.y, r.w, r.h);
-            },
-
-            clearDirtyRects: function() {
-                var self = this
-
-                this.game.forEachVisibleEntity(function(entity) {
-                    if(entity.isDirty && entity.oldDirtyRect) {
-                        self.clearDirtyRect(entity.layer,entity.oldDirtyRect);
-                    }
-                });
+                layer.ctx.clearRect(r.x, r.y, r.w, r.h);
             },
 
             getEntityBoundingRect: function(entity){
@@ -144,6 +88,36 @@ define(['../../shared/js/model'],
                 rect.w = entity.sprite.width;
 
                 return rect;
+            },
+
+
+            renderLayer: function(layer){
+                var self = this;
+
+                this.clearLayerDirtyRects(layer);
+
+                layer.ctx.save();
+
+                layer.forEachDirtyEntities(function(entity){
+                    if (entity.isLoaded && entity.sprite.isLoaded) {
+                            self.drawEntity(entity, layer);
+                            entity.isDirty = false;
+                            entity.oldDirtyRect = entity.dirtyRect;
+                            entity.dirtyRect = null;
+                        }
+                });
+
+                layer.ctx.restore();
+            },
+
+            clearLayerDirtyRects: function(layer) {
+                var self = this;
+
+                layer.forEachDirtyEntities(function(entity){
+                    if(entity.oldDirtyRect) {
+                        self.clearDirtyRect(layer,entity.oldDirtyRect);
+                    }
+                });
             }
         });
 

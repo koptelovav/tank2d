@@ -29,16 +29,12 @@ define(['jquery', 'app'], function ($, App) {
             game = new Game(app);
             app.setGame(game);
 
-            game.onStart(function(){
+            game.on('start',function(){
                 game.setup(entities, background, foreground);
                 game.loadMap();
             });
 
-            game.onRun(function(){
-
-            });
-
-            game.onLoad(function(){
+            game.on('load',function(){
                 for(var i = 0; i < app.game.teamCount; i++){
                     app.playerGrid.append('<div id="team'+i+'"></div>');
                     for(var j=0; j<(app.game.maxPlayers / app.game.teamCount); j++){

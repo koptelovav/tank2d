@@ -43,7 +43,6 @@ Types = {
     },
 
     MapElements: {
-        EMPTY: 0,
         WALL: 1,
         ARMOREDWALL: 2,
         TREES: 3,
@@ -85,7 +84,6 @@ var kinds = {
     flag: [Types.Entities.FLAG, "object"],
 
     wall: [Types.MapElements.WALL, "tile"],
-    empty: [Types.MapElements.EMPTY, "tile"],
     armoredwall: [Types.MapElements.ARMOREDWALL, "tile"],
     trees: [Types.MapElements.TREES, "tile"],
     ice: [Types.MapElements.ICE, "tile"],

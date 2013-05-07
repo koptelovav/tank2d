@@ -9,8 +9,6 @@ define(['../../shared/js/tank'], function (Tank) {
             this.isDead = false;
             this.isPlay = false;
 
-            this.layer = 'entities';
-
             this._super(config.id, "player", config.kind, {
                 "speed": 200,
                 "armor": 1,
@@ -29,7 +27,8 @@ define(['../../shared/js/tank'], function (Tank) {
             else if (this.orientation === Types.Orientations.UP) this.y--;
             else if (this.orientation === Types.Orientations.RIGHT) this.x++;
             else if (this.orientation === Types.Orientations.DOWN) this.y++;
-            this.setDirty();
+
+            this.emit('move', this);
         },
 
         getState: function () {

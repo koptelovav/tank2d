@@ -8,39 +8,33 @@ define(['../../shared/js/tile'],function (Tile) {
         }
     };
 
-    Tiles.empty = Tile.extend({
-        init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, false, false, 'background');
-        }
-    });
-
     Tiles.wall = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, true, true, 'background');
+            this._super(id, 'tile', kind, x, y, true, true);
         }
     });
 
     Tiles.armoredwall = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, true, true, 'background');
+            this._super(id, 'tile', kind, x, y, true, true);
         }
     });
 
     Tiles.trees = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, false, false, 'foreground');
+            this._super(id, 'tile', kind, x, y, false, false);
         }
     });
 
     Tiles.water = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, true, false, 'background');
+            this._super(id, 'tile', kind, x, y, true, false);
         }
     });
 
     Tiles.ice = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, false, false, 'background');
+            this._super(id, 'tile', kind, x, y, false, false);
         }
     });
 

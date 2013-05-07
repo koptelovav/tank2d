@@ -102,21 +102,19 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
         },
 
         run: function (filePath) {
-            var self = this,
-                data = fs.readFileSync(filePath, 'utf-8');
+            var data = fs.readFileSync(filePath, 'utf-8');
 
-
-            this.map = new Map(self);
+            this.map = new Map(this);
 
             this.map.on('init', function () {
-                self.minPlayers = self.map.minPlayers;
-                self.maxPlayers = self.map.maxPlayers;
-                self.teamCount = self.map.teamCount;
-                self.initEntityGrid();
-                self.initMapTails();
-                self.initTeams();
-                self.initSpawns(self.map.spawns);
-            });
+                this.minPlayers = this.map.minPlayers;
+                this.maxPlayers = this.map.maxPlayers;
+                this.teamCount = this.map.teamCount;
+                this.initEntityGrid();
+                this.initMapTails();
+                this.initTeams();
+                this.initSpawns(this.map.spawns);
+            }, this);
 
             this.map.setData(JSON.parse(data));
 

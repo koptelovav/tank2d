@@ -1,9 +1,8 @@
 define(['../../shared/js/entity'], function (Entity) {
     var Tile = Entity.extend({
-        init: function (id, type, kind, x, y, tankCollision, bulletCollision, layer) {
+        init: function (id, type, kind, x, y, tankCollision, bulletCollision) {
             this._super(id, type, kind);
             this.setPosition(x,y);
-            this.layer = layer || null;
             this.tankColliding = tankCollision;
             this.bulletColliding = bulletCollision;
         },
