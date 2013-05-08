@@ -22,11 +22,11 @@ define(['../../shared/js/tank'], function (Tank) {
 
         move: function() {
             this.emit('beforeMove', this);
-
-            if (this.orientation === Types.Orientations.LEFT) this.x--;
-            else if (this.orientation === Types.Orientations.UP) this.y--;
-            else if (this.orientation === Types.Orientations.RIGHT) this.x++;
-            else if (this.orientation === Types.Orientations.DOWN) this.y++;
+            if (this.orientation === Types.Orientations.LEFT) this.gridX--;
+            else if (this.orientation === Types.Orientations.UP) this.gridY--;
+            else if (this.orientation === Types.Orientations.RIGHT) this.gridX++;
+            else if (this.orientation === Types.Orientations.DOWN) this.gridY++;
+            this.setPosition(this.gridX, this.gridY);
 
             this.emit('move', this);
         },

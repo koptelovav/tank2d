@@ -14,32 +14,14 @@ define(['../../shared/js/model'],function (Model) {
         },
 
         setPosition: function(x, y){
-            this.x = x;
-            this.y = y;
+            this.setGridPosition(x, y);
+            this.x = x * 16;
+            this.y = y * 16;
         },
 
-        setSprite: function(sprite) {
-            if(!sprite) {
-                console.error(this.id + " : sprite is null", true);
-                throw "Error";
-            }
-
-            if(this.sprite && this.sprite.name === sprite.name) {
-                return;
-            }
-
-            this.sprite = sprite;
-
-            this.animations = sprite.createAnimations();
-
-            this.isLoaded = true;
-            if(this.ready_func) {
-                this.ready_func();
-            }
-        },
-
-        getSprite: function() {
-            return this.sprite;
+        setGridPosition: function(x, y){
+            this.gridX = x;
+            this.gridY = y;
         },
 
         getAnimationByName: function(name) {
@@ -83,8 +65,8 @@ define(['../../shared/js/model'],function (Model) {
 
         getChunk: function(){
             return [
-                [this.x, this.y  ],[this.x+1, this.y  ],
-                [this.x, this.y+1],[this.x+1, this.y+1]
+                [this.gridX, this.gridY  ],[this.gridX+1, this.gridY  ],
+                [this.gridX, this.gridY+1],[this.gridX+1, this.gridY+1]
             ];
         }
     });

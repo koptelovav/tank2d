@@ -177,7 +177,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
         removeFromEntityGrid: function (entity) {
             var self = this;
-            if (this.entities[entity.id] && _.isNumber(entity.x) && _.isNumber(entity.y)) {
+            if (this.entities[entity.id] && _.isNumber(entity.gridX) && _.isNumber(entity.gridY)) {
                 _.each(entity.getChunk(), function (pos) {
                     delete self.entityGrid[pos[0]][pos[1]][entity.id];
                 });

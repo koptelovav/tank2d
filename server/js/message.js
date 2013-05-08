@@ -120,8 +120,8 @@ define(['../../shared/js/model', 'utils'], function (Model, Utils) {
         serialize: function () {
             return [Types.Messages.SPAWN,
                 this.player.id,
-                this.player.x,
-                this.player.y,
+                this.player.gridX,
+                this.player.gridY,
                 this.player.orientation
             ];
         }

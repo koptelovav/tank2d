@@ -69,8 +69,8 @@ define(['../../shared/js/model'],
             drawImage: function(layer, entity){
                 var sprite = entity.sprite;
                 layer.ctx.drawImage(sprite.image,
-                    entity.x * 16,
-                    entity.y * 16,
+                    entity.x,
+                    entity.y,
                     sprite.width,
                     sprite.height);
             },
@@ -82,8 +82,8 @@ define(['../../shared/js/model'],
             getEntityBoundingRect: function(entity){
                 var rect = {};
 
-                rect.x = entity.x * 16;
-                rect.y = entity.y * 16;
+                rect.x = entity.x;
+                rect.y = entity.y;
                 rect.h = entity.sprite.height;
                 rect.w = entity.sprite.width;
 
@@ -100,6 +100,7 @@ define(['../../shared/js/model'],
 
                 layer.forEachDirtyEntities(function(entity){
                     if (entity.isLoaded && entity.sprite.isLoaded) {
+                        console.log(entity);
                             self.drawEntity(entity, layer);
                             entity.isDirty = false;
                             entity.oldDirtyRect = entity.dirtyRect;

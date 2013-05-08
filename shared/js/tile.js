@@ -16,7 +16,7 @@ define(['../../shared/js/entity'], function (Entity) {
         },
 
         getChunk:function(){
-            return [[this.x, this.y]];
+            return [[this.gridX, this.gridY]];
         }
     });
 

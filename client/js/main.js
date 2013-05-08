@@ -68,7 +68,7 @@ define(['jquery', 'app'], function ($, App) {
             game.on('playerLeft',function(id){
                 app.playerGrid.find('#'+id).remove();
             });
-/////////////////////////////////////
+
             game.on('playerReady',function(playerId){
                 app.setReady(playerId);
             });
