@@ -56,7 +56,7 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
             this._setSprite(entity);
             this._setDirty(entity);
 
-            entity.on('move', function(entity){
+            entity.on('move animate', function(entity){
                 this._setDirty(entity);
             }, this);
 

@@ -228,6 +228,10 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
                         self.addEntity(player);
 
                         self.scene.addToLayer(player,'entities');
+
+                        player.on('move',function(){
+                            self.addToEntityGrid(player);
+                        });
                     }
                 });
 
@@ -282,6 +286,9 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
                 }
             },
 
+            stopMove: function(){
+                this.player.isMoveable = false;
+            },
             playerMoveUp: function (id) {
                 this.playerMove(id, Types.Orientations.UP);
             },
@@ -296,16 +303,23 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
             },
 
             playerMove: function (id, orientation) {
-                var player = id ? this.entities[id] : this.player;
-                if (this.isValidPlayerMove(player, orientation)) {
-                    this.unregisterEntityPosition(player);
-                    player.setOrientation(orientation);
-                    player.move();
-                    this.addToEntityGrid(player);
-                }
-                if (!id) {
-                    this.client.sendMove(orientation)
-                }
+                var self = this;
+                    player = id ? this.entities[id] : this.player;
+                player.isMoveable = true;
+                var moveInterval = setInterval(function(){
+                    if(player.isMoveable){
+                        if (!player.isMove && self.isValidPlayerMove(player, orientation)) {
+                            self.unregisterEntityPosition(player);
+                            player.setOrientation(orientation);
+                            player.move();
+                        }
+                        if (!id) {
+                            self.client.sendMove(orientation)
+                        }
+                    }else{
+                        clearInterval(moveInterval);
+                    }
+                },1000/60);
             },
 
             isValidPlayerMove: function (player, orientation) {

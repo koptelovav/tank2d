@@ -107,6 +107,16 @@ define(['jquery', 'app'], function ($, App) {
                     app.$chatInput.val('');
                 }
             });
+
+            $("body").keyup(function(e) {
+                var code = (e.keyCode ? e.keyCode : e.which);
+                if(code == 38 || code == 87 ||
+                    code == 39 || code == 68 ||
+                    code == 40 || code == 83 ||
+                    code == 37 || code == 65) { //up
+                    app.game.stopMove();
+                }
+            });
         });
     };
 

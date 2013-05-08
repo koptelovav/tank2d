@@ -100,7 +100,6 @@ define(['../../shared/js/model'],
 
                 layer.forEachDirtyEntities(function(entity){
                     if (entity.isLoaded && entity.sprite.isLoaded) {
-                        console.log(entity);
                             self.drawEntity(entity, layer);
                             entity.isDirty = false;
                             entity.oldDirtyRect = entity.dirtyRect;
