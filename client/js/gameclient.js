@@ -1,5 +1,5 @@
-define(['player'], function(Player) {
-    var GameClient = Class.extend({
+define(['../../shared/js/model'], function(Model) {
+    var GameClient = Model.extend({
         init: function(host, port) {
             this.connection = null;
             this.host = host;
@@ -162,7 +162,6 @@ define(['player'], function(Player) {
 
         receiveLeftGame: function(data){
             var playerId = data[1];
-            console.log('left player');
 
             if(this.leftgame_callback)
                 this.leftgame_callback(playerId)

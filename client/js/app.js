@@ -1,7 +1,7 @@
 
-define(['jquery'], function($) {
+define(['jquery','../../shared/js/model'], function($,Model) {
 
-    var App = Class.extend({
+    var App = Model.extend({
         init: function() {
             this.ready = false;
             this.$readyButton = $('#ready-button');
