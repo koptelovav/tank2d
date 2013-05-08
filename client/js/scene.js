@@ -1,4 +1,4 @@
-define(['../../shared/js/model','renderer'], function(Model, Renderer){
+define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, Sprite){
     var Layer = Model.extend({
         init: function(id, canvas){
             this.id = id;
@@ -33,6 +33,11 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
             this.height = height;
             this.layers = {};
             this.renderer = new Renderer(this);
+
+            //resurses
+            this.sprites = {};
+            this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank"];
+            this._loadSprites();
         },
 
         refreshFrame: function(){
@@ -48,26 +53,19 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
         },
 
         addToLayer: function(entity,layerName){
-            this.setDirty(entity);
+            this._setSprite(entity);
+            this._setDirty(entity);
 
             entity.on('move', function(entity){
-                this.setDirty(entity);
+                this._setDirty(entity);
             }, this);
 
             this.layers[layerName]['entities'][entity.id] = entity;
         },
 
-        setDirty: function(entity){
+        _setDirty: function(entity){
             entity.isDirty = true;
             entity.dirtyRect = this.renderer.getEntityBoundingRect(entity);
-        },
-
-        removeEntity: function(entity){
-
-        },
-
-        _setEntityCallbacks: function(){
-
         },
 
         _addLayer: function(layer){
@@ -76,6 +74,31 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
 
         _layerExist: function(id){
             return id in this.layers;
+        },
+
+        _loadSprite: function (name) {
+            this.sprites[name] = new Sprite(name, 3);
+        },
+
+        _loadSprites: function () {
+            _.map(this.spriteNames, this._loadSprite, this);
+        },
+
+        _setSprite: function(entity) {
+            var sprite = this.sprites[entity.kind];
+
+            if(!sprite) {
+                console.error(this.id + " : sprite is null", true);
+                throw "Error";
+            }
+
+            if(this.sprite && this.sprite.name === sprite.name) {
+                return;
+            }
+
+            entity.sprite = sprite;
+            entity.animations = sprite.createAnimations();
+            entity.isLoaded = true;
         }
     });
 

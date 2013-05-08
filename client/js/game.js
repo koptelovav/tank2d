@@ -1,5 +1,5 @@
-define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', 'sprite', '../../shared/js/gametypes'],
-    function (Model,Renderer,Scene, Map, TileFactory, GameClient, Player, Sprite) {
+define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', '../../shared/js/gametypes'],
+    function (Model,Scene, Map, TileFactory, GameClient, Player) {
 
         var Game = Model.extend({
             init: function (app) {
@@ -21,11 +21,7 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
 
                 this.client = null;
 
-                // Game state
                 this.entities = {};
-                this.sprites = {};
-
-                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank"]
             },
 
             setup: function (entities, background, foreground) {
@@ -67,7 +63,6 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
                         if ((kind = Types.getKindAsString(self.map.tiles[i][j])) !== undefined) {
                             id = 5000 + mId + String(i) + String(j);
                             element = TileFactory.create(id, kind, i, j);
-                            element.setSprite(this.sprites[kind]);
                             self.addToEntityGrid(element);
                             self.addEntity(element);
 
@@ -93,7 +88,6 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
                         this.entityGrid[i][j] = {};
                     }
                 }
-                console.info("Initialized grids.");
             },
 
             unregisterEntityPosition: function(entity) {
@@ -121,7 +115,6 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
             run: function (started_callback) {
                 var self = this;
 
-                this.loadSprites();
                 this.ready = true;
                 this.connect(started_callback);
 
@@ -231,7 +224,6 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
                         }
                         player.setPosition(x, y);
                         player.setOrientation(orientation);
-                        player.setSprite(self.sprites[Types.getKindAsString(player.kind)]);
                         self.addToEntityGrid(player);
                         self.addEntity(player);
 
@@ -250,26 +242,6 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
 
             addEntity: function (entity) {
                 this.entities[entity.id] = entity;
-            },
-
-            checkOtherDirtyRects: function(source){
-                /**
-                 * @TODO Обязательно переделать!!!!!!!!!!!
-                 */
-                var self = this;
-                for (var i = source.x-2; i < source.x+3; i++) {
-                    for (var j = source.y-2; j < source.y+3; j++) {
-                        if(!this.map.isOutOfBounds(i,j)){
-                            _.each(this.renderingGrid[i][j], function (entity) {
-                                if(entity.id !== source.id && entity.layer === source.layer){
-                                    console.log('check');
-                                    entity.dirtyRect = self.scene.renderer.getEntityBoundingRect(entity);
-                                    entity.isDirty = true;
-                                }
-                            });
-                        }
-                    }
-                }
             },
 
             incrementPopulation: function () {
@@ -336,7 +308,6 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
                 }
             },
 
-
             isValidPlayerMove: function (player, orientation) {
                 if (this.map && player) {
                     var chunk = player.getChunk();
@@ -354,18 +325,7 @@ define(['../../shared/js/model','renderer','scene', '../../shared/js/map', '../.
                         return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1);
                     }
                 }
-            },
-
-            loadSprite: function (name) {
-                this.sprites[name] = new Sprite(name, 3);
-            },
-
-            loadSprites: function () {
-                _.map(this.spriteNames, this.loadSprite, this);
-                console.log('sprites load');
             }
-
-
         });
 
         return Game;

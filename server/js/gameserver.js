@@ -35,7 +35,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             this.on('playerConnect', function (connection) {
                 var player = new Player({
                     id: connection.id,
-                    kind: Types.Entities.TANK,
+                    kind: 'tank',
                     team: self.getPlayerTeam(),
                     isReady: false
                 });
