@@ -12,14 +12,18 @@ define(['../../shared/js/tank'], function (Tank) {
             this.isMoveable = false;
 
             this._super(config.id, "player", config.kind, {
-                "speed": 250,
+                "speed": 2,
                 "armor": 1,
                 "bullet": 1
             });
         },
 
         setOrientation: function (newOrientation) {
-            this.orientation = newOrientation;
+            if(this.orientation !== newOrientation){
+                this.orientation = newOrientation;
+                this.emit('changeOrientation');
+                this.setPosition(this.gridX, this.gridY);
+            }
         },
 
         move: function() {
@@ -27,14 +31,25 @@ define(['../../shared/js/tank'], function (Tank) {
 
             this.isMove = true;
 
-            if (this.orientation === Types.Orientations.LEFT) this.gridX--;
-            else if (this.orientation === Types.Orientations.UP) this.gridY--;
-            else if (this.orientation === Types.Orientations.RIGHT) this.gridX++;
-            else if (this.orientation === Types.Orientations.DOWN) this.gridY++;
+            if (this.orientation === Types.Orientations.LEFT) this.x-= this.speed;
+            else if (this.orientation === Types.Orientations.UP) this.y-= this.speed;
+            else if (this.orientation === Types.Orientations.RIGHT) this.x+= this.speed;
+            else if (this.orientation === Types.Orientations.DOWN) this.y+= this.speed;
+            this.emit('shift', this);
 
-            this.setPosition(this.gridX, this.gridY);
+            if((this.x % 16 === 0 && this.x / 16 !== this.gridX) ||
+                this.y % 16 === 0 && this.y / 16 !== this.gridY){
+
+                if (this.orientation === Types.Orientations.LEFT) this.gridX--;
+                else if (this.orientation === Types.Orientations.UP) this.gridY--;
+                else if (this.orientation === Types.Orientations.RIGHT) this.gridX++;
+                else if (this.orientation === Types.Orientations.DOWN) this.gridY++;
+                this.emit('move', this);
+            }
             this.isMove = false;
-            this.emit('move', this);
+        },
+
+        shift: function(){
 
         },
 

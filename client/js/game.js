@@ -4,6 +4,7 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
         var Game = Model.extend({
             init: function (app) {
                 this.app = app;
+                this.spriteManager = new SpriteManager();
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -27,7 +28,6 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
             },
 
             setup: function (entities, background, foreground) {
-                this.spriteManager = new SpriteManager();
                 this.scene = new Scene(768,768);
                 this.scene.newLayer('entities', entities);
                 this.scene.newLayer('background', background);
@@ -39,6 +39,8 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
 
                 this.ready = true;
                 this.connect(started_callback);
+
+                this.spriteManager.addResource(this.spriteNames).load();
 
                 var waitGameLoadData = setInterval(function () {
                     if (self.loadData) {
@@ -57,7 +59,6 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
             },
 
             start: function () {
-                this.spriteManager.addResource(this.spriteNames).load();
                 this.initGrids();
                 this.initMap();
                 this.tick();
@@ -117,6 +118,7 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
             addToScene: function(entity){
                 var element = this.scene.createElement(entity);
                 element.setSprite(this.spriteManager.getSprite(entity.kind));
+                element.setAnimation('idle', 300);
                 this.scene.addToLayer(element,Types.getLayerAsKind(entity.kind));
             },
 
@@ -312,9 +314,9 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
             playerMove: function (id, orientation) {
                 var self = this;
                 var player = id ? this.entities[id] : this.player;
+                player.setOrientation(orientation);
                 if (!player.isMove && self.isValidPlayerMove(player, orientation)) {
                     self.unregisterEntityPosition(player);
-                    player.setOrientation(orientation);
                     player.move();
                 }
                 if (!id) {

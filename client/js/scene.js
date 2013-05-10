@@ -32,12 +32,21 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
             this.entity = entity;
             this.dirtyRect = [];
             this.sprite = null;
-            this.animation = null;
+            this.animations = null;
+            this.currentAnimation = null;
 
-            this.isDirty = true;
+            this.isLoaded = false;
+            this.isDirty = false;
 
-            entity.on('move animate', function(){
+            entity.on('move shift changeOrientation', function(){
                 this._setDirty();
+            }, this);
+
+            entity.on('changeOrientation',function(){
+                if (entity.orientation === Types.Orientations.LEFT)  this.setAnimation('move_left');
+                else if (entity.orientation === Types.Orientations.UP)  this.setAnimation('move_up');
+                else if (entity.orientation === Types.Orientations.RIGHT)  this.setAnimation('move_right');
+                else if (entity.orientation === Types.Orientations.DOWN)  this.setAnimation('move_down');
             }, this);
         },
 
@@ -46,13 +55,46 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
                 return this;
             }
             this.sprite = sprite;
+            this.animations = sprite.createAnimations();
             this._setDirty();
-
             return this;
         },
 
-        setAnimation: function(){
+        getAnimationByName: function(name) {
+            var animation = null;
 
+            if(name in this.animations) {
+                animation = this.animations[name];
+            }
+            else {
+                log.error("No animation called "+ name);
+            }
+            return animation;
+        },
+
+        setAnimation: function(name, speed, count, onEndCount) {
+            if(this.sprite.isLoaded) {
+                if(this.currentAnimation && this.currentAnimation.name === name) {
+                    return;
+                }
+
+                var a = this.getAnimationByName(name);
+                if(a) {
+                    this.currentAnimation = a;
+                    if(name.substr(0, 3) === "atk") {
+                        this.currentAnimation.reset();
+                    }
+                    this.currentAnimation.setSpeed(speed);
+                    this.currentAnimation.setCount(count ? count : 0, onEndCount || function() {
+//                        self.idle();
+                    });
+                }
+
+                this.isLoaded = true;
+            }
+            else {
+                console.log("Not ready for animation");
+            }
         },
 
         getId: function(){

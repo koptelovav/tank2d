@@ -63,16 +63,28 @@ define(['../../shared/js/model'],
             },
 
             drawEntity: function (entity,layer) {
-                this.drawImage(layer,entity);
+                this.drawImage(entity,layer);
             },
 
-            drawImage: function(layer, entity){
-                var sprite = entity.sprite;
-                layer.ctx.drawImage(sprite.image,
-                    entity.getX(),
-                    entity.getY(),
-                    sprite.width,
-                    sprite.height);
+            drawImage: function(entity,layer){
+                var sprite = entity.sprite,
+                    anim = entity.currentAnimation;
+
+                if(anim && sprite) {
+                    var	frame = anim.currentFrame,
+                        x = frame.x,
+                        y = frame.y,
+                        w = sprite.width,
+                        h = sprite.height,
+                        ox = entity.getX(),
+                        oy = entity.getY(),
+                        dw = w,
+                        dh = h;
+
+
+
+                    layer.ctx.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
+                }
             },
 
             clearDirtyRect: function(layer,r) {
