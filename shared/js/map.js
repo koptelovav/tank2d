@@ -24,12 +24,12 @@ define(['../../shared/js/model'],
                 return x < 0 || x >= this.width || y < 0 || y >= this.height;
             },
 
-            isTankColliding: function (x, y) {
+            isTankColliding: function (x, y, eId) {
                 if (this.isOutOfBounds(x, y)) {
                     return true;
                 }
                 for (var id in this.game.entityGrid[x][y]) {
-                    if (this.game.entityGrid[x][y][id]['tankColliding']) return true;
+                    if (this.game.entityGrid[x][y][id]['tankColliding'] && id !== eId) return true;
                 }
                 return false;
             },

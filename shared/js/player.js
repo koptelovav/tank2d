@@ -23,37 +23,18 @@ define(['../../shared/js/tank'], function (Tank) {
         },
 
         move: function() {
-            var self = this;
             this.emit('beforeMove', this);
 
             this.isMove = true;
 
-            var increment = 0;
-            var moveInterval = setInterval(function(){
-                if(increment < 16){
-                    increment++;
-                    if (self.orientation === Types.Orientations.LEFT) self.x--;
-                    else if (self.orientation === Types.Orientations.UP) self.y--;
-                    else if (self.orientation === Types.Orientations.RIGHT) self.x++;
-                    else if (self.orientation === Types.Orientations.DOWN) self.y++;
-                    self.emit('animate', self);
-                }
-                else if(increment === 16){
-                    clearInterval(moveInterval);
-                    if (self.orientation === Types.Orientations.LEFT) self.gridX--;
-                    else if (self.orientation === Types.Orientations.UP) self.gridY--;
-                    else if (self.orientation === Types.Orientations.RIGHT) self.gridX++;
-                    else if (self.orientation === Types.Orientations.DOWN) self.gridY++;
+            if (this.orientation === Types.Orientations.LEFT) this.gridX--;
+            else if (this.orientation === Types.Orientations.UP) this.gridY--;
+            else if (this.orientation === Types.Orientations.RIGHT) this.gridX++;
+            else if (this.orientation === Types.Orientations.DOWN) this.gridY++;
 
-                    self.setPosition(self.gridX, self.gridY);
-                    self.isMove = false;
-                    self.emit('move', self);
-
-                }
-            },1000/this.speed);
-
-
-
+            this.setPosition(this.gridX, this.gridY);
+            this.isMove = false;
+            this.emit('move', this);
 
         },
 

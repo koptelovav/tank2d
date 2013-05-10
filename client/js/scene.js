@@ -27,17 +27,69 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
         }
     });
 
+    var SceneElement = Model.extend({
+        init: function(entity){
+            this.entity = entity;
+            this.dirtyRect = [];
+            this.sprite = null;
+            this.animation = null;
+
+            this.isDirty = true;
+
+            entity.on('move animate', function(){
+                this._setDirty();
+            }, this);
+        },
+
+        setSprite: function(sprite){
+            if(this.sprite && this.sprite.name === sprite.name) {
+                return this;
+            }
+            this.sprite = sprite;
+            this._setDirty();
+
+            return this;
+        },
+
+        setAnimation: function(){
+
+        },
+
+        getId: function(){
+            return this.entity.id;
+        },
+
+        getX: function(){
+            return this.entity.x;
+        },
+
+        getY: function(){
+            return this.entity.y
+        },
+
+        _setDirty: function(){
+            this.isDirty = true;
+            this.dirtyRect = this._getBoundingRect();
+        },
+
+        _getBoundingRect: function(){
+            var rect = {};
+
+            rect.x = this.entity.x;
+            rect.y = this.entity.y;
+            rect.h = this.sprite.height;
+            rect.w = this.sprite.width;
+
+            return rect;
+        }
+    });
+
     var Scene = Model.extend({
         init: function(width, height){
             this.width = width;
             this.height = height;
             this.layers = {};
             this.renderer = new Renderer(this);
-
-            //resurses
-            this.sprites = {};
-            this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank"];
-            this._loadSprites();
         },
 
         refreshFrame: function(){
@@ -52,20 +104,12 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
             }
         },
 
-        addToLayer: function(entity,layerName){
-            this._setSprite(entity);
-            this._setDirty(entity);
-
-            entity.on('move animate', function(entity){
-                this._setDirty(entity);
-            }, this);
-
-            this.layers[layerName]['entities'][entity.id] = entity;
+        createElement: function(entity){
+            return new SceneElement(entity);
         },
 
-        _setDirty: function(entity){
-            entity.isDirty = true;
-            entity.dirtyRect = this.renderer.getEntityBoundingRect(entity);
+        addToLayer: function(sceneElement,layerName){
+            this.layers[layerName]['entities'][sceneElement.getId()] = sceneElement;
         },
 
         _addLayer: function(layer){
@@ -74,31 +118,6 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
 
         _layerExist: function(id){
             return id in this.layers;
-        },
-
-        _loadSprite: function (name) {
-            this.sprites[name] = new Sprite(name, 3);
-        },
-
-        _loadSprites: function () {
-            _.map(this.spriteNames, this._loadSprite, this);
-        },
-
-        _setSprite: function(entity) {
-            var sprite = this.sprites[entity.kind];
-
-            if(!sprite) {
-                console.error(this.id + " : sprite is null", true);
-                throw "Error";
-            }
-
-            if(this.sprite && this.sprite.name === sprite.name) {
-                return;
-            }
-
-            entity.sprite = sprite;
-            entity.animations = sprite.createAnimations();
-            entity.isLoaded = true;
         }
     });
 

@@ -83,38 +83,34 @@ define(['jquery', 'app'], function ($, App) {
 
             $("body").keydown(function(e) {
                 var code = (e.keyCode ? e.keyCode : e.which);
-                if(code == 38 || code == 87) { //up
-                    app.game.playerMoveUp();
-                }
-                else if(code == 39 || code == 68) { //right
-                    app.game.playerMoveRight();
-                }
-                else if(code == 40 || code == 83) { //down
-                    app.game.playerMoveDown();
-                }
-                else if(code == 37 || code == 65) { //left
-                    app.game.playerMoveLeft();
-                }
-                else if(code == 17) { //fire
-                    //   send('fire');
-                }
-            });
-
-            $("body").keydown(function(e) {
-                var code = (e.keyCode ? e.keyCode : e.which);
                 if(code == 13 && app.$chatInput.val()) {
                     app.sendChatMessage(app.$chatInput.val());
                     app.$chatInput.val('');
                 }
             });
 
-            $("body").keyup(function(e) {
-                var code = (e.keyCode ? e.keyCode : e.which);
-                if(code == 38 || code == 87 ||
-                    code == 39 || code == 68 ||
-                    code == 40 || code == 83 ||
-                    code == 37 || code == 65) { //up
-                    app.game.stopMove();
+            var keysDown = {};
+
+            addEventListener("keydown", function (e) {
+                keysDown[e.keyCode] = true;
+            }, false);
+
+            addEventListener("keyup", function (e) {
+                delete keysDown[e.keyCode];
+            }, false);
+
+            game.on('tick', function(){
+                if (38 in keysDown || 87 in keysDown) { // Player holding up
+                    app.game.playerMoveUp();
+                }
+                if (40 in keysDown || 83 in keysDown) { // Player holding down
+                    app.game.playerMoveDown();
+                }
+                if (37 in keysDown || 65 in keysDown) { // Player holding left
+                    app.game.playerMoveLeft();
+                }
+                if (39 in keysDown || 68 in keysDown) { // Player holding right
+                    app.game.playerMoveRight();
                 }
             });
         });

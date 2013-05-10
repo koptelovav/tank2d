@@ -69,6 +69,15 @@ Types = {
     }
 };
 
+var kindLayers = {
+    ice: "background",
+    wall: "background",
+    armoredwall: "background",
+    trees: "foreground",
+    water: "background",
+    tank: "entities"
+};
+
 var kinds = {
     tank: [Types.Entities.TANK, "player"],
 
@@ -98,6 +107,9 @@ var kinds = {
     }
 };
 
+Types.getLayerAsKind = function(kind) {
+    return kindLayers[kind];
+};
 
 Types.isPlayer = function(kind) {
     return kinds.getType(kind) === "player";

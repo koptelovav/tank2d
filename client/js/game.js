@@ -1,5 +1,5 @@
-define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', '../../shared/js/gametypes'],
-    function (Model,Scene, Map, TileFactory, GameClient, Player) {
+define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', '../../shared/js/gametypes'],
+    function (Model,SpriteManager,Scene, Map, TileFactory, GameClient, Player) {
 
         var Game = Model.extend({
             init: function (app) {
@@ -22,13 +22,55 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
                 this.client = null;
 
                 this.entities = {};
+
+                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank"];
             },
 
             setup: function (entities, background, foreground) {
+                this.spriteManager = new SpriteManager();
                 this.scene = new Scene(768,768);
                 this.scene.newLayer('entities', entities);
                 this.scene.newLayer('background', background);
                 this.scene.newLayer('foreground', foreground);
+            },
+
+            run: function (started_callback) {
+                var self = this;
+
+                this.ready = true;
+                this.connect(started_callback);
+
+                var waitGameLoadData = setInterval(function () {
+                    if (self.loadData) {
+
+                        var waitStartGame = setInterval(function () {
+                            if (self.map && self.map.isLoaded && self.started) {
+                                self.start();
+                                self.sendLoad();
+                                clearInterval(waitStartGame);
+                            }
+                        }, 1000);
+
+                        clearInterval(waitGameLoadData);
+                    }
+                }, 100);
+            },
+
+            start: function () {
+                this.spriteManager.addResource(this.spriteNames).load();
+                this.initGrids();
+                this.initMap();
+                this.tick();
+                this.sendLoad();
+                console.info("Game loop started.");
+            },
+
+            tick: function () {
+                if (this.started) {
+                    this.emit('tick');
+                    this.scene.refreshFrame();
+                }
+                requestAnimFrame(this.tick.bind(this));
             },
 
             loadMap: function () {
@@ -52,29 +94,30 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
             },
 
             initMap: function () {
-                var self = this,
-                    kind,
-                    element,
+                var kind,
+                    tile,
                     mId = 1,
                     id;
 
-                for (var j, i = 0; i < self.map.height; i++) {
-                    for (j = 0; j < self.map.width; j++) {
-                        if ((kind = Types.getKindAsString(self.map.tiles[i][j])) !== undefined) {
+                for (var j, i = 0; i < this.map.height; i++) {
+                    for (j = 0; j < this.map.width; j++) {
+                        if ((kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
                             id = 5000 + mId + String(i) + String(j);
-                            element = TileFactory.create(id, kind, i, j);
-                            self.addToEntityGrid(element);
-                            self.addEntity(element);
+                            tile = TileFactory.create(id, kind, i, j);
+                            this.addToEntityGrid(tile);
+                            this.addEntity(tile);
+                            this.addToScene(tile);
 
-                            if(kind === 'trees'){
-                                this.scene.addToLayer(element,'foreground');
-                            }else{
-                                this.scene.addToLayer(element,'background');
-                            }
                             mId++;
                         }
                     }
                 }
+            },
+
+            addToScene: function(entity){
+                var element = this.scene.createElement(entity);
+                element.setSprite(this.spriteManager.getSprite(entity.kind));
+                this.scene.addToLayer(element,Types.getLayerAsKind(entity.kind));
             },
 
             initGrids: function () {
@@ -112,42 +155,6 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
                 }
             },
 
-            run: function (started_callback) {
-                var self = this;
-
-                this.ready = true;
-                this.connect(started_callback);
-
-                var waitGameLoadData = setInterval(function () {
-                    if (self.loadData) {
-
-                        var waitStartGame = setInterval(function () {
-                            if (self.map && self.map.isLoaded && self.started) {
-                                self.start();
-                                self.sendLoad();
-                                clearInterval(waitStartGame);
-                            }
-                        }, 1000);
-
-                        clearInterval(waitGameLoadData);
-                    }
-                }, 100);
-            },
-
-            start: function () {
-                this.initGrids();
-                this.initMap();
-                this.tick();
-                this.sendLoad();
-                console.info("Game loop started.");
-            },
-
-            tick: function () {
-                if (this.started) {
-                    this.scene.refreshFrame();
-                }
-                requestAnimFrame(this.tick.bind(this));
-            },
 
             connect: function (connect_func) {
                 var self = this;
@@ -227,7 +234,7 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
                         self.addToEntityGrid(player);
                         self.addEntity(player);
 
-                        self.scene.addToLayer(player,'entities');
+                        self.addToScene(player);
 
                         player.on('move',function(){
                             self.addToEntityGrid(player);
@@ -304,22 +311,15 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
 
             playerMove: function (id, orientation) {
                 var self = this;
-                    player = id ? this.entities[id] : this.player;
-                player.isMoveable = true;
-                var moveInterval = setInterval(function(){
-                    if(player.isMoveable){
-                        if (!player.isMove && self.isValidPlayerMove(player, orientation)) {
-                            self.unregisterEntityPosition(player);
-                            player.setOrientation(orientation);
-                            player.move();
-                        }
-                        if (!id) {
-                            self.client.sendMove(orientation)
-                        }
-                    }else{
-                        clearInterval(moveInterval);
-                    }
-                },1000/60);
+                var player = id ? this.entities[id] : this.player;
+                if (!player.isMove && self.isValidPlayerMove(player, orientation)) {
+                    self.unregisterEntityPosition(player);
+                    player.setOrientation(orientation);
+                    player.move();
+                }
+                if (!id) {
+                    self.client.sendMove(orientation)
+                }
             },
 
             isValidPlayerMove: function (player, orientation) {
@@ -327,16 +327,16 @@ define(['../../shared/js/model','scene', '../../shared/js/map', '../../shared/js
                     var chunk = player.getChunk();
 
                     if (orientation === Types.Orientations.LEFT) {
-                        return !this.map.isTankColliding.call(this.map, chunk[0][0] - 1, chunk[0][1]) && !this.map.isTankColliding.call(this.map, chunk[2][0] - 1, chunk[2][1]);
+                        return !this.map.isTankColliding.call(this.map, chunk[0][0] - 1, chunk[0][1], player.id) && !this.map.isTankColliding.call(this.map, chunk[2][0] - 1, chunk[2][1], player.id);
                     }
                     else if (orientation === Types.Orientations.UP) {
-                        return !this.map.isTankColliding.call(this.map, chunk[0][0], chunk[0][1] - 1) && !this.map.isTankColliding.call(this.map, chunk[1][0], chunk[1][1] - 1);
+                        return !this.map.isTankColliding.call(this.map, chunk[0][0], chunk[0][1] - 1, player.id) && !this.map.isTankColliding.call(this.map, chunk[1][0], chunk[1][1] - 1, player.id);
                     }
                     else if (orientation === Types.Orientations.RIGHT) {
-                        return !this.map.isTankColliding.call(this.map, chunk[1][0] + 1, chunk[1][1]) && !this.map.isTankColliding.call(this.map, chunk[3][0] + 1, chunk[3][1]);
+                        return !this.map.isTankColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id) && !this.map.isTankColliding.call(this.map, chunk[3][0] + 1, chunk[3][1], player.id);
                     }
                     else if (orientation === Types.Orientations.DOWN) {
-                        return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1);
+                        return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1, player.id) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1, player.id);
                     }
                 }
             }
