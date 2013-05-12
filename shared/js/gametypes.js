@@ -72,13 +72,34 @@ Types = {
 };
 
 var kindLayers = {
-    ice: "background",
-    wall: "background",
-    armoredwall: "background",
-    trees: "foreground",
-    water: "background",
-    tank: "entities",
-    bullet: "entities"
+    ice: {
+        layer: "background",
+        animated: false
+    },
+    wall: {
+        layer:"background",
+        animated: false
+    },
+    armoredwall: {
+        layer: "background",
+        animated: false
+    },
+    trees: {
+        layer: "foreground",
+        animated: false
+    },
+    water: {
+        layer: "background",
+        animated: true
+    },
+    tank: {
+        layer: "entities",
+        animated: true
+    },
+    bullet: {
+        layer: "entities",
+        animated: false
+    }
 };
 
 var kinds = {
@@ -111,7 +132,10 @@ var kinds = {
 };
 
 Types.getLayerAsKind = function(kind) {
-    return kindLayers[kind];
+    return kindLayers[kind]['layer'];
+};
+Types.getIsAnimateAsKind = function(kind) {
+    return kindLayers[kind]['animated'];
 };
 
 Types.isPlayer = function(kind) {

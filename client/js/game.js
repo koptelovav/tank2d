@@ -120,9 +120,8 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                 var element = this.scene.createElement(entity);
                 element.setSprite(this.spriteManager.getSprite(entity.kind));
                 element.setAnimation('idle', 800);
-                if(entity.kind == 'water' || entity.kind == 'tank'){
-                    element.animated = true;
-                }
+                element.isAnimated = Types.getIsAnimateAsKind(entity.kind);
+
                 this.scene.addToLayer(element,Types.getLayerAsKind(entity.kind));
             },
 

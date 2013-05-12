@@ -14,7 +14,7 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
 
         forEachAnimatedEntities: function(callback){
             _.each(this.entities, function(entity){
-                if(entity.animated) {
+                if(entity.isAnimated) {
                     callback(entity);
                 }
             });
@@ -39,18 +39,18 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
 
             this.isLoaded = false;
             this.isDirty = false;
-            this.animated = false;
+            this.isAnimated = false;
 
             entity.on('shift changeOrientation', function(){
                 this._setDirty();
             }, this);
 
             entity.on('beginMove', function(){
-                this.animated = true;
+                this.isAnimated = true;
             }, this);
 
             entity.on('endMove', function(){
-                this.animated = false;
+                this.isAnimated = false;
             }, this);
 
             entity.on('changeOrientation',function(){
