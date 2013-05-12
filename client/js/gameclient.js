@@ -18,6 +18,8 @@ define(['../../shared/js/model'], function(Model) {
             this.handlers[Types.Messages.SPAWN] = this.receiveSpawn;
             this.handlers[Types.Messages.MOVE] = this.receiveMove;
             this.handlers[Types.Messages.CHAT] = this.receiveChatMessage;
+            this.handlers[Types.Messages.ENDMOVE] = this.receiveEndMove;
+            this.handlers[Types.Messages.SYNCPOS] = this.receiveSyncPos;
 
             this.enable();
         },
@@ -125,6 +127,21 @@ define(['../../shared/js/model'], function(Model) {
             if(this.move_callback){
                 this.move_callback(id,orientation);
             }
+        },
+
+        receiveEndMove: function(data){
+            var id = data[1];
+
+            this.emit('endMove', id);
+        },
+
+        receiveSyncPos: function(data){
+            var id = data[1],
+                x = data[2],
+                y = data[3],
+                gridX = data[4],
+                gridY = data[5];
+            this.emit('syncPos', id, x, y, gridX, gridY);
         },
 
 
@@ -267,6 +284,10 @@ define(['../../shared/js/model'], function(Model) {
 
         sendMove: function(orientation){
             this.sendMessage([Types.Messages.MOVE,orientation])
+        },
+
+        sendEndMove: function(){
+            this.sendMessage([Types.Messages.ENDMOVE])
         },
 
         sendChatMessage: function(message){

@@ -27,6 +27,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             this.spawns = {};
             this.players = {};
             this.entities = {};
+            this.movableEntities = {};
             this.teams = {};
             this.entityGrid = [];
 
@@ -87,12 +88,25 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                     }
                 });
 
-                player.on('move', function () {
-                    self.broadcastFromPlayer(player.id, new Message.Move(player));
+                player.on('playerBeginMove', function (orientation) {
+                    player.setOrientation(orientation);
+
+                    if(!player.isMovable){
+                        player.toggleMovable();
+                        self.broadcastFromPlayer(player.id, new Message.Move(player));
+                    }
+                });
+
+                player.on('playerEndMove', function () {
+                    if(player.isMovable){
+                        player.toggleMovable();
+                        self.broadcastFromPlayer(player.id, new Message.EndMove(player));
+                        self.send(new Message.SyncPosition(player));
+                    }
                 });
 
                 player.on('beforeMove', function (player) {
-                    self.removeFromEntityGrid(player);
+                    self.unregisterEntityPosition(player);
                 });
 
                 player.on('chatMessage', function (message) {
@@ -118,9 +132,10 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
             this.map.setData(JSON.parse(data));
 
+            var self = this;
 
             setInterval(function () {
-                //game loop
+                self.moveEntities();
             }, 1000 / this.ups);
         },
 
@@ -162,9 +177,26 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             }
         },
 
+        moveEntities: function(){
+            _.each(this.movableEntities, function(entity){
+                if(entity.isMovable){
+                    if (this.isValidPlayerMove(entity, entity.orientation)) {
+                        this.unregisterEntityPosition(entity);
+                        entity.move();
+                    }
+                }
+            }, this);
+        },
+
         addEntity: function (entity) {
             this.entities[entity.id] = entity;
         },
+
+        addMovableEntity: function (entity) {
+            this.addEntity(entity);
+            this.movableEntities[entity.id] = entity;
+        },
+
 
         addToEntityGrid: function (entity) {
             var self = this;
@@ -175,12 +207,18 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             }
         },
 
-        removeFromEntityGrid: function (entity) {
-            var self = this;
-            if (this.entities[entity.id] && _.isNumber(entity.gridX) && _.isNumber(entity.gridY)) {
-                _.each(entity.getChunk(), function (pos) {
-                    delete self.entityGrid[pos[0]][pos[1]][entity.id];
-                });
+
+        removeFromEntityGrid: function (entity, x, y) {
+            if (this.entityGrid[x][y][entity.id]) {
+                delete this.entityGrid[x][y][entity.id];
+            }
+        },
+
+        unregisterEntityPosition: function(entity) {
+            if(entity) {
+                _.each(entity.getChunk(), function(pos){
+                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
+                }, this);
             }
         },
 
@@ -270,7 +308,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
         addPlayer: function (player) {
             this.teams[player.team].push(player.id);
             this.players[player.id] = player;
-            this.entities[player.id] = player;
+            this.addMovableEntity(player);
         },
 
         getPlayerTeam: function(){
@@ -295,8 +333,10 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
         },
 
         removePlayer: function (player) {
-            this.removeFromEntityGrid(player);
+            this.unregisterEntityPosition(player);
             delete this.players[player.id];
+            delete this.entities[player.id];
+            delete this.movableEntities[player.id];
             this.teams[player.team].splice(this.teams[player.team].indexOf(player.id), 1);
         },
 
@@ -336,7 +376,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
         broadcastFromPlayer: function (playerId, message) {
             var connection = this.server.getConnection(playerId);
             connection.broadcast(message.serialize());
-        },
+        }
     });
     return GameServer;
 });

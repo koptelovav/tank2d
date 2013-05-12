@@ -39,6 +39,32 @@ define(['../../shared/js/model', 'utils'], function (Model, Utils) {
         }
     });
 
+    Messages.EndMove = Message.extend({
+        init: function (entity) {
+            this.entity = entity;
+        },
+        serialize: function () {
+            return [Types.Messages.ENDMOVE,
+                this.entity.id,
+            ];
+        }
+    });
+
+    Messages.SyncPosition = Message.extend({
+        init: function (entity) {
+            this.entity = entity;
+        },
+        serialize: function () {
+            return [Types.Messages.SYNCPOS,
+                this.entity.id,
+                this.entity.x,
+                this.entity.y,
+                this.entity.gridX,
+                this.entity.gridY,
+            ];
+        }
+    });
+
     /**
      * Класс сообщения. Подключение игрока к игре.
      * @type JoinGame

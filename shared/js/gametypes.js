@@ -20,7 +20,9 @@ Types = {
         LOADMAP : 10,
         GAMEPLAY: 11,
         SPAWN: 12,
-        CHAT: 13
+        CHAT: 13,
+        ENDMOVE: 14,
+        SYNCPOS: 15
     },
     
     Entities: {
@@ -75,7 +77,8 @@ var kindLayers = {
     armoredwall: "background",
     trees: "foreground",
     water: "background",
-    tank: "entities"
+    tank: "entities",
+    bullet: "entities"
 };
 
 var kinds = {

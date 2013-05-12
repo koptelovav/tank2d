@@ -46,6 +46,7 @@ define(function() {
         },
     
         update: function(time) {
+            console.log('update');
             if(this.lastTime === 0 && this.name.substr(0, 3) === "atk") {
                 this.lastTime = time;
             }
@@ -53,6 +54,7 @@ define(function() {
             if(this.isTimeToAnimate(time)) {
                 this.lastTime = time;
                 this.tick();
+                this.emit('animation');
                 return true;
             } else {
                 return false;

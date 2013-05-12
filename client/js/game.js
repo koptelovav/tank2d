@@ -1,5 +1,5 @@
-define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', '../../shared/js/gametypes'],
-    function (Model,SpriteManager,Scene, Map, TileFactory, GameClient, Player) {
+define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', '../../shared/js/gametypes'],
+    function (Model,Bullet,SpriteManager,Scene, Map, TileFactory, GameClient, Player) {
 
         var Game = Model.extend({
             init: function (app) {
@@ -8,7 +8,6 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
-                this.canStart = false;
                 this.isLoad = false;
 
 
@@ -23,8 +22,9 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
                 this.client = null;
 
                 this.entities = {};
+                this.movableEntities = {};
 
-                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank"];
+                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet"];
             },
 
             setup: function (entities, background, foreground) {
@@ -69,6 +69,7 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
             tick: function () {
                 if (this.started) {
                     this.emit('tick');
+                    this.moveEntities();
                     this.scene.refreshFrame();
                 }
                 requestAnimFrame(this.tick.bind(this));
@@ -118,7 +119,10 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
             addToScene: function(entity){
                 var element = this.scene.createElement(entity);
                 element.setSprite(this.spriteManager.getSprite(entity.kind));
-                element.setAnimation('idle', 300);
+                element.setAnimation('idle', 800);
+                if(entity.kind == 'water' || entity.kind == 'tank'){
+                    element.animated = true;
+                }
                 this.scene.addToLayer(element,Types.getLayerAsKind(entity.kind));
             },
 
@@ -139,7 +143,7 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
                 if(entity) {
                     _.each(entity.getChunk(), function(pos){
                         this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                    },this);
+                    }, this);
                 }
             },
 
@@ -147,7 +151,7 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
                 if(entity) {
                     _.each(entity.getChunk(), function(pos){
                         this.entityGrid[pos[0]][pos[1]][entity.id] = entity;
-                    },this);
+                    }, this);
                 }
             },
 
@@ -157,6 +161,16 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
                 }
             },
 
+            moveEntities: function(){
+                _.each(this.movableEntities, function(entity){
+                    if(entity.isMovable){
+                        if (this.isColliding(entity)) {
+                            this.unregisterEntityPosition(entity);
+                            entity.move();
+                        }
+                    }
+                }, this);
+            },
 
             connect: function (connect_func) {
                 var self = this;
@@ -234,7 +248,7 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
                         player.setPosition(x, y);
                         player.setOrientation(orientation);
                         self.addToEntityGrid(player);
-                        self.addEntity(player);
+                        self.addMovableEntity(player);
 
                         self.addToScene(player);
 
@@ -250,11 +264,25 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
 
                 this.client.onMove(function (id, orientation) {
                     self.playerMove(id, orientation);
+                    console.log('player move '+ id);
+                });
+
+                this.client.on('endMove',function (id) {
+                    self.playerStopMove(id);
+                });
+
+                this.client.on('syncPos',function (id ,x, y, gridX, gridY) {
+                    self.entities[id].syncPososition(x, y, gridX, gridY);
                 });
             },
 
             addEntity: function (entity) {
                 this.entities[entity.id] = entity;
+            },
+
+            addMovableEntity: function (entity) {
+                this.addEntity(entity);
+                this.movableEntities[entity.id] = entity;
             },
 
             incrementPopulation: function () {
@@ -295,8 +323,21 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
                 }
             },
 
-            stopMove: function(){
-                this.player.isMoveable = false;
+            playerFire: function(id){
+                var bullet = new Bullet(new Date(), 'easy', 'bullet', this.player, 10);
+                this.addMovableEntity(bullet);
+                this.addToScene(bullet);
+                bullet.toggleMovable();
+            },
+
+            playerStopMove: function(id){
+                var player = id ? this.entities[id] : this.player;
+
+                if(player.isMovable){
+                    player.toggleMovable();
+                    if(!id)
+                        this.client.sendEndMove();
+                }
             },
             playerMoveUp: function (id) {
                 this.playerMove(id, Types.Orientations.UP);
@@ -312,35 +353,63 @@ define(['../../shared/js/model','spritemanager','scene', '../../shared/js/map', 
             },
 
             playerMove: function (id, orientation) {
-                var self = this;
                 var player = id ? this.entities[id] : this.player;
                 player.setOrientation(orientation);
-                if (!player.isMove && self.isValidPlayerMove(player, orientation)) {
-                    self.unregisterEntityPosition(player);
-                    player.move();
-                }
-                if (!id) {
-                    self.client.sendMove(orientation)
+
+                if(!player.isMovable){
+                    player.toggleMovable();
+                    if(!id)
+                        this.client.sendMove(orientation);
                 }
             },
 
-            isValidPlayerMove: function (player, orientation) {
+            isColliding: function(entity){
+                if(entity instanceof Player){
+                    return this.isValidPlayerMove(entity);
+                }else if(entity instanceof Bullet){
+                    return this.isValidBulletMove(entity);
+                }
+                return false;
+            },
+
+            isValidPlayerMove: function (player) {
                 if (this.map && player) {
                     var chunk = player.getChunk();
 
-                    if (orientation === Types.Orientations.LEFT) {
+                    if (player.orientation === Types.Orientations.LEFT) {
                         return !this.map.isTankColliding.call(this.map, chunk[0][0] - 1, chunk[0][1], player.id) && !this.map.isTankColliding.call(this.map, chunk[2][0] - 1, chunk[2][1], player.id);
                     }
-                    else if (orientation === Types.Orientations.UP) {
+                    else if (player.orientation === Types.Orientations.UP) {
                         return !this.map.isTankColliding.call(this.map, chunk[0][0], chunk[0][1] - 1, player.id) && !this.map.isTankColliding.call(this.map, chunk[1][0], chunk[1][1] - 1, player.id);
                     }
-                    else if (orientation === Types.Orientations.RIGHT) {
+                    else if (player.orientation === Types.Orientations.RIGHT) {
                         return !this.map.isTankColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id) && !this.map.isTankColliding.call(this.map, chunk[3][0] + 1, chunk[3][1], player.id);
                     }
-                    else if (orientation === Types.Orientations.DOWN) {
+                    else if (player.orientation === Types.Orientations.DOWN) {
                         return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1, player.id) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1, player.id);
                     }
                 }
+                return false;
+            },
+
+            isValidBulletMove: function (player) {
+                if (this.map && player) {
+                    var chunk = player.getChunk();
+
+                    if (player.orientation === Types.Orientations.LEFT) {
+                        return !this.map.isBulletColliding.call(this.map, chunk[0][0] - 1, chunk[0][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[2][0] - 1, chunk[2][1], player.id);
+                    }
+                    else if (player.orientation === Types.Orientations.UP) {
+                        return !this.map.isBulletColliding.call(this.map, chunk[0][0], chunk[0][1] - 1, player.id) && !this.map.isBulletColliding.call(this.map, chunk[1][0], chunk[1][1] - 1, player.id);
+                    }
+                    else if (player.orientation === Types.Orientations.RIGHT) {
+                        return !this.map.isBulletColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[3][0] + 1, chunk[3][1], player.id);
+                    }
+                    else if (player.orientation === Types.Orientations.DOWN) {
+                        return !this.map.isBulletColliding.call(this.map, chunk[2][0], chunk[2][1] + 1, player.id) && !this.map.isBulletColliding.call(this.map, chunk[3][0], chunk[3][1] + 1, player.id);
+                    }
+                }
+                return false;
             }
         });
 

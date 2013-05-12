@@ -4,7 +4,8 @@ define(['text!../sprites/armoredwall.json',
         'text!../sprites/trees.json',
         'text!../sprites/wall.json',
         'text!../sprites/water.json',
-        'text!../sprites/tank.json'], function() {
+        'text!../sprites/tank.json',
+        'text!../sprites/bullet.json'], function() {
     
     var sprites = {};
     

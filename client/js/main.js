@@ -82,11 +82,11 @@ define(['jquery', 'app'], function ($, App) {
             });
 
             $("body").keydown(function(e) {
-                var code = (e.keyCode ? e.keyCode : e.which);
+               /* var code = (e.keyCode ? e.keyCode : e.which);
                 if(code == 13 && app.$chatInput.val()) {
                     app.sendChatMessage(app.$chatInput.val());
                     app.$chatInput.val('');
-                }
+                }*/
             });
 
             var keysDown = {};
@@ -97,6 +97,7 @@ define(['jquery', 'app'], function ($, App) {
 
             addEventListener("keyup", function (e) {
                 delete keysDown[e.keyCode];
+                app.game.playerStopMove();
             }, false);
 
             game.on('tick', function(){
@@ -111,6 +112,9 @@ define(['jquery', 'app'], function ($, App) {
                 }
                 if (39 in keysDown || 68 in keysDown) { // Player holding right
                     app.game.playerMoveRight();
+                }
+                if(13 in keysDown){
+                    app.game.playerFire();
                 }
             });
         });

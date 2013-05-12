@@ -42,13 +42,10 @@ define(['../../shared/js/model'], function (Model) {
                 }
                 else if (action === Types.Messages.MOVE) {
                     var orientation = message[1];
-
-                    player.setOrientation(orientation);
-
-                    if (game.isValidPlayerMove(player, orientation)) {
-                        player.move();
-                        game.addToEntityGrid(player);
-                    }
+                    player.emit('playerBeginMove',orientation);
+                }
+                else if (action === Types.Messages.ENDMOVE) {
+                    player.emit('playerEndMove');
                 }
             });
 

@@ -23,7 +23,7 @@ define(['../../shared/js/model'],
                     this.renderLayer(layer);
                 }, this);
 
-                console.log('Frame rendered');
+//                console.log('Frame rendered');
             },
 
             drawFPS: function () {
@@ -93,6 +93,11 @@ define(['../../shared/js/model'],
 
             renderLayer: function(layer){
                 var self = this;
+
+
+                layer.forEachAnimatedEntities(function(entity){
+                    entity.currentAnimation.update(new Date());
+                });
 
                 this.clearLayerDirtyRects(layer);
 

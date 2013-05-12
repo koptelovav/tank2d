@@ -4,13 +4,6 @@ define(['../../shared/js/model'],function (Model) {
             this.id = parseInt(id);
             this.kind = kind;
             this.type = type;
-            this.sprite = null;
-            this.animations = null;
-            this.currentAnimation = null;
-
-            //Modes
-            this.isLoaded = false;
-            this.visible = true;
         },
 
         setPosition: function(x, y){

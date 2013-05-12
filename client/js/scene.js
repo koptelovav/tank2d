@@ -12,9 +12,11 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
             this.canvas.height = height;
         },
 
-        forEachEntities: function(callback){
+        forEachAnimatedEntities: function(callback){
             _.each(this.entities, function(entity){
-                callback(entity);
+                if(entity.animated) {
+                    callback(entity);
+                }
             });
         },
 
@@ -37,16 +39,25 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
 
             this.isLoaded = false;
             this.isDirty = false;
+            this.animated = false;
 
-            entity.on('move shift changeOrientation', function(){
+            entity.on('shift changeOrientation', function(){
                 this._setDirty();
             }, this);
 
+            entity.on('beginMove', function(){
+                this.animated = true;
+            }, this);
+
+            entity.on('endMove', function(){
+                this.animated = false;
+            }, this);
+
             entity.on('changeOrientation',function(){
-                if (entity.orientation === Types.Orientations.LEFT)  this.setAnimation('move_left');
-                else if (entity.orientation === Types.Orientations.UP)  this.setAnimation('move_up');
-                else if (entity.orientation === Types.Orientations.RIGHT)  this.setAnimation('move_right');
-                else if (entity.orientation === Types.Orientations.DOWN)  this.setAnimation('move_down');
+                if (entity.orientation === Types.Orientations.LEFT)  this.setAnimation('move_left', 50);
+                else if (entity.orientation === Types.Orientations.UP)  this.setAnimation('move_up', 50);
+                else if (entity.orientation === Types.Orientations.RIGHT)  this.setAnimation('move_right', 50);
+                else if (entity.orientation === Types.Orientations.DOWN)  this.setAnimation('move_down', 50);
             }, this);
         },
 
@@ -88,6 +99,10 @@ define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, 
                     this.currentAnimation.setCount(count ? count : 0, onEndCount || function() {
 //                        self.idle();
                     });
+
+                    this.currentAnimation.on('animation', function(){
+                        this._setDirty();
+                    }, this);
                 }
 
                 this.isLoaded = true;
