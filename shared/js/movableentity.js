@@ -11,7 +11,7 @@ define(['../../shared/js/entity'],function (Entity) {
         setOrientation: function (newOrientation) {
             if (this.orientation !== newOrientation) {
                 this.orientation = newOrientation;
-                this.emit('changeOrientation');
+                this.emit('changeOrientation', this.orientation);
 
               /*  var x = this.x % 16 >= 8 ? Math.ceil(this.x / 16) : Math.round(this.x / 16);
                 var y = this.y % 16 >= 8 ? Math.ceil(this.y / 16) : Math.round(this.y / 16);*/

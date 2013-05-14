@@ -174,7 +174,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
             connect: function (connect_func) {
                 var self = this;
 
-                this.client = new GameClient('127.0.0.1', '8000');
+                this.client = new GameClient('172.17.3.61', '8000');
                 this.client.connect();
 
                 this.client.onConnected(function () {
@@ -396,16 +396,16 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                     var chunk = player.getChunk();
 
                     if (player.orientation === Types.Orientations.LEFT) {
-                        return !this.map.isBulletColliding.call(this.map, chunk[0][0] - 1, chunk[0][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[2][0] - 1, chunk[2][1], player.id);
+                        return !this.map.isBulletColliding.call(this.map, chunk[0][0] - 1, chunk[0][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[1][0] - 1, chunk[1][1], player.id);
                     }
                     else if (player.orientation === Types.Orientations.UP) {
                         return !this.map.isBulletColliding.call(this.map, chunk[0][0], chunk[0][1] - 1, player.id) && !this.map.isBulletColliding.call(this.map, chunk[1][0], chunk[1][1] - 1, player.id);
                     }
                     else if (player.orientation === Types.Orientations.RIGHT) {
-                        return !this.map.isBulletColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[3][0] + 1, chunk[3][1], player.id);
+                        return !this.map.isBulletColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id);
                     }
                     else if (player.orientation === Types.Orientations.DOWN) {
-                        return !this.map.isBulletColliding.call(this.map, chunk[2][0], chunk[2][1] + 1, player.id) && !this.map.isBulletColliding.call(this.map, chunk[3][0], chunk[3][1] + 1, player.id);
+                        return !this.map.isBulletColliding.call(this.map, chunk[0][0], chunk[1][1] + 1, player.id) && !this.map.isBulletColliding.call(this.map, chunk[1][0], chunk[1][1] + 1, player.id);
                     }
                 }
                 return false;

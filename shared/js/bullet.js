@@ -12,10 +12,10 @@ define(['../../shared/js/movableentity'],function (MovableEntity) {
         },
 
         setStartPosition: function(){
-            if (this.orientation === Types.Orientations.LEFT) this.x-= 16;
-            else if (this.orientation === Types.Orientations.UP) this.y-= 16;
-            else if (this.orientation === Types.Orientations.RIGHT) this.x+= 16;
-            else if (this.orientation === Types.Orientations.DOWN) this.y+= 16;
+            if (this.orientation === Types.Orientations.LEFT){this.x = this.player.x; this.y= this.player.y+12}
+            else if (this.orientation === Types.Orientations.UP){this.x = this.player.x+12; this.y= this.player.y}
+            else if (this.orientation === Types.Orientations.RIGHT){this.x = this.player.x+20; this.y= this.player.y+12}
+            else if (this.orientation === Types.Orientations.DOWN){this.x = this.player.x+12; this.y= this.player.y+20}
         }
     });
 
