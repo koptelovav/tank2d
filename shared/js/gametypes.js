@@ -71,6 +71,34 @@ Types = {
     }
 };
 
+var messages = {
+    'hello': [Types.Messages.HELLO],
+    'welcome': [Types.Messages.WELCOME],
+    'population': [Types.Messages.POPULATION],
+    'joinGame': [Types.Messages.JOINGAME],
+    'leftGame': [Types.Messages.LEFTGAME],
+    'move': [Types.Messages.MOVE],
+    'gameStart': [Types.Messages.GAMESTART],
+    'iReady': [Types.Messages.IREADY],
+    'gameData': [Types.Messages.GAMEDATA],
+    'gameFull': [Types.Messages.GAMEFULL],
+    'gamePlay': [Types.Messages.GAMEPLAY],
+    'spawn': [Types.Messages.SPAWN],
+    'chat': [Types.Messages.CHAT],
+
+    getType: function(message) {
+        return messages[Types.getMessageName(message)][1];
+    }
+};
+
+Types.getMessageName = function(message) {
+    for(var name in messages) {
+        if(messages[name][0] === message) {
+            return name;
+        }
+    }
+};
+
 var kindLayers = {
     ice: {
         layer: "background",

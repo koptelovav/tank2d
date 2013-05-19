@@ -5,7 +5,7 @@ define(['jquery', 'app'], function ($, App) {
         $(document).ready(function () {
             app = new App();
 
-            console.info("App initialized.");
+//            console.info("App initialized.");
 
             app.tryConnectingGame(function(){
 
@@ -49,11 +49,11 @@ define(['jquery', 'app'], function ($, App) {
                 });
             });
 
-            game.on('playerWelcome',function(player){
+            game.on('playerWelcome',function(){
                  app.$readyButton.bind('click',function(){
                      app.$readyButton.unbind('click');
                      app.game.sendReady();
-                     app.setReady(player.id);
+                    // app.setReady(player.id);
                  });
             });
 
@@ -62,6 +62,7 @@ define(['jquery', 'app'], function ($, App) {
             });
 
             game.on('playerJoin',function(playerConfig){
+
                 app.addPlayer(playerConfig);
             });
 

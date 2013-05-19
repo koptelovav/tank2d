@@ -1,5 +1,5 @@
-define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'gameclient', '../../shared/js/player', '../../shared/js/gametypes'],
-    function (Model,Bullet,SpriteManager,Scene, Map, TileFactory, GameClient, Player) {
+define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'listener', '../../shared/js/player', '../../shared/js/gametypes'],
+    function (Model,Bullet,SpriteManager,Scene, Map, TileFactory, Listenter, Player) {
 
         var Game = Model.extend({
             init: function (app) {
@@ -19,7 +19,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
 
                 this.player = null;
 
-                this.client = null;
+                this.listener = null;
 
                 this.entities = {};
                 this.movableEntities = {};
@@ -63,7 +63,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                 this.initMap();
                 this.tick();
                 this.sendLoad();
-                console.info("Game loop started.");
+//                console.info("Game loop started.");
             },
 
             tick: function () {
@@ -86,7 +86,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                     self.map.on('init',function () {
                         self.mapGrid = self.map.tiles;
                         self.teamCount = self.map.teamCount;
-                        console.info("Map loaded.");
+//                        console.info("Map loaded.");
                     });
 
                     self.map.setData(data);
@@ -171,108 +171,96 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                 }, this);
             },
 
-            connect: function (connect_func) {
-                var self = this;
+            connect: function () {
+                this.listener = new Listenter(io.connect("http://127.0.0.1:8000/"));
 
-                this.client = new GameClient('127.0.0.1', '8000');
-                this.client.connect();
+                this.listener.on('connect',function () {
+                    this.listener.sendHello();
+                }, this);
 
-                this.client.onConnected(function () {
-                    if (connect_func) {
-                        connect_func();
-                    }
+                this.listener.on('welcome',function () {
+                    this.connected = true;
+                    this.emit('playerWelcome');
+                }, this);
 
-                    self.client.sendHello();
-
-                    console.info("Starting client/server handshake");
-                });
-
-                this.client.onWelcome(function (playerConfig) {
-                    self.player = playerConfig;
-                    self.connected = true;
-
-                    self.emit('playerWelcome',self.player);
-                });
-
-                this.client.onLoadGameData(function (id, population, teamCount, minPlayers, maxPlayers, players) {
-                    self.id = id;
-                    self.setPopulation(population);
-                    self.teamCount = teamCount;
-                    self.minPlayers = minPlayers;
-                    self.maxPlayers = maxPlayers;
+                this.listener.on('gameData',function (id, population, teamCount, minPlayers, maxPlayers, players) {
+                    this.id = id;
+                    this.setPopulation(population);
+                    this.teamCount = teamCount;
+                    this.minPlayers = minPlayers;
+                    this.maxPlayers = maxPlayers;
 
                     _.each(players, function (playerConfig) {
-                        self.entities[playerConfig.id] = playerConfig;
+                        this.entities[playerConfig.id] = playerConfig;
                     });
 
-                    self.loadData = true;
+                    this.loadData = true;
 
-                    self.emit('load');
-                });
+                    this.emit('load');
+                }, this);
 
-                this.client.onStarted(function () {
-                    self.started = true;
-                    self.emit('start');
-                });
+                this.listener.on('gameStart',function () {
+                    this.started = true;
+                    this.emit('start');
+                }, this);
 
-                this.client.onJoinGame(function (playerConfig) {
-                    self.entities[playerConfig.id] = playerConfig;
-                    self.incrementPopulation();
+                this.listener.on('joinGame',function (playerConfig) {
+                    this.addPlayer(playerConfig);
+                }, this);
 
-                    self.emit('playerJoin',playerConfig)
-                });
+                this.listener.on('leftGame',function (playerId) {
+                    this.decrementPopulation();
+                    delete this.entities[playerId];
 
-                this.client.onLeftGame(function (playerId) {
-                    self.decrementPopulation();
+                    this.emit('playerLeft',playerId);
+                }, this);
 
-                    delete self.entities[playerId];
+                this.listener.on('iReady',function (playerId) {
+                    this.emit('playerReady',playerId);
+                }, this);
 
-                    self.emit('playerLeft',playerId);
-                });
+                this.listener.on('gamePlay',function () {
+                    this.emit('play');
+                }, this);
 
-                this.client.onReady(function (playerId) {
-                    self.emit('playerReady',playerId);
-                });
-
-                this.client.onGamePlay(function () {
-                    self.emit('play');
-                });
-
-                this.client.onSpawn(function (id, x, y, orientation) {
-                    if (self.entityIdExists(id)) {
-                        var player = new Player(self.entities[id]);
-                        if (id === self.player.id) {
-                            self.player = player;
-                        }
+                this.listener.on('spawn',function (id, x, y, orientation) {
+                    var player;
+                    if (this.entityIdExists(id)) {
+                        player = this.getEntityById(id);
                         player.setPosition(x, y);
                         player.setOrientation(orientation);
-                        self.addToEntityGrid(player);
-                        self.addMovableEntity(player);
+                        this.addToEntityGrid(player);
 
-                        self.addToScene(player);
+                        this.addToScene(player);
 
                         player.on('move',function(){
-                            self.addToEntityGrid(player);
-                        });
+                            this.addToEntityGrid(player);
+                        }, this);
                     }
-                });
+                }, this);
 
-                this.client.onChatMessage(function(id, message){
-                    self.emit('chatMessage',id, message);
-                });
+                this.listener.on('chat',function(id, message){
+                    this.emit('chatMessage',id, message);
+                }, this);
 
-                this.client.onMove(function (id, orientation) {
-                    self.playerMove(id, orientation);
-                    console.log('player move '+ id);
-                });
+                this.listener.on('move',function (id, orientation) {
+                    this.playerMove(id, orientation);
+                }, this);
 
-                this.client.on('endMove',function (id) {
-                    self.playerStopMove(id);
-                });
+                this.listener.on('endMove',function (id) {
+                    this.playerStopMove(id);
+                }, this);
 
-                this.client.on('syncPos',function (id ,x, y, gridX, gridY) {
-                    self.entities[id].syncPososition(x, y, gridX, gridY);
-                });
+                this.listener.on('syncPos',function (id ,x, y, gridX, gridY) {
+                    this.entities[id].syncPososition(x, y, gridX, gridY);
+                }, this);
+            },
+
+            addPlayer: function(d){
+                var player = new Player(d[0],d[1],d[2],d[3],d[4]);
+                this.addMovableEntity(player);
+                this.incrementPopulation();
+                this.emit('playerJoin',player);
             },
 
             addEntity: function (entity) {
@@ -298,15 +286,15 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
             },
 
             sendReady: function () {
-                this.client.sendReady();
+                this.listener.sendReady();
             },
 
             sendLoad: function () {
-                this.client.sendLoad();
+                this.listener.sendLoad();
             },
 
             sendChatMessage: function (message) {
-                this.client.sendChatMessage(message);
+                this.listener.sendChatMessage(message);
             },
 
             entityIdExists: function (id) {
@@ -335,7 +323,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                 if(player.isMovable){
                     player.toggleMovable();
                     if(!id)
-                        this.client.sendEndMove();
+                        this.listener.sendEndMove();
                 }
             },
             playerMoveUp: function (id) {
@@ -358,7 +346,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                 if(!player.isMovable){
                     player.toggleMovable();
                     if(!id)
-                        this.client.sendMove(orientation);
+                        this.listener.sendMove(orientation);
                 }
             },
 

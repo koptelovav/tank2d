@@ -67,7 +67,7 @@ define(['jquery','../../shared/js/model'], function($,Model) {
 
             if(!this.ready) {
                 var watchCanStart = setInterval(function() {
-                    console.debug("waiting...");
+//                    console.debug("waiting...");
                     if(self.canConnectingGame()) {
                         setTimeout(function() {
                             //тут должен быть загрузчик

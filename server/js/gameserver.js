@@ -34,16 +34,11 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             this.playerCount = 0;
 
             this.on('playerConnect', function (connection) {
-                var player = new Player({
-                    id: connection.id,
-                    kind: 'tank',
-                    team: self.getPlayerTeam(),
-                    isReady: false
-                });
+                var player = new Player(connection.id, 'player', 'tank', this.getPlayerTeam(), false);
 
                 player.connection = connection;
                 player.listener = new Listener(this, player);
-            });
+            }, this);
 
             this.on('playerEnter', function (player) {
                 log.info("Player has joined " + self.id);
@@ -52,7 +47,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                 self.incrementPlayerCount();
 
                 self.sendToPlayer(player.id, new Message.welcome(player));
-                self.broadcastFromPlayer(player.id, new Message.JoinGame(player));
+                self.send(new Message.JoinGame(player));
                 self.sendToPlayer(player.id, new Message.gameData(self));
 
 
@@ -209,13 +204,11 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
 
         removeFromEntityGrid: function (entity, x, y) {
-            if (this.entityGrid[x][y][entity.id]) {
-                delete this.entityGrid[x][y][entity.id];
-            }
+            delete this.entityGrid[x][y][entity.id];
         },
 
         unregisterEntityPosition: function(entity) {
-            if(entity) {
+            if(entity && entity.x && entity.y) {
                 _.each(entity.getChunk(), function(pos){
                     this.removeFromEntityGrid(entity, pos[0], pos[1]);
                 }, this);

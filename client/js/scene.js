@@ -1,4 +1,4 @@
-define(['../../shared/js/model','renderer','sprite'], function(Model, Renderer, Sprite){
+define(['../../shared/js/model','renderer'], function(Model, Renderer){
     var Layer = Model.extend({
         init: function(id, canvas){
             this.id = id;

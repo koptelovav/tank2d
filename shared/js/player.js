@@ -1,8 +1,8 @@
-define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank, Bullet) {
+define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
     var Player = Tank.extend({
-        init: function (config) {
-            this.team = config.team;
-            this.isReady = config.isReady;
+        init: function (id, type, kind, team, isReady) {
+            this.team = team;
+            this.isReady = isReady;
 
             this.hasEnteredGame = false;
             this.isLoad = false;
@@ -12,7 +12,7 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank, Bulle
 
             this.bullets = {};
 
-            this._super(config.id, "player", config.kind, {
+            this._super(id, type, kind, {
                 "speed": 2,
                 "armor": 1,
                 "bullet": 1
@@ -22,6 +22,7 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank, Bulle
         getState: function () {
             var state = [
                 this.id,
+                this.type,
                 this.kind,
                 this.team,
                 this.isReady
