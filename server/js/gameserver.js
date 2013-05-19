@@ -58,7 +58,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                 this.sendToPlayer(player.id, new Message.gameData(self));
 
 
-                this.listener.on('close', function (playerId) {
+                this.listener.once('close', function (playerId) {
                     console.log('exit: '+playerId);
 
                     var player = this.players[playerId];
@@ -74,7 +74,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                     }
                 }, this);
 
-                this.listener.on('iReady', function (playerId) {
+                this.listener.on('ready', function (playerId) {
                     var player = this.players[playerId];
                     player.isReady = true;
 

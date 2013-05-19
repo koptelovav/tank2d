@@ -79,7 +79,7 @@ var messages = {
     'leftGame': [Types.Messages.LEFTGAME],
     'move': [Types.Messages.MOVE],
     'gameStart': [Types.Messages.GAMESTART],
-    'iReady': [Types.Messages.IREADY],
+    'ready': [Types.Messages.IREADY],
     'gameData': [Types.Messages.GAMEDATA],
     'gameFull': [Types.Messages.GAMEFULL],
     'gamePlay': [Types.Messages.GAMEPLAY],

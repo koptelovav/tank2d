@@ -12,7 +12,7 @@ define(['../../shared/js/model'], function (Model) {
                 self.receiveMessage(message, connection.id);
             });
 
-            connection.on('close', function () {
+            connection.once('close', function () {
                 self.emit('close', connection.id);
             });
 
