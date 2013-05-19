@@ -186,7 +186,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                     this.emit('playerWelcome');
                 }, this);
 
-                this.listener.on('gameData',function (id, population, teamCount, minPlayers, maxPlayers, players) {
+                this.listener.on('gameData',function (cId, id, population, teamCount, minPlayers, maxPlayers, players) {
                     this.id = id;
                     this.setPopulation(population);
                     this.teamCount = teamCount;
@@ -207,18 +207,18 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                     this.emit('start');
                 }, this);
 
-                this.listener.on('joinGame',function (playerConfig) {
+                this.listener.on('joinGame',function (cId, playerConfig) {
                     this.addPlayer(playerConfig);
                 }, this);
 
-                this.listener.on('leftGame',function (playerId) {
+                this.listener.on('leftGame',function (cId, playerId) {
                     this.decrementPopulation();
                     delete this.entities[playerId];
 
                     this.emit('playerLeft',playerId);
                 }, this);
 
-                this.listener.on('iReady',function (playerId) {
+                this.listener.on('iReady',function (cId, playerId) {
                     this.emit('playerReady',playerId);
                 }, this);
 
@@ -226,7 +226,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                     this.emit('play');
                 }, this);
 
-                this.listener.on('spawn',function (id, x, y, orientation) {
+                this.listener.on('spawn',function (cId, id, x, y, orientation) {
                     var player;
                     if (this.entityIdExists(id)) {
                         player = this.getEntityById(id);
@@ -242,19 +242,19 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                     }
                 }, this);
 
-                this.listener.on('chat',function(id, message){
+                this.listener.on('chat',function(cId, id, message){
                     this.emit('chatMessage',id, message);
                 }, this);
 
-                this.listener.on('move',function (id, orientation) {
+                this.listener.on('move',function (cId, id, orientation) {
                     this.playerMove(id, orientation);
                 }, this);
 
-                this.listener.on('endMove',function (id) {
+                this.listener.on('endMove',function (cId, id) {
                     this.playerStopMove(id);
                 }, this);
 
-                this.listener.on('syncPos',function (id ,x, y, gridX, gridY) {
+                this.listener.on('syncPos',function (cId, id ,x, y, gridX, gridY) {
                     this.entities[id].syncPososition(x, y, gridX, gridY);
                 }, this);
             },

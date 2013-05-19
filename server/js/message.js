@@ -178,6 +178,14 @@ define(['../../shared/js/model', 'utils'], function (Model, Utils) {
         }
     });
 
+    Messages.connect = Message.extend({
+        init: function () {
+        },
+        serialize: function () {
+            return [Types.Messages.CONNECT]
+        }
+    });
+
     return Messages;
 });
 

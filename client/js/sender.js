@@ -8,12 +8,12 @@ define(['../../shared/js/model'], function(Model) {
             this.connections[connection.id] = connection;
         },
 
-        send: function(id, message) {
-            this.connections[id].send(JSON.stringify([message]));
+        removeConnection: function(id){
+            delete this.connections[id];
         },
 
-        sendHello: function(){
-            this.sendMessage([Types.Messages.HELLO]);
+        send: function(id, message) {
+            this.connections[id].send(JSON.stringify([message]));
         },
 
         sendLoad: function(){

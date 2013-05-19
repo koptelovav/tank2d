@@ -123,8 +123,8 @@ define(['../../shared/js/model', 'utils', 'url', 'http', 'fs', 'express', 'expre
 
             this.ws.sockets.on('connection', function (connection) {
                 var WebSocketIO = new WS.WebSocketConnection(self._createId(), connection, self);
-                self.emit('connect', WebSocketIO);
                 self.addConnection(WebSocketIO);
+                self.emit('connect', WebSocketIO);
             });
         },
 
@@ -156,7 +156,7 @@ define(['../../shared/js/model', 'utils', 'url', 'http', 'fs', 'express', 'expre
             this._super(id, connection, server);
 
             this._connection.on('message', function (message) {
-                self.emit('listen', JSON.parse(message));
+                self.emit('message', message);
             });
 
             this._connection.on('disconnect', function () {

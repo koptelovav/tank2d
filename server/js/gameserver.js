@@ -21,7 +21,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             this.server = websocketServer;
             this.ups = 60;
 
-//            this.listener = new Listener();
+            this.listener = new Listener();
 
             this.isStart = false;
             this.isPlay = false;
@@ -35,85 +35,99 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
             this.playerCount = 0;
 
+
             this.on('playerConnect', function (connection) {
                 var player = new Player(connection.id, 'player', 'tank', this.getPlayerTeam(), false);
-
-                player.connection = connection;
-                player.listener = new Listener(this, player);
-
-//                this.listeners[connection.id] = Listener(connection);
-
-
+                this.addPlayer(player);
+                this.listener.addConnection(connection);
             }, this);
 
-            this.on('playerEnter', function (player) {
-                log.info("Player has joined " + self.id);
-
-                self.addPlayer(player);
-                self.incrementPlayerCount();
-
-                self.sendToPlayer(player.id, new Message.welcome(player));
-                self.send(new Message.JoinGame(player));
-                self.sendToPlayer(player.id, new Message.gameData(self));
+            this.listener.on('connect', function(connectionId){
+                this.sendToPlayer(connectionId, new Message.connect());
+            }, this);
 
 
-                player.on('exit', function () {
-                    console.log('player exit '+player.id);
-                    self.broadcastFromPlayer(player.id, new Message.LeftGame(player));
-                    self.removePlayer(player);
-                    self.decrementPlayerCount();
+            this.listener.on('hello', function (playerId) {
+                var player = this.players[playerId];
 
-                    if (self.playerCount === 0) {
-                        self.restart();
+                log.info("Player has joined " + this.id);
+                this.incrementPlayerCount();
+
+                this.sendToPlayer(player.id, new Message.welcome(player));
+                this.send(new Message.JoinGame(player));
+                this.sendToPlayer(player.id, new Message.gameData(self));
+
+
+                this.listener.on('close', function (playerId) {
+                    console.log('exit: '+playerId);
+
+                    var player = this.players[playerId];
+
+                    this.broadcastFromPlayer(player.id, new Message.LeftGame(player));
+                    this.removePlayer(player);
+                    this.decrementPlayerCount();
+
+                    this.listener.removeConnection(player.id);
+
+                    if (this.playerCount === 0) {
+                        this.restart();
                     }
-                });
+                }, this);
 
-                player.on('ready', function () {
-                    self.broadcastFromPlayer(player.id, new Message.iReady(player));
+                this.listener.on('iReady', function (playerId) {
+                    var player = this.players[playerId];
+                    player.isReady = true;
 
-                    if (self._checkAllStarted() && self.playerCount >= self.minPlayers && !self.isStart) {
-                        self.isStart = true;
-                        self.send(new Message.gameStart(self.id));
+                    this.broadcastFromPlayer(player.id, new Message.iReady(player));
+
+                    if (this._checkAllStarted() && this.playerCount >= this.minPlayers && !this.isStart) {
+                        this.isStart = true;
+                        this.send(new Message.gameStart(this.id));
                     }
-                });
+                }, this);
 
-                player.on('load', function () {
-                    if (self._checkAllLoaded() && !self.isPlay) {
-                        self.isPlay = true;
+                this.listener.on('gameLoad', function (playerId) {
+                    var player = this.players[playerId];
+                    player.isLoad = true;
 
-                        self.send(new Message.gamePlay(self.id));
+                    if (this._checkAllLoaded() && !this.isPlay) {
+                        this.isPlay = true;
+
+                        this.send(new Message.gamePlay(this.id));
 
                         setTimeout(function () {
                             self.spawnAll();
                         }, 100);
                     }
-                });
+                }, this);
 
-                player.on('playerBeginMove', function (orientation) {
+                this.listener.on('playerBeginMove', function (orientation) {
+                    var player = this.players[playerId];
+
                     player.setOrientation(orientation);
 
                     if(!player.isMovable){
                         player.toggleMovable();
-                        self.broadcastFromPlayer(player.id, new Message.Move(player));
+                        this.broadcastFromPlayer(player.id, new Message.Move(player));
                     }
-                });
+                }, this);
 
-                player.on('playerEndMove', function () {
+                this.listener.on('playerEndMove', function () {
                     if(player.isMovable){
                         player.toggleMovable();
-                        self.broadcastFromPlayer(player.id, new Message.EndMove(player));
-                        self.send(new Message.SyncPosition(player));
+                        this.broadcastFromPlayer(player.id, new Message.EndMove(player));
+                        this.send(new Message.SyncPosition(player));
                     }
-                });
+                }, this);
 
-                player.on('beforeMove', function (player) {
-                    self.unregisterEntityPosition(player);
-                });
+                this.listener.on('beforeMove', function (player) {
+                    this.unregisterEntityPosition(player);
+                }, this);
 
-                player.on('chatMessage', function (message) {
-                    self.send(new Message.chat(player.id, message));
-                });
-            });
+                this.listener.on('chatMessage', function (message) {
+                    this.send(new Message.chat(player.id, message));
+                }, this);
+            }, this);
         },
 
         run: function (filePath) {

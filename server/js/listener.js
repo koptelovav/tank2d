@@ -1,59 +1,55 @@
 define(['../../shared/js/model'], function (Model) {
     var Listener = Model.extend({
-        init: function (game, player) {
-            this.game = game;
-            this.player = player;
-            this.connection = player.connection;
+        init: function () {
+            this.connections = {};
+        },
 
-            this.connection.on('listen', function (message) {
-                var action = parseInt(message[0]);
+        addConnection: function (connection) {
+            var self = this;
+            this.connections[connection.id] = connection;
 
-                if (!player.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
-                    player.connection.disconnect("Invalid handshake message: " + message);
-                    return;
-                }
-                if (player.hasEnteredGame && !player.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
-                    player.connection.disconnect("Cannot initiate handshake twice: " + message);
-                    return;
-                }
-
-                if (action === Types.Messages.HELLO) {
-                    if (game.isFull()) {
-                        // self.send([Types.Messages.GAMEFULL, self.id]);
-                    } else {
-                        player.hasEnteredGame = true;
-                        player.isDead = false;
-
-                        game.emit('playerEnter', player);
-                    }
-                }else if (action === Types.Messages.CHAT) {
-                    player.emit('chatMessage', message[1]);
-                }
-                else if (action === Types.Messages.IREADY) {
-                    player.isReady = true;
-                    player.emit('ready');
-                }
-                else if (action === Types.Messages.LOADMAP) {
-                    player.isLoad = true;
-                    player.emit('load');
-                }
-                else if (!player.isPlay){
-                    return;
-                }
-                else if (action === Types.Messages.MOVE) {
-                    var orientation = message[1];
-                    player.emit('playerBeginMove',orientation);
-                }
-                else if (action === Types.Messages.ENDMOVE) {
-                    player.emit('playerEndMove');
-                }
+            connection.on('message', function (message) {
+                self.receiveMessage(message, connection.id);
             });
 
-            this.connection.on('close', function () {
-                player.emit('exit');
+            connection.on('close', function () {
+                self.emit('close', connection.id);
             });
 
-            this.connection.send('go');
+            this.emit('connect', connection.id);
+        },
+
+        removeConnection: function (id) {
+            delete this.connections[id];
+        },
+
+        receiveMessage: function (message, id) {
+            var data;
+
+            data = JSON.parse(message);
+
+            if (data instanceof Array) {
+                if (data[0] instanceof Array) {
+                    this.receiveActionBatch(data, id);
+                } else {
+                    this.receiveAction(data, id);
+                }
+            }
+        },
+
+        receiveAction: function (data, id) {
+            data[0] = Types.getMessageName(data[0]);
+            if (data[0] !== undefined) {
+                data.splice(1, 0, id);
+                console.log(data);
+                this.emit.apply(this, data);
+            }
+        },
+
+        receiveActionBatch: function (actions, id) {
+            _.each(actions, function (action) {
+                this.receiveAction(action, id);
+            }, this);
         }
     });
 

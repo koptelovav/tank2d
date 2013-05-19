@@ -22,7 +22,7 @@ Types = {
         SPAWN: 12,
         CHAT: 13,
         ENDMOVE: 14,
-        SYNCPOS: 15
+        CONNECT: 15
     },
     
     Entities: {
@@ -83,8 +83,10 @@ var messages = {
     'gameData': [Types.Messages.GAMEDATA],
     'gameFull': [Types.Messages.GAMEFULL],
     'gamePlay': [Types.Messages.GAMEPLAY],
+    'gameLoad': [Types.Messages.LOADMAP],
     'spawn': [Types.Messages.SPAWN],
     'chat': [Types.Messages.CHAT],
+    'connect': [Types.Messages.CONNECT],
 
     getType: function(message) {
         return messages[Types.getMessageName(message)][1];
