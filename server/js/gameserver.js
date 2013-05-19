@@ -21,6 +21,8 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
             this.server = websocketServer;
             this.ups = 60;
 
+//            this.listener = new Listener();
+
             this.isStart = false;
             this.isPlay = false;
 
@@ -38,6 +40,10 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
                 player.connection = connection;
                 player.listener = new Listener(this, player);
+
+//                this.listeners[connection.id] = Listener(connection);
+
+
             }, this);
 
             this.on('playerEnter', function (player) {

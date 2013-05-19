@@ -1,10 +1,12 @@
-define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'listener', '../../shared/js/player', '../../shared/js/gametypes'],
-    function (Model,Bullet,SpriteManager,Scene, Map, TileFactory, Listenter, Player) {
+define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'sender', 'listener', '../../shared/js/player', '../../shared/js/gametypes'],
+    function (Model,Bullet,SpriteManager,Scene, Map, TileFactory, Sender, Listener, Player) {
 
         var Game = Model.extend({
             init: function (app) {
                 this.app = app;
                 this.spriteManager = new SpriteManager();
+                this.listener = new Listener();
+                this.sender = new Sender();
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -19,7 +21,6 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
 
                 this.player = null;
 
-                this.listener = null;
 
                 this.entities = {};
                 this.movableEntities = {};
@@ -172,10 +173,12 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
             },
 
             connect: function () {
-                this.listener = new Listenter(io.connect("http://127.0.0.1:8000/"));
+                this.connection = io.connect("http://127.0.0.1:8000/");
+                this.listener.addConnection(this.connection);
+                this.sender.addConnection(this.connection);
 
                 this.listener.on('connect',function () {
-                    this.listener.sendHello();
+                    this.sender.send(this.connection.id, Types.Messages.HELLO);
                 }, this);
 
                 this.listener.on('welcome',function () {
@@ -286,15 +289,15 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
             },
 
             sendReady: function () {
-                this.listener.sendReady();
+                this.sender.send(this.connection.id, Types.Messages.IREADY);
             },
 
             sendLoad: function () {
-                this.listener.sendLoad();
+                this.sender.send(this.connection.id, Types.Messages.LOADMAP);
             },
 
             sendChatMessage: function (message) {
-                this.listener.sendChatMessage(message);
+                this.sender.send(this.connection.id, Types.Messages.CHAT);
             },
 
             entityIdExists: function (id) {
