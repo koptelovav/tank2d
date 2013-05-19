@@ -11,17 +11,16 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
          * @param {WebsocketServer} websocketServer Сокет-сервер
          */
         init: function (id, name, websocketServer) {
-            var self = this;
-
             this.id = id;
+            this.server = websocketServer;
+            this.listener = new Listener();
+
             this.name = name;
             this.minPlayers = null;
             this.maxPlayers = null;
             this.teamCount = null;
-            this.server = websocketServer;
-            this.ups = 60;
 
-            this.listener = new Listener();
+            this.ups = 60;
 
             this.isStart = false;
             this.isPlay = false;
@@ -55,7 +54,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
                 this.sendToPlayer(player.id, new Message.welcome(player));
                 this.send(new Message.JoinGame(player));
-                this.sendToPlayer(player.id, new Message.gameData(self));
+                this.sendToPlayer(player.id, new Message.gameData(this));
 
 
                 this.listener.once('close', function (playerId) {
@@ -95,9 +94,7 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
 
                         this.send(new Message.gamePlay(this.id));
 
-                        setTimeout(function () {
-                            self.spawnAll();
-                        }, 100);
+                        this.spawnAll();
                     }
                 }, this);
 
