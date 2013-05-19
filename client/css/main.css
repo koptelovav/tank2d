@@ -1,3 +1,6 @@
+body{
+    background: #ccc;
+}
 #canvas{
     display: none;
     /*border: 40px solid #CCC;*/
@@ -31,7 +34,7 @@
 #connected-grid{
     display: none;
     border: 1px solid #333;
-    width: 400px;
+    width: 350px;
 }
 
 [id^="team"]{
@@ -66,11 +69,11 @@
 }
 
 #chat-input textarea{
-    width: 395px;
+    width: 350px;
     height: 40px;
 }
 #chat-wrap{
-    width: 400px;
+    width: 350px;
     overflow: hidden;
     border: 1px solid #0b97c4;
 }

@@ -90,31 +90,38 @@ define(['jquery', 'app'], function ($, App) {
                 }*/
             });
 
-            var keysDown = {};
+            var keyFire,
+                keyMove;
 
             addEventListener("keydown", function (e) {
-                keysDown[e.keyCode] = true;
+                keyFire = keyMove = e.keyCode;
+
             }, false);
 
             addEventListener("keyup", function (e) {
-                delete keysDown[e.keyCode];
-                app.game.playerStopMove();
+                if(13 === keyFire){
+                    keyFire = false;
+                }else{
+                    keyMove = false;
+                    app.game.playerStopMove()
+                }
+
             }, false);
 
             game.on('tick', function(){
-                if (38 in keysDown || 87 in keysDown) { // Player holding up
+                if (38 === keyMove || 87 === keyMove) { // Player holding up
                     app.game.playerMoveUp();
                 }
-                if (40 in keysDown || 83 in keysDown) { // Player holding down
+                else if (40 === keyMove || 83 === keyMove) { // Player holding down
                     app.game.playerMoveDown();
                 }
-                if (37 in keysDown || 65 in keysDown) { // Player holding left
+                else if (37 === keyMove || 65 === keyMove) { // Player holding left
                     app.game.playerMoveLeft();
                 }
-                if (39 in keysDown || 68 in keysDown) { // Player holding right
+                else if (39 === keyMove || 68 === keyMove) { // Player holding right
                     app.game.playerMoveRight();
                 }
-                if(13 in keysDown){
+                if(13 === keyFire){
                     app.game.playerFire();
                 }
             });
