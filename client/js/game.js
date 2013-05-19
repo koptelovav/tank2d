@@ -1,4 +1,4 @@
-define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'sender', 'listener', '../../shared/js/player', '../../shared/js/gametypes'],
+define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'sender', '../../shared/js/listener', '../../shared/js/player', '../../shared/js/gametypes'],
     function (Model,Bullet,SpriteManager,Scene, Map, TileFactory, Sender, Listener, Player) {
 
         var Game = Model.extend({
@@ -174,6 +174,7 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
 
             connect: function () {
                 this.connection = io.connect("http://127.0.0.1:8000/");
+                this.connection.id = 'client-connection';
                 this.listener.addConnection(this.connection);
                 this.sender.addConnection(this.connection);
 
