@@ -6,7 +6,7 @@ define(['../../shared/js/model'],
             },
 
             unregisterEntityPosition: function(entity) {
-                if(entity) {
+                if(entity && entity.x && entity.y) {
                     _.each(entity.getChunk(), function(pos){
                         this.removeFromEntityGrid(entity, pos[0], pos[1]);
                     }, this);
@@ -25,17 +25,6 @@ define(['../../shared/js/model'],
                 if (this.entityGrid[x][y][entity.id]) {
                     delete this.entityGrid[x][y][entity.id];
                 }
-            },
-
-            moveEntities: function(){
-                _.each(this.movableEntities, function(entity){
-                    if(entity.isMovable){
-                        if (this.isColliding(entity)) {
-                            this.unregisterEntityPosition(entity);
-                            entity.move();
-                        }
-                    }
-                }, this);
             },
 
             addEntity: function (entity) {

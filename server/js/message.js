@@ -130,7 +130,7 @@ define(['../../shared/js/model', 'utils'], function (Model, Utils) {
         serialize: function () {
             return [Types.Messages.GAMEDATA,
                 this.game.id,
-                this.game.playerCount,
+                this.game.population,
                 this.game.teamCount,
                 this.game.maxPlayers,
                 this.game.minPlayers,

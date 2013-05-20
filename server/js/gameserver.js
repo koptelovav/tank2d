@@ -32,7 +32,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
             this.teams = {};
             this.entityGrid = [];
 
-            this.playerCount = 0;
+            this.population = 0;
 
 
             this.on('playerConnect', function (connection) {
@@ -50,7 +50,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
                 var player = this.players[connection.id];
 
                 log.info("Player has joined " + this.id);
-                this.incrementPlayerCount();
+                this.incrementPopulation();
 
                 this.sendToPlayer(player.id, new Message.welcome(player));
                 this.send(new Message.JoinGame(player));
@@ -64,11 +64,11 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
 
                     this.broadcastFromPlayer(player.id, new Message.LeftGame(player));
                     this.removePlayer(player);
-                    this.decrementPlayerCount();
+                    this.decrementPopulation();
 
                     this.listener.removeConnection(connection.id);
 
-                    if (this.playerCount === 0) {
+                    if (this.population === 0) {
                         this.restart();
                     }
                 }, this);
@@ -79,7 +79,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
 
                     this.broadcastFromPlayer(player.id, new Message.iReady(player));
 
-                    if (this._checkAllStarted() && this.playerCount >= this.minPlayers && !this.isStart) {
+                    if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
                         this.isStart = true;
                         this.send(new Message.gameStart(this.id));
                     }
@@ -154,7 +154,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
         restart: function () {
             this.isStart = false;
             this.isPlay = false;
-            this.playerCount = 0;
+            this.population = 0;
             this.initEntityGrid();
             this.initMapTails();
         },
@@ -200,38 +200,6 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
             }, this);
         },
 
-        addEntity: function (entity) {
-            this.entities[entity.id] = entity;
-        },
-
-        addMovableEntity: function (entity) {
-            this.addEntity(entity);
-            this.movableEntities[entity.id] = entity;
-        },
-
-
-        addToEntityGrid: function (entity) {
-            var self = this;
-            if (this.entities[entity.id]) {
-                _.each(entity.getChunk(), function (pos) {
-                    self.entityGrid[pos[0]][pos[1]][entity.id] = entity;
-                });
-            }
-        },
-
-
-        removeFromEntityGrid: function (entity, x, y) {
-            delete this.entityGrid[x][y][entity.id];
-        },
-
-        unregisterEntityPosition: function(entity) {
-            if(entity && entity.x && entity.y) {
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                }, this);
-            }
-        },
-
         _checkAllStarted: function () {
             var result = true;
             for (var player in this.players) {
@@ -250,20 +218,6 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
             });
 
             return result;
-        },
-
-        setPlayerCount: function (count) {
-            this.playerCount = count;
-        },
-
-        incrementPlayerCount: function () {
-            this.setPlayerCount(this.playerCount + 1);
-        },
-
-        decrementPlayerCount: function () {
-            if (this.playerCount > 0) {
-                this.setPlayerCount(this.playerCount - 1);
-            }
         },
 
         initTeams: function () {
@@ -371,7 +325,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
         },
 
         isFull: function () {
-            return this.playerCount === this.maxPlayers;
+            return this.population === this.maxPlayers;
         },
 
         send: function (message) {
