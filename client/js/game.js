@@ -165,7 +165,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     this.emit('playerWelcome');
                 }, this);
 
-                this.listener.on('gameData',function (cId, id, population, teamCount, minPlayers, maxPlayers, players) {
+                this.listener.on('gameData',function (connection, id, population, teamCount, minPlayers, maxPlayers, players) {
                     this.id = id;
                     this.setPopulation(population);
                     this.teamCount = teamCount;
@@ -186,18 +186,18 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     this.emit('start');
                 }, this);
 
-                this.listener.on('joinGame',function (cId, playerConfig) {
+                this.listener.on('joinGame',function (connection, playerConfig) {
                     this.addPlayer(playerConfig);
                 }, this);
 
-                this.listener.on('leftGame',function (cId, playerId) {
+                this.listener.on('leftGame',function (connection, playerId) {
                     this.decrementPopulation();
                     delete this.entities[playerId];
 
                     this.emit('playerLeft',playerId);
                 }, this);
 
-                this.listener.on('iReady',function (cId, playerId) {
+                this.listener.on('iReady',function (connection, playerId) {
                     this.emit('playerReady',playerId);
                 }, this);
 
@@ -205,7 +205,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     this.emit('play');
                 }, this);
 
-                this.listener.on('spawn',function (cId, id, x, y, orientation) {
+                this.listener.on('spawn',function (connection, id, x, y, orientation) {
                     var player;
                     if (this.entityIdExists(id)) {
                         player = this.getEntityById(id);
@@ -221,19 +221,19 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     }
                 }, this);
 
-                this.listener.on('chat',function(cId, id, message){
+                this.listener.on('chat',function(connection, id, message){
                     this.emit('chatMessage',id, message);
                 }, this);
 
-                this.listener.on('move',function (cId, id, orientation) {
+                this.listener.on('move',function (connection, id, orientation) {
                     this.playerMove(id, orientation);
                 }, this);
 
-                this.listener.on('endMove',function (cId, id) {
+                this.listener.on('endMove',function (connection, id) {
                     this.playerStopMove(id);
                 }, this);
 
-                this.listener.on('syncPos',function (cId, id ,x, y, gridX, gridY) {
+                this.listener.on('syncPos',function (connection, id ,x, y, gridX, gridY) {
                     this.entities[id].syncPososition(x, y, gridX, gridY);
                 }, this);
             },
