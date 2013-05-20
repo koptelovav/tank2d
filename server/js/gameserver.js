@@ -45,7 +45,6 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
                 this.sendToPlayer(connection.id, new Message.connect());
             }, this);
 
-
             this.listener.on('hello', function (connection) {
                 var player = this.players[connection.id];
 
@@ -55,75 +54,74 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
                 this.sendToPlayer(player.id, new Message.welcome(player));
                 this.send(new Message.JoinGame(player));
                 this.sendToPlayer(player.id, new Message.gameData(this));
+            }, this);
 
+            this.listener.on('close', function (connection) {
+                console.log('exit: '+connection.id);
 
-                this.listener.once('close', function (connection) {
-                    console.log('exit: '+connection.id);
+                var player = this.players[connection.id];
 
-                    var player = this.players[connection.id];
+                this.broadcastFromPlayer(player.id, new Message.LeftGame(player));
+                this.removePlayer(player);
+                this.decrementPopulation();
 
-                    this.broadcastFromPlayer(player.id, new Message.LeftGame(player));
-                    this.removePlayer(player);
-                    this.decrementPopulation();
+                this.listener.removeConnection(connection.id);
 
-                    this.listener.removeConnection(connection.id);
+                if (this.population === 0) {
+                    this.restart();
+                }
+            }, this);
 
-                    if (this.population === 0) {
-                        this.restart();
-                    }
-                }, this);
+            this.listener.on('ready', function (connection) {
+                var player = this.players[connection.id];
+                player.isReady = true;
 
-                this.listener.on('ready', function (connection) {
-                    var player = this.players[connection.id];
-                    player.isReady = true;
+                this.broadcastFromPlayer(player.id, new Message.iReady(player));
 
-                    this.broadcastFromPlayer(player.id, new Message.iReady(player));
+                if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
+                    this.isStart = true;
+                    this.send(new Message.gameStart(this.id));
+                }
+            }, this);
 
-                    if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
-                        this.isStart = true;
-                        this.send(new Message.gameStart(this.id));
-                    }
-                }, this);
+            this.listener.on('gameLoad', function (connection) {
+                var player = this.players[connection.id];
+                player.isLoad = true;
 
-                this.listener.on('gameLoad', function (connection) {
-                    var player = this.players[connection.id];
-                    player.isLoad = true;
+                if (this._checkAllLoaded() && !this.isPlay) {
+                    this.isPlay = true;
 
-                    if (this._checkAllLoaded() && !this.isPlay) {
-                        this.isPlay = true;
+                    this.send(new Message.gamePlay(this.id));
 
-                        this.send(new Message.gamePlay(this.id));
+                    this.spawnAll();
+                }
+            }, this);
 
-                        this.spawnAll();
-                    }
-                }, this);
+            this.listener.on('playerBeginMove', function (connection, orientation) {
+                var player = this.players[connection.id];
 
-                this.listener.on('playerBeginMove', function (connection, orientation) {
-                    var player = this.players[connection.id];
+                player.setOrientation(orientation);
 
-                    player.setOrientation(orientation);
+                if(!player.isMovable){
+                    player.toggleMovable();
+                    this.broadcastFromPlayer(player.id, new Message.Move(player));
+                }
+            }, this);
 
-                    if(!player.isMovable){
-                        player.toggleMovable();
-                        this.broadcastFromPlayer(player.id, new Message.Move(player));
-                    }
-                }, this);
+            this.listener.on('playerEndMove', function () {
+                if(player.isMovable){
+                    player.toggleMovable();
+                    this.broadcastFromPlayer(player.id, new Message.EndMove(player));
+                    this.send(new Message.SyncPosition(player));
+                }
+            }, this);
 
-                this.listener.on('playerEndMove', function () {
-                    if(player.isMovable){
-                        player.toggleMovable();
-                        this.broadcastFromPlayer(player.id, new Message.EndMove(player));
-                        this.send(new Message.SyncPosition(player));
-                    }
-                }, this);
+            this.listener.on('beforeMove', function (player) {
+                this.unregisterEntityPosition(player);
+            }, this);
 
-                this.listener.on('beforeMove', function (player) {
-                    this.unregisterEntityPosition(player);
-                }, this);
-
-                this.listener.on('chatMessage', function (message) {
-                    this.send(new Message.chat(player.id, message));
-                }, this);
+            this.listener.on('chatMessage', function (message) {
+                this.send(new Message.chat(player.id, message));
             }, this);
         },
 
