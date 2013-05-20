@@ -1,7 +1,7 @@
-define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','../../shared/js/listener', '../../shared/js/player'],
-    function (Model, Utils, Message, Map, TileFactory, Spawn, fs, Listener, Player) {
+define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','../../shared/js/listener', '../../shared/js/player'],
+    function (GameBase, Utils, Message, Map, TileFactory, Spawn, fs, Listener, Player) {
 
-    var GameServer = Model.extend({
+    var GameServer = GameBase.extend({
 
         /**
          * Конструктор класса (инициализация игрового сервера)
@@ -41,13 +41,13 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                 this.listener.addConnection(connection);
             }, this);
 
-            this.listener.on('connect', function(connectionId){
-                this.sendToPlayer(connectionId, new Message.connect());
+            this.listener.on('connect', function(connection){
+                this.sendToPlayer(connection.id, new Message.connect());
             }, this);
 
 
-            this.listener.on('hello', function (playerId) {
-                var player = this.players[playerId];
+            this.listener.on('hello', function (connection) {
+                var player = this.players[connection.id];
 
                 log.info("Player has joined " + this.id);
                 this.incrementPlayerCount();
@@ -57,24 +57,24 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                 this.sendToPlayer(player.id, new Message.gameData(this));
 
 
-                this.listener.once('close', function (playerId) {
-                    console.log('exit: '+playerId);
+                this.listener.once('close', function (connection) {
+                    console.log('exit: '+connection.id);
 
-                    var player = this.players[playerId];
+                    var player = this.players[connection.id];
 
                     this.broadcastFromPlayer(player.id, new Message.LeftGame(player));
                     this.removePlayer(player);
                     this.decrementPlayerCount();
 
-                    this.listener.removeConnection(player.id);
+                    this.listener.removeConnection(connection.id);
 
                     if (this.playerCount === 0) {
                         this.restart();
                     }
                 }, this);
 
-                this.listener.on('ready', function (playerId) {
-                    var player = this.players[playerId];
+                this.listener.on('ready', function (connection) {
+                    var player = this.players[connection.id];
                     player.isReady = true;
 
                     this.broadcastFromPlayer(player.id, new Message.iReady(player));
@@ -85,8 +85,8 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                     }
                 }, this);
 
-                this.listener.on('gameLoad', function (playerId) {
-                    var player = this.players[playerId];
+                this.listener.on('gameLoad', function (connection) {
+                    var player = this.players[connection.id];
                     player.isLoad = true;
 
                     if (this._checkAllLoaded() && !this.isPlay) {
@@ -98,8 +98,8 @@ define(['../../shared/js/model', 'utils', 'message', '../../shared/js/map', '../
                     }
                 }, this);
 
-                this.listener.on('playerBeginMove', function (orientation) {
-                    var player = this.players[playerId];
+                this.listener.on('playerBeginMove', function (connection, orientation) {
+                    var player = this.players[connection.id];
 
                     player.setOrientation(orientation);
 

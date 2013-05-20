@@ -1,7 +1,7 @@
-define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'sender', '../../shared/js/listener', '../../shared/js/player', '../../shared/js/gametypes'],
-    function (Model,Bullet,SpriteManager,Scene, Map, TileFactory, Sender, Listener, Player) {
+define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'sender', '../../shared/js/listener', '../../shared/js/player', '../../shared/js/gametypes'],
+    function (GameBase,Bullet,SpriteManager,Scene, Map, TileFactory, Sender, Listener, Player) {
 
-        var Game = Model.extend({
+        var Game = GameBase.extend({
             init: function (app) {
                 this.app = app;
                 this.spriteManager = new SpriteManager();
@@ -139,28 +139,6 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                 }
             },
 
-            unregisterEntityPosition: function(entity) {
-                if(entity) {
-                    _.each(entity.getChunk(), function(pos){
-                        this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                    }, this);
-                }
-            },
-
-            addToEntityGrid: function(entity) {
-                if(entity) {
-                    _.each(entity.getChunk(), function(pos){
-                        this.entityGrid[pos[0]][pos[1]][entity.id] = entity;
-                    }, this);
-                }
-            },
-
-            removeFromEntityGrid: function (entity, x, y) {
-                if (this.entityGrid[x][y][entity.id]) {
-                    delete this.entityGrid[x][y][entity.id];
-                }
-            },
-
             moveEntities: function(){
                 _.each(this.movableEntities, function(entity){
                     if(entity.isMovable){
@@ -267,28 +245,6 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
                 this.emit('playerJoin',player);
             },
 
-            addEntity: function (entity) {
-                this.entities[entity.id] = entity;
-            },
-
-            addMovableEntity: function (entity) {
-                this.addEntity(entity);
-                this.movableEntities[entity.id] = entity;
-            },
-
-            incrementPopulation: function () {
-                this.setPopulation(this.population + 1);
-            },
-
-            decrementPopulation: function () {
-                this.setPopulation(this.population - 1);
-            },
-
-            setPopulation: function (newPopulation) {
-                this.population = newPopulation;
-                this.emit('changePopulation', this.population);
-            },
-
             sendReady: function () {
                 this.sender.send(this.connection.id, Types.Messages.IREADY);
             },
@@ -299,19 +255,6 @@ define(['../../shared/js/model','../../shared/js/bullet','spritemanager','scene'
 
             sendChatMessage: function (message) {
                 this.sender.send(this.connection.id, Types.Messages.CHAT);
-            },
-
-            entityIdExists: function (id) {
-                return id in this.entities;
-            },
-
-            getEntityById: function (id) {
-                if (id in this.entities) {
-                    return this.entities[id];
-                }
-                else {
-                    log.error("Unknown entity id : " + id, true);
-                }
             },
 
             playerFire: function(id){

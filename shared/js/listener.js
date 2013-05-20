@@ -9,46 +9,47 @@ define(['../../shared/js/model'], function (Model) {
             this.connections[connection.id] = connection;
 
             connection.on('message', function (message) {
-                self.receiveMessage(message, connection.id);
+                self.receiveMessage(message, connection);
             });
 
             connection.once('close', function () {
-                self.emit('close', connection.id);
+                self.emit('close', connection);
             });
 
-            this.emit('connect', connection.id);
+            this.emit('connect', connection);
         },
 
         removeConnection: function (id) {
             delete this.connections[id];
         },
 
-        receiveMessage: function (message, id) {
+        receiveMessage: function (message, connection) {
             var data;
 
             data = JSON.parse(message);
 
             if (data instanceof Array) {
                 if (data[0] instanceof Array) {
-                    this.receiveActionBatch(data, id);
+                    this.receiveActionBatch(data, connection);
                 } else {
-                    this.receiveAction(data, id);
+                    this.receiveAction(data, connection);
                 }
             }
         },
 
-        receiveAction: function (data, id) {
+        receiveAction: function (data, connection) {
             data[0] = Types.getMessageName(data[0]);
             if (data[0] !== undefined) {
-                data.splice(1, 0, id);
                 console.log(data);
+                data.splice(1, 0, connection);
+
                 this.emit.apply(this, data);
             }
         },
 
-        receiveActionBatch: function (actions, id) {
+        receiveActionBatch: function (actions, connection) {
             _.each(actions, function (action) {
-                this.receiveAction(action, id);
+                this.receiveAction(action, connection);
             }, this);
         }
     });
