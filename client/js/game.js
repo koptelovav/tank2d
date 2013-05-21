@@ -1,5 +1,5 @@
-define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', 'sender', '../../shared/js/listener', '../../shared/js/player', '../../shared/js/gametypes'],
-    function (GameBase,Bullet,SpriteManager,Scene, Map, TileFactory, Sender, Listener, Player) {
+define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', '../../shared/js/listener', '../../shared/js/player', '../../shared/js/gametypes'],
+    function (GameBase,Bullet,SpriteManager,Scene, Map, TileFactory, Listener, Player) {
 
         var Game = GameBase.extend({
             init: function (app) {
@@ -49,7 +49,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                         var waitStartGame = setInterval(function () {
                             if (self.map && self.map.isLoaded && self.started) {
                                 self.start();
-                                self.sendLoad();
+                                self.send(Types.Messages.LOADMAP);
                                 clearInterval(waitStartGame);
                             }
                         }, 1000);
@@ -63,7 +63,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 this.initGrids();
                 this.initMap();
                 this.tick();
-                this.sendLoad();
 //                console.info("Game loop started.");
             },
 
@@ -154,10 +153,9 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 this.connection = io.connect("http://127.0.0.1:8000/");
                 this.connection.id = 'client-connection';
                 this.listener.addConnection(this.connection);
-                this.sender.addConnection(this.connection);
 
                 this.listener.on('connect',function () {
-                    this.sender.send(this.connection.id, Types.Messages.HELLO);
+                    this.send(Types.Messages.HELLO);
                 }, this);
 
                 this.listener.on('welcome',function () {
@@ -246,15 +244,11 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             sendReady: function () {
-                this.sender.send(this.connection.id, Types.Messages.IREADY);
-            },
-
-            sendLoad: function () {
-                this.sender.send(this.connection.id, Types.Messages.LOADMAP);
+                this.send(Types.Messages.IREADY);
             },
 
             sendChatMessage: function (message) {
-                this.sender.send(this.connection.id, Types.Messages.CHAT);
+                this.send(Types.Messages.CHAT);
             },
 
             playerFire: function(id){
@@ -269,8 +263,9 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
 
                 if(player.isMovable){
                     player.toggleMovable();
-                    if(!id)
-                        this.listener.sendEndMove();
+                    if(!id){
+//                        this.listener.sendEndMove();
+                    }
                 }
             },
             playerMoveUp: function (id) {
@@ -292,8 +287,9 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
 
                 if(!player.isMovable){
                     player.toggleMovable();
-                    if(!id)
-                        this.listener.sendMove(orientation);
+                    if(!id){
+//                        this.listener.sendMove(orientation);
+                    }
                 }
             },
 
@@ -344,6 +340,11 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     }
                 }
                 return false;
+            },
+
+            send: function(){
+                var args = JSON.stringify(_.toArray(arguments));
+                this.connection.send(args);
             }
         });
 
