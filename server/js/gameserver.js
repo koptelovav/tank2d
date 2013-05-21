@@ -1,5 +1,5 @@
-define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','../../shared/js/listener', '../../shared/js/player'],
-    function (GameBase, Utils, Message, Map, TileFactory, Spawn, fs, Listener, Player) {
+define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','../../shared/js/listener', '../../shared/js/player'],
+    function (GameBase, Map, TileFactory, Spawn, fs, Listener, Player) {
 
     var GameServer = GameBase.extend({
 
