@@ -21,7 +21,7 @@ define(function() {
             this.connection.send(args);
         },
 
-        instance: function(){
+        getSocketConnection: function(){
             return this.connection;
         }
 

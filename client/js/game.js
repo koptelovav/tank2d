@@ -151,7 +151,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
 
             connect: function () {
                 this.connection.connect();
-                this.listener.addConnection(this.connection.instance());
+                this.listener.addConnection(this.connection.getSocketConnection());
 
                 this.listener.on('connect',function () {
                     this.connection.send(Types.Messages.HELLO);
