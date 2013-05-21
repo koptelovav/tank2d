@@ -24,7 +24,7 @@ Types = {
         ENDMOVE: 14,
         CONNECT: 15
     },
-    
+
     Entities: {
         TANK: 100,
         BULLET: 101,
@@ -93,12 +93,16 @@ var messages = {
     }
 };
 
-Types.getMessageName = function(message) {
+Types.getMessageName = function(code) {
     for(var name in messages) {
-        if(messages[name][0] === message) {
+        if(messages[name][0] === code) {
             return name;
         }
     }
+};
+
+Types.getMessageCode = function(name) {
+    return messages[name][0];
 };
 
 var kindLayers = {
