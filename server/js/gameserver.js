@@ -32,6 +32,8 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
             this.teams = {};
             this.entityGrid = [];
 
+            this.outgoingQueues = {};
+
             this.population = 0;
 
 
@@ -42,7 +44,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
             }, this);
 
             this.listener.on('connect', function(connection){
-                this.sendToPlayer(connection.id, new Message.connect());
+                this.pushToPlayer(connection.id, Types.Messages.CONNECT)
             }, this);
 
             this.listener.on('hello', function (connection) {
@@ -51,9 +53,17 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
                 log.info("Player has joined " + this.id);
                 this.incrementPopulation();
 
-                this.sendToPlayer(player.id, new Message.welcome(player));
-                this.send(new Message.JoinGame(player));
-                this.sendToPlayer(player.id, new Message.gameData(this));
+                this.pushToPlayer(player.id, Types.Messages.WELCOME, player.getState());
+                this.pushToAll(Types.Messages.JOINGAME, player.getState());
+                this.pushToPlayer(player.id,
+                    Types.Messages.GAMEDATA,
+                    this.id,
+                    this.population,
+                    this.teamCount,
+                    this.maxPlayers,
+                    this.minPlayers,
+                    this.getPlayersInfo()
+                );
             }, this);
 
             this.listener.on('close', function (connection) {
@@ -61,7 +71,8 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
 
                 var player = this.players[connection.id];
 
-                this.broadcastFromPlayer(player.id, new Message.LeftGame(player));
+                this.pushToBroadcast(player.id, Types.Messages.LEFTGAME,  player.id);
+
                 this.removePlayer(player);
                 this.decrementPopulation();
 
@@ -76,11 +87,11 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
                 var player = this.players[connection.id];
                 player.isReady = true;
 
-                this.broadcastFromPlayer(player.id, new Message.iReady(player));
+                this.pushToBroadcast(player.id, Types.Messages.IREADY,  player.id);
 
                 if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
                     this.isStart = true;
-                    this.send(new Message.gameStart(this.id));
+                    this.pushToAll(Types.Messages.GAMESTART, this.id);
                 }
             }, this);
 
@@ -91,7 +102,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
                 if (this._checkAllLoaded() && !this.isPlay) {
                     this.isPlay = true;
 
-                    this.send(new Message.gamePlay(this.id));
+                    this.pushToAll(Types.Messages.GAMEPLAY,  this.id);
 
                     this.spawnAll();
                 }
@@ -104,24 +115,17 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
 
                 if(!player.isMovable){
                     player.toggleMovable();
-                    this.broadcastFromPlayer(player.id, new Message.Move(player));
+                    this.pushToBroadcast(player.id, Types.Messages.MOVE,  player.id,  player.orientation);
                 }
             }, this);
 
-            this.listener.on('playerEndMove', function () {
-                if(player.isMovable){
-                    player.toggleMovable();
-                    this.broadcastFromPlayer(player.id, new Message.EndMove(player));
-                    this.send(new Message.SyncPosition(player));
-                }
+            this.listener.on('playerEndMove', function (connection) {
             }, this);
 
-            this.listener.on('beforeMove', function (player) {
-                this.unregisterEntityPosition(player);
+            this.listener.on('beforeMove', function (connection) {
             }, this);
 
-            this.listener.on('chatMessage', function (message) {
-                this.send(new Message.chat(player.id, message));
+            this.listener.on('chatMessage', function (connection, message) {
             }, this);
         },
 
@@ -146,6 +150,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
 
             setInterval(function () {
                 self.moveEntities();
+                self.processQueues();
             }, 1000 / this.ups);
         },
 
@@ -260,7 +265,12 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
 
             this.addToEntityGrid(player);
 
-            this.send(new Message.spawn(player));
+            this.pushToAll(Types.Messages.SPAWN,
+                player.id,
+                player.gridX,
+                player.gridY,
+                player.orientation
+            );
         },
 
         getPlayerById: function (id) {
@@ -270,6 +280,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
         addPlayer: function (player) {
             this.teams[player.team].push(player.id);
             this.players[player.id] = player;
+            this.outgoingQueues[player.id] = []
             this.addMovableEntity(player);
         },
 
@@ -299,6 +310,7 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
             delete this.players[player.id];
             delete this.entities[player.id];
             delete this.movableEntities[player.id];
+            delete this.outgoingQueues[player.id];
             this.teams[player.team].splice(this.teams[player.team].indexOf(player.id), 1);
         },
 
@@ -326,18 +338,44 @@ define(['../../shared/js/gamebase', 'utils', 'message', '../../shared/js/map', '
             return this.population === this.maxPlayers;
         },
 
-        send: function (message) {
-            this.server.sendToRoom(this.id, message.serialize());
+        pushToPlayer: function(playerId){
+            var args = _.toArray(arguments).slice(1);
+
+            if(playerId in this.outgoingQueues) {
+                this.outgoingQueues[playerId].push(args);
+            } else {
+                log.error("pushToPlayer: player was undefined");
+            }
         },
 
-        sendToPlayer: function (playerId, message) {
-            var connection = this.server.getConnection(playerId);
-            connection.send(message.serialize());
+        pushToBroadcast: function(ignoredId){
+            var args = _.toArray(arguments).slice(1);
+
+            for(var id in this.outgoingQueues) {
+                if(id != ignoredId) {
+                    this.outgoingQueues[id].push(args);
+                }
+            }
         },
 
-        broadcastFromPlayer: function (playerId, message) {
-            var connection = this.server.getConnection(playerId);
-            connection.broadcast(message.serialize());
+        pushToAll: function(){
+            var args = _.toArray(arguments);
+
+            for(var id in this.outgoingQueues) {
+                this.outgoingQueues[id].push(args);
+            }
+        },
+
+        processQueues: function() {
+            var connection;
+
+            for(var id in this.outgoingQueues) {
+                if(this.outgoingQueues[id].length > 0) {
+                    connection = this.server.getConnection(id);
+                    connection.send(this.outgoingQueues[id]);
+                    this.outgoingQueues[id] = [];
+                }
+            }
         }
     });
     return GameServer;
