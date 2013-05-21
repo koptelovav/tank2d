@@ -1,12 +1,12 @@
-define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', '../../shared/js/listener', '../../shared/js/player', '../../shared/js/gametypes'],
-    function (GameBase,Bullet,SpriteManager,Scene, Map, TileFactory, Listener, Player) {
+define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', '../../shared/js/listener', '../../shared/js/player', 'connection','../../shared/js/gametypes'],
+    function (GameBase,Bullet,SpriteManager,Scene, Map, TileFactory, Listener, Player, Connection) {
 
         var Game = GameBase.extend({
             init: function (app) {
                 this.app = app;
                 this.spriteManager = new SpriteManager();
                 this.listener = new Listener();
-                this.sender = new Sender();
+                this.connection = new Connection('127.0.0.1','8000');
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -49,7 +49,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                         var waitStartGame = setInterval(function () {
                             if (self.map && self.map.isLoaded && self.started) {
                                 self.start();
-                                self.send(Types.Messages.LOADMAP);
+                                self.connection.send(Types.Messages.LOADMAP);
                                 clearInterval(waitStartGame);
                             }
                         }, 1000);
@@ -150,12 +150,11 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             connect: function () {
-                this.connection = io.connect("http://127.0.0.1:8000/");
-                this.connection.id = 'client-connection';
-                this.listener.addConnection(this.connection);
+                this.connection.connect();
+                this.listener.addConnection(this.connection.instance());
 
                 this.listener.on('connect',function () {
-                    this.send(Types.Messages.HELLO);
+                    this.connection.send(Types.Messages.HELLO);
                 }, this);
 
                 this.listener.on('welcome',function () {
@@ -244,11 +243,11 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             sendReady: function () {
-                this.send(Types.Messages.IREADY);
+                this.connection.send(Types.Messages.IREADY);
             },
 
             sendChatMessage: function (message) {
-                this.send(Types.Messages.CHAT);
+                this.connection.send(Types.Messages.CHAT);
             },
 
             playerFire: function(id){
@@ -340,11 +339,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     }
                 }
                 return false;
-            },
-
-            send: function(){
-                var args = JSON.stringify(_.toArray(arguments));
-                this.connection.send(args);
             }
         });
 
