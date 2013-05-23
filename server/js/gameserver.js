@@ -37,7 +37,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 this.listener.assign(player, connection);
             }, this);
 
-            this.listener.on('connect', function(player){
+            this.listener.on('assigned', function(player){
                 this.pushToPlayer(player.id, Types.Messages.CONNECT);
 
                 player.on('hello', function () {
