@@ -246,7 +246,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
         },
 
         playerSpawn: function (id) {
-            var player = this.getPlayerById(id);
+            var player = this.getEntityById(id);
 
             this.pushToAll(Types.Messages.SPAWN,
                 player.id,
@@ -254,10 +254,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 player.gridY,
                 player.orientation
             );
-        },
-
-        getPlayerById: function (id) {
-            return this.players[id];
         },
 
         addPlayer: function (player) {
