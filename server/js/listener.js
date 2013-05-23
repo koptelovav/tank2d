@@ -20,7 +20,7 @@ define(['../../shared/js/model'], function (Model) {
             });
 
             connection.once('close', function () {
-                self.emit('close', entity);
+                entity.emit('exit');
             });
 
             this.emit('connect', entity);

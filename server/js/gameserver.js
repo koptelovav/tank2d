@@ -45,19 +45,19 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                     this.incrementPopulation();
 
                     this.pushToPlayer(player.id, Types.Messages.WELCOME, player.getState());
-                    this.pushToAll(Types.Messages.JOINGAME, player.getState());
+                    this.pushToBroadcast(player.id, Types.Messages.JOINGAME, player.getState());
                     this.pushToPlayer(player.id,
                         Types.Messages.GAMEDATA,
                         this.id,
                         this.population,
                         this.teamCount,
-                        this.maxPlayers,
                         this.minPlayers,
+                        this.maxPlayers,
                         this.getPlayersInfo()
                     );
                 }, this);
 
-                player.on('close', function () {
+                player.on('exit', function () {
                     console.log('exit: '+player.id);
 
                     this.pushToBroadcast(player.id, Types.Messages.LEFTGAME,  player.id);

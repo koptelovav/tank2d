@@ -167,9 +167,9 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     this.minPlayers = minPlayers;
                     this.maxPlayers = maxPlayers;
 
-                    _.each(players, function (playerConfig) {
-                        this.entities[playerConfig.id] = playerConfig;
-                    });
+                    _.each(players, function (playerData) {
+                        this.addPlayer(playerData);
+                    }, this);
 
                     this.loadData = true;
 
@@ -183,6 +183,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
 
                 this.connection.on('joinGame',function (playerConfig) {
                     this.addPlayer(playerConfig);
+                    this.incrementPopulation();
                 }, this);
 
                 this.connection.on('leftGame',function (playerId) {
@@ -236,7 +237,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             addPlayer: function(d){
                 var player = new Player(d[0],d[1],d[2],d[3],d[4]);
                 this.addMovableEntity(player);
-                this.incrementPopulation();
                 this.emit('playerJoin',player);
             },
 
