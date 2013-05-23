@@ -1,4 +1,4 @@
-define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','../../shared/js/listener', '../../shared/js/player'],
+define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tilefactory', 'spawn','fs','listener', '../../shared/js/player'],
     function (GameBase, Map, TileFactory, Spawn, fs, Listener, Player) {
 
     var GameServer = GameBase.extend({
@@ -40,92 +40,89 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.on('playerConnect', function (connection) {
                 var player = new Player(connection.id, 'player', 'tank', this.getPlayerTeam(), false);
                 this.addPlayer(player);
+
                 this.listener.addConnection(connection);
+                this.listener.assign(player, connection);
             }, this);
 
-            this.listener.on('connect', function(connection){
-                this.pushToPlayer(connection.id, Types.Messages.CONNECT)
-            }, this);
+            this.listener.on('connect', function(player){
+                this.pushToPlayer(player.id, Types.Messages.CONNECT);
 
-            this.listener.on('hello', function (connection) {
-                var player = this.players[connection.id];
+                player.on('hello', function () {
+                    log.info("Player has joined " + this.id);
+                    this.incrementPopulation();
 
-                log.info("Player has joined " + this.id);
-                this.incrementPopulation();
+                    this.pushToPlayer(player.id, Types.Messages.WELCOME, player.getState());
+                    this.pushToAll(Types.Messages.JOINGAME, player.getState());
+                    this.pushToPlayer(player.id,
+                        Types.Messages.GAMEDATA,
+                        this.id,
+                        this.population,
+                        this.teamCount,
+                        this.maxPlayers,
+                        this.minPlayers,
+                        this.getPlayersInfo()
+                    );
+                }, this);
 
-                this.pushToPlayer(player.id, Types.Messages.WELCOME, player.getState());
-                this.pushToAll(Types.Messages.JOINGAME, player.getState());
-                this.pushToPlayer(player.id,
-                    Types.Messages.GAMEDATA,
-                    this.id,
-                    this.population,
-                    this.teamCount,
-                    this.maxPlayers,
-                    this.minPlayers,
-                    this.getPlayersInfo()
-                );
-            }, this);
+                player.on('close', function () {
+                    console.log('exit: '+player.id);
 
-            this.listener.on('close', function (connection) {
-                console.log('exit: '+connection.id);
+                    this.pushToBroadcast(player.id, Types.Messages.LEFTGAME,  player.id);
 
-                var player = this.players[connection.id];
+                    this.removePlayer(player);
+                    this.decrementPopulation();
 
-                this.pushToBroadcast(player.id, Types.Messages.LEFTGAME,  player.id);
+                    this.listener.removeConnection(connection.id);
 
-                this.removePlayer(player);
-                this.decrementPopulation();
+                    if (this.population === 0) {
+                        this.restart();
+                    }
+                }, this);
 
-                this.listener.removeConnection(connection.id);
+                player.on('ready', function () {
+                    player.isReady = true;
 
-                if (this.population === 0) {
-                    this.restart();
-                }
-            }, this);
+                    this.pushToBroadcast(player.id, Types.Messages.IREADY,  player.id);
 
-            this.listener.on('ready', function (connection) {
-                var player = this.players[connection.id];
-                player.isReady = true;
+                    if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
+                        this.isStart = true;
+                        this.pushToAll(Types.Messages.GAMESTART, this.id);
+                    }
+                }, this);
 
-                this.pushToBroadcast(player.id, Types.Messages.IREADY,  player.id);
+                player.on('gameLoad', function () {
+                    
+                    player.isLoad = true;
 
-                if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
-                    this.isStart = true;
-                    this.pushToAll(Types.Messages.GAMESTART, this.id);
-                }
-            }, this);
+                    if (this._checkAllLoaded() && !this.isPlay) {
+                        this.isPlay = true;
 
-            this.listener.on('gameLoad', function (connection) {
-                var player = this.players[connection.id];
-                player.isLoad = true;
+                        this.pushToAll(Types.Messages.GAMEPLAY,  this.id);
 
-                if (this._checkAllLoaded() && !this.isPlay) {
-                    this.isPlay = true;
+                        this.spawnAll();
+                    }
+                }, this);
 
-                    this.pushToAll(Types.Messages.GAMEPLAY,  this.id);
+                player.on('playerBeginMove', function (orientation) {
+                    
 
-                    this.spawnAll();
-                }
-            }, this);
+                    player.setOrientation(orientation);
 
-            this.listener.on('playerBeginMove', function (connection, orientation) {
-                var player = this.players[connection.id];
+                    if(!player.isMovable){
+                        player.toggleMovable();
+                        this.pushToBroadcast(player.id, Types.Messages.MOVE,  player.id,  player.orientation);
+                    }
+                }, this);
 
-                player.setOrientation(orientation);
+                player.on('playerEndMove', function () {
+                }, this);
 
-                if(!player.isMovable){
-                    player.toggleMovable();
-                    this.pushToBroadcast(player.id, Types.Messages.MOVE,  player.id,  player.orientation);
-                }
-            }, this);
+                player.on('beforeMove', function () {
+                }, this);
 
-            this.listener.on('playerEndMove', function (connection) {
-            }, this);
-
-            this.listener.on('beforeMove', function (connection) {
-            }, this);
-
-            this.listener.on('chatMessage', function (connection, message) {
+                player.on('chatMessage', function (message) {
+                }, this);
             }, this);
         },
 
