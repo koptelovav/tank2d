@@ -1,11 +1,10 @@
-define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', '../../shared/js/listener', '../../shared/js/player', 'connection','../../shared/js/gametypes'],
-    function (GameBase,Bullet,SpriteManager,Scene, Map, TileFactory, Listener, Player, Connection) {
+define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','scene', '../../shared/js/map', '../../shared/js/tilefactory', '../../shared/js/player', 'connection','../../shared/js/gametypes'],
+    function (GameBase,Bullet,SpriteManager,Scene, Map, TileFactory, Player, Connection) {
 
         var Game = GameBase.extend({
             init: function (app) {
                 this.app = app;
                 this.spriteManager = new SpriteManager();
-                this.listener = new Listener();
                 this.connection = new Connection('127.0.0.1','8000');
                 this.ready = false;
                 this.started = false;
@@ -151,18 +150,17 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
 
             connect: function () {
                 this.connection.connect();
-                this.listener.addConnection(this.connection.getSocketConnection());
 
-                this.listener.on('connect',function () {
+                this.connection.on('connect',function () {
                     this.connection.send(Types.Messages.HELLO);
                 }, this);
 
-                this.listener.on('welcome',function () {
+                this.connection.on('welcome',function () {
                     this.connected = true;
                     this.emit('playerWelcome');
                 }, this);
 
-                this.listener.on('gameData',function (connection, id, population, teamCount, minPlayers, maxPlayers, players) {
+                this.connection.on('gameData',function (id, population, teamCount, minPlayers, maxPlayers, players) {
                     this.id = id;
                     this.setPopulation(population);
                     this.teamCount = teamCount;
@@ -178,31 +176,31 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     this.emit('load');
                 }, this);
 
-                this.listener.on('gameStart',function () {
+                this.connection.on('gameStart',function () {
                     this.started = true;
                     this.emit('start');
                 }, this);
 
-                this.listener.on('joinGame',function (connection, playerConfig) {
+                this.connection.on('joinGame',function (playerConfig) {
                     this.addPlayer(playerConfig);
                 }, this);
 
-                this.listener.on('leftGame',function (connection, playerId) {
+                this.connection.on('leftGame',function (playerId) {
                     this.decrementPopulation();
                     delete this.entities[playerId];
 
                     this.emit('playerLeft',playerId);
                 }, this);
 
-                this.listener.on('iReady',function (connection, playerId) {
+                this.connection.on('iReady',function (playerId) {
                     this.emit('playerReady',playerId);
                 }, this);
 
-                this.listener.on('gamePlay',function () {
+                this.connection.on('gamePlay',function () {
                     this.emit('play');
                 }, this);
 
-                this.listener.on('spawn',function (connection, id, x, y, orientation) {
+                this.connection.on('spawn',function (id, x, y, orientation) {
                     var player;
                     if (this.entityIdExists(id)) {
                         player = this.getEntityById(id);
@@ -218,19 +216,19 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     }
                 }, this);
 
-                this.listener.on('chat',function(connection, id, message){
+                this.connection.on('chat',function(id, message){
                     this.emit('chatMessage',id, message);
                 }, this);
 
-                this.listener.on('move',function (connection, id, orientation) {
+                this.connection.on('move',function (id, orientation) {
                     this.playerMove(id, orientation);
                 }, this);
 
-                this.listener.on('endMove',function (connection, id) {
+                this.connection.on('endMove',function (id) {
                     this.playerStopMove(id);
                 }, this);
 
-                this.listener.on('syncPos',function (connection, id ,x, y, gridX, gridY) {
+                this.connection.on('syncPos',function (id ,x, y, gridX, gridY) {
                     this.entities[id].syncPososition(x, y, gridX, gridY);
                 }, this);
             },
