@@ -24,6 +24,8 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
                 this.id,
                 this.type,
                 this.kind,
+                this.x,
+                this.y,
                 this.team,
                 this.isReady
             ];

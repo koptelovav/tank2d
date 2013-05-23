@@ -53,7 +53,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                         this.teamCount,
                         this.minPlayers,
                         this.maxPlayers,
-                        this.getPlayersInfo()
+                        this.getPlayersInfo(player.id)
                     );
                 }, this);
 
@@ -111,6 +111,9 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 }, this);
 
                 player.on('beforeMove', function () {
+                }, this);
+
+                player.on('move', function () {
                 }, this);
 
                 player.on('chatMessage', function (message) {
@@ -243,16 +246,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
         },
 
         playerSpawn: function (id) {
-            var spawn,
-                player = this.getPlayerById(id);
-
-            spawn = this.getRandomSpawn(player.team);
-
-            player.setPosition(spawn.x, spawn.y);
-            player.orientation = spawn.orientation;
-            player.isPlay = true;
-
-            this.addToEntityGrid(player);
+            var player = this.getPlayerById(id);
 
             this.pushToAll(Types.Messages.SPAWN,
                 player.id,
@@ -267,9 +261,18 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
         },
 
         addPlayer: function (player) {
+            var spawn;
+
+            spawn = this.getRandomSpawn(player.team);
+            player.setPosition(spawn.x, spawn.y);
+            player.orientation = spawn.orientation;
+            player.isPlay = true;
+
             this.teams[player.team].push(player.id);
             this.players[player.id] = player;
-            this.outgoingQueues[player.id] = []
+            this.outgoingQueues[player.id] = [];
+
+            this.addToEntityGrid(player);
             this.addMovableEntity(player);
         },
 
@@ -286,10 +289,11 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             return parseInt(selectedTeam);
         },
 
-        getPlayersInfo: function () {
+        getPlayersInfo: function (ignoreId) {
             var playersInfo = [];
             _.each(this.players, function (player) {
-                playersInfo.push(player.getState());
+                if(player.id !== ignoreId)
+                    playersInfo.push(player.getState());
             });
             return playersInfo;
         },

@@ -5,8 +5,6 @@ define(['jquery', 'app'], function ($, App) {
         $(document).ready(function () {
             app = new App();
 
-//            console.info("App initialized.");
-
             app.tryConnectingGame(function(){
 
             });

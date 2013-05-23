@@ -155,8 +155,9 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     this.connection.send(Types.Messages.HELLO);
                 }, this);
 
-                this.connection.on('welcome',function () {
+                this.connection.on('welcome',function (playerData) {
                     this.connected = true;
+                    this.player = this.addPlayer(playerData);
                     this.emit('playerWelcome');
                 }, this);
 
@@ -181,8 +182,8 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     this.emit('start');
                 }, this);
 
-                this.connection.on('joinGame',function (playerConfig) {
-                    this.addPlayer(playerConfig);
+                this.connection.on('joinGame',function (playerData) {
+                    this.addPlayer(playerData);
                     this.incrementPopulation();
                 }, this);
 
@@ -235,9 +236,11 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             addPlayer: function(d){
-                var player = new Player(d[0],d[1],d[2],d[3],d[4]);
+                var player = new Player(d[0],d[1],d[2],d[5],d[6]);
+                player.setPosition(d[3],d[4]);
                 this.addMovableEntity(player);
                 this.emit('playerJoin',player);
+                return player;
             },
 
             sendReady: function () {
@@ -279,13 +282,13 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             playerMove: function (id, orientation) {
-                var player = id ? this.entities[id] : this.player;
+                var player = id ? this.getEntityById(id) : this.player;
                 player.setOrientation(orientation);
 
                 if(!player.isMovable){
                     player.toggleMovable();
                     if(!id){
-//                        this.listener.sendMove(orientation);
+                        this.connection.send(Types.Messages.MOVE, orientation);
                     }
                 }
             },
