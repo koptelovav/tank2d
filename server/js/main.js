@@ -27,7 +27,7 @@ define(['ws','utils','fs','gameserver','log', '../../shared/js/gametypes'],funct
         server.on('connect',function(WebSocketIO) {
             WebSocketIO.room = game.id;
             WebSocketIO.join(game.id);
-            game.emit('playerConnect',WebSocketIO);
+            game.emit('connect',WebSocketIO);
         });
 
         server.on('error',function() {

@@ -23,7 +23,7 @@ define(['../../shared/js/model'], function (Model) {
                 entity.emit('exit');
             });
 
-            this.emit('connect', entity);
+            this.emit('assigned', entity);
         },
 
         receiveMessage: function (message, entity) {

@@ -29,7 +29,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.population = 0;
 
 
-            this.on('playerConnect', function (connection) {
+            this.on('connect', function (connection) {
                 var player = new Player(connection.id, 'player', 'tank', this.getPlayerTeam(), false);
                 this.addPlayer(player);
 
