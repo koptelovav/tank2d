@@ -2,14 +2,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
     function (GameBase, Map, TileFactory, Spawn, fs, Listener, Player) {
 
     var GameServer = GameBase.extend({
-
-        /**
-         * Конструктор класса (инициализация игрового сервера)
-         * @this {GameServer}
-         * @param {number} id ID игрового сервера
-         * @param {string} name Название игорвого сервера (отображается пользователям)
-         * @param {WebsocketServer} websocketServer Сокет-сервер
-         */
         init: function (id, name, websocketServer) {
             this.id = id;
             this.server = websocketServer;
@@ -73,7 +65,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                     this.removePlayer(player);
                     this.decrementPopulation();
 
-                    this.listener.removeConnection(connection.id);
+                    this.listener.removeConnection(player.id);
 
                     if (this.population === 0) {
                         this.restart();
