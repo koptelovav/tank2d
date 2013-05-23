@@ -80,6 +80,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                     if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
                         this.isStart = true;
                         this.pushToAll(Types.Messages.GAMESTART, this.id);
+                        this.pushToAll(Types.Messages.SENDMAP, this.map.getData());
                     }
                 }, this);
 

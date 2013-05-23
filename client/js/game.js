@@ -11,15 +11,11 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 this.connected = false;
                 this.isLoad = false;
 
-
-                this.loadData = false;
+                this.player = null;
 
                 this.population = 0;
                 this.maxPlayers = null;
                 this.minPlayers = null;
-
-                this.player = null;
-
 
                 this.entities = {};
                 this.movableEntities = {};
@@ -34,17 +30,15 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 this.scene.newLayer('foreground', foreground);
             },
 
-            run: function (started_callback) {
+            run: function () {
                 var self = this;
 
                 this.ready = true;
-                this.connect(started_callback);
+                this.connect();
 
                 this.spriteManager.addResource(this.spriteNames).load();
 
                 var waitGameLoadData = setInterval(function () {
-                    if (self.loadData) {
-
                         var waitStartGame = setInterval(function () {
                             if (self.map && self.map.isLoaded && self.started) {
                                 self.start();
@@ -54,7 +48,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                         }, 1000);
 
                         clearInterval(waitGameLoadData);
-                    }
                 }, 100);
             },
 
@@ -74,24 +67,9 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 requestAnimFrame(this.tick.bind(this));
             },
 
-            loadMap: function () {
-                var self = this;
-
-                var filePath = '../../shared/maps/level1.json';
-
-                $.get(filePath, function (data) {
-                    self.map = new Map(self);
-
-                    self.map.on('init',function () {
-                        self.mapGrid = self.map.tiles;
-                        self.teamCount = self.map.teamCount;
-//                        console.info("Map loaded.");
-                    });
-
-                    self.map.setData(data);
-                }, 'json');
-
-
+            loadMap: function (data) {
+                this.map = new Map(this);
+                this.map.setData(data);
             },
 
             initMap: function () {
@@ -172,14 +150,16 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                         this.addPlayer(playerData);
                     }, this);
 
-                    this.loadData = true;
-
                     this.emit('load');
                 }, this);
 
                 this.connection.on('gameStart',function () {
                     this.started = true;
                     this.emit('start');
+                }, this);
+
+                this.connection.on('sendMap',function (data) {
+                    this.loadMap(data);
                 }, this);
 
                 this.connection.on('joinGame',function (playerData) {
@@ -199,6 +179,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 }, this);
 
                 this.connection.on('gamePlay',function () {
+//                    this.connection.send(Types.Messages.SENDMAP);
                     this.emit('play');
                 }, this);
 

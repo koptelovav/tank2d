@@ -22,7 +22,8 @@ Types = {
         SPAWN: 12,
         CHAT: 13,
         ENDMOVE: 14,
-        CONNECT: 15
+        CONNECT: 15,
+        SENDMAP: 16
     },
 
     Entities: {
@@ -87,6 +88,7 @@ var messages = {
     'spawn': [Types.Messages.SPAWN],
     'chat': [Types.Messages.CHAT],
     'connect': [Types.Messages.CONNECT],
+    'sendMap': [Types.Messages.SENDMAP],
 
     getType: function(message) {
         return messages[Types.getMessageName(message)][1];

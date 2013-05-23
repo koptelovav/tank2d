@@ -8,6 +8,7 @@ define(['../../shared/js/model'],
             },
 
             setData: function (map) {
+                this.data = map;
                 this.tiles = map.tiles;
                 this.width = map.width;
                 this.height = map.height;
@@ -18,6 +19,10 @@ define(['../../shared/js/model'],
                 this.isLoaded = true;
 
                 this.emit('init');
+            },
+
+            getData: function(){
+                return this.data;
             },
 
             isOutOfBounds: function (x, y) {

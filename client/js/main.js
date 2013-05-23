@@ -29,7 +29,7 @@ define(['jquery', 'app'], function ($, App) {
 
             game.on('start',function(){
                 game.setup(entities, background, foreground);
-                game.loadMap();
+//                game.loadMap();
             });
 
             game.on('load',function(){
