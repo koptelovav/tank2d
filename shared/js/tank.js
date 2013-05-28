@@ -11,6 +11,8 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.bulletColliding = true;
 
             this._super(id, type, kind, this.speed);
+
+            this.setSize(32);
         }
     });
 

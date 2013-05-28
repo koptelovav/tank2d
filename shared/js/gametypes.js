@@ -107,34 +107,42 @@ Types.getMessageCode = function(name) {
     return messages[name][0];
 };
 
-var kindLayers = {
+var kindConfig = {
     ice: {
         layer: "background",
-        animated: false
+        animated: false,
+        colliding: []
     },
     wall: {
         layer:"background",
-        animated: false
+        animated: false,
+        colliding: ['tank','bullet']
     },
     armoredwall: {
         layer: "background",
-        animated: false
+        animated: false,
+        colliding: ['tank','bullet']
     },
     trees: {
         layer: "foreground",
-        animated: false
+        animated: false,
+        colliding: []
     },
     water: {
         layer: "background",
-        animated: true
+        animated: true,
+        colliding: ['tank']
     },
     tank: {
         layer: "entities",
-        animated: true
+        animated: true,
+        colliding: ['tank','bullet']
+
     },
     bullet: {
         layer: "entities",
-        animated: false
+        animated: false,
+        colliding: ['tank','bullet']
     }
 };
 
@@ -168,10 +176,14 @@ var kinds = {
 };
 
 Types.getLayerAsKind = function(kind) {
-    return kindLayers[kind]['layer'];
+    return kindConfig[kind]['layer'];
 };
 Types.getIsAnimateAsKind = function(kind) {
-    return kindLayers[kind]['animated'];
+    return kindConfig[kind]['animated'];
+};
+
+Types.getCollidingArray = function(kind) {
+    return kindConfig[kind]['colliding'];
 };
 
 Types.isPlayer = function(kind) {
