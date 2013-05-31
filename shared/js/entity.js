@@ -27,17 +27,6 @@ define(['../../shared/js/model'], function (Model) {
                 [this.gridX, this.gridY  ],[this.gridX+1, this.gridY  ],
                 [this.gridX, this.gridY+1],[this.gridX+1, this.gridY+1]
             ];
-        },
-
-        colliding: function (entity) {
-            if (entity.id !== this.id &&
-                entity.x >= this.x && entity.x <= this.x + this.width &&
-                entity.y >= this.y && entity.x <= this.y + this.height){
-                if (Types.getCollidingArray(entity.kind).indexOf(this.kind) >= 0){
-                    return true;
-                }
-            }
-            return false;
         }
     });
 

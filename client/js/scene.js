@@ -169,6 +169,11 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
             this.layers[layerName]['entities'][sceneElement.getId()] = sceneElement;
         },
 
+        removeFromLayer: function(entity,layerName){
+            this.renderer.clearDirtyRect(this.layers[layerName], this.layers[layerName]['entities'][entity.id].oldDirtyRect);
+            delete this.layers[layerName]['entities'][entity.id];
+        },
+
         _addLayer: function(layer){
             this.layers[layer.id] = layer;
         },

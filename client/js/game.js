@@ -102,6 +102,11 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 this.scene.addToLayer(element,Types.getLayerAsKind(entity.kind));
             },
 
+            removeFromScene: function(entity){
+                this.scene.removeFromLayer(entity,Types.getLayerAsKind(entity.kind));
+            },
+
+
             initGrids: function () {
                 this.tiles = [];
                 this.entityGrid = [];
@@ -118,12 +123,38 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             moveEntities: function(){
                 _.each(this.movableEntities, function(entity){
                     if(entity.isMovable){
-                        if (this.isColliding(entity)) {
-                            this.unregisterEntityPosition(entity);
-                            entity.move();
+                        if(entity instanceof Player){
+
+                           if(this.isValidPlayerMove(entity)){
+                                entity.move();
+                            }
+                        }else if(entity instanceof Bullet){
+                            var hit = this.map.isBulletColliding.call(this.map, entity);
+
+                            if(hit === true){
+                                entity.toggleMovable();
+                                this.removeEntity(entity);
+                            }else if(_.isObject(hit) && !_.isEmpty(hit)){
+                                entity.toggleMovable();
+                                this.removeEntity(entity);
+
+                                _.each(hit, function(item){
+                                    this.removeEntity(item);
+                                }, this);
+                            }
+                            else{
+                                entity.move();
+                            }
                         }
                     }
                 }, this);
+            },
+
+            removeEntity: function(entity){
+                this.removeFromScene(entity);
+                this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
+                delete this.entities[entity.id];
+
             },
 
             connect: function () {
@@ -233,7 +264,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             playerFire: function(id){
-                var bullet = new Bullet(new Date(), 'easy', 'bullet', this.player, 10);
+                var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 10);
                 this.addMovableEntity(bullet);
                 this.addToScene(bullet);
                 bullet.toggleMovable();
