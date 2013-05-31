@@ -264,10 +264,17 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             playerFire: function(id){
-                var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 10);
+                if(this.player.fire){
+                this.player.fire = false;
+                var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 200);
                 this.addMovableEntity(bullet);
                 this.addToScene(bullet);
-                bullet.toggleMovable();
+               bullet.toggleMovable();
+                    var self = this;
+                    setTimeout(function(){
+                        self.player.fire = true;
+                    },1000);
+                }
             },
 
             playerStopMove: function(id){

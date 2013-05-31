@@ -93,11 +93,10 @@ define(['jquery', 'app'], function ($, App) {
 
             addEventListener("keydown", function (e) {
                 keyFire = keyMove = e.keyCode;
-
             }, false);
 
             addEventListener("keyup", function (e) {
-                if(13 === keyFire){
+                if(32 === keyFire){
                     keyFire = false;
                 }else{
                     keyMove = false;
@@ -119,7 +118,7 @@ define(['jquery', 'app'], function ($, App) {
                 else if (39 === keyMove || 68 === keyMove) { // Player holding right
                     app.game.playerMoveRight();
                 }
-                if(13 === keyFire){
+                if(32 === keyFire){
                     app.game.playerFire();
                 }
             });

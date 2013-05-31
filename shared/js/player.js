@@ -9,11 +9,12 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
             this.isDead = false;
             this.isPlay = false;
             this.isMovable = false;
+            this.fire = true;
 
             this.bullets = {};
 
             this._super(id, type, kind, {
-                "speed": 2,
+                "speed": 200,
                 "armor": 1,
                 "bullet": 1
             });

@@ -8,26 +8,26 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
 
             this.setPosition(player.gridX, player.gridY);
             this.setStartPosition();
-            this.setSize(16);
+            this.setSize(2);
 
         },
 
         setStartPosition: function () {
             if (this.orientation === Types.Orientations.LEFT) {
-                this.x = this.player.x;
+                this.x = this.player.x-4;
                 this.y = this.player.y + 12
             }
             else if (this.orientation === Types.Orientations.UP) {
                 this.x = this.player.x + 12;
-                this.y = this.player.y
+                this.y = this.player.y-4
             }
             else if (this.orientation === Types.Orientations.RIGHT) {
-                this.x = this.player.x + 20;
+                this.x = this.player.x + 28;
                 this.y = this.player.y + 12
             }
             else if (this.orientation === Types.Orientations.DOWN) {
                 this.x = this.player.x + 12;
-                this.y = this.player.y + 20
+                this.y = this.player.y + 28;
             }
         }
     });
