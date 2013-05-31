@@ -273,7 +273,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     var self = this;
                     setTimeout(function(){
                         self.player.fire = true;
-                    },1000);
+                    },500);
                 }
             },
 

@@ -23,10 +23,10 @@ define(['../../shared/js/entity'],function (Entity) {
         move: function () {
             this.emit('beforeMove', this);
 
-            if (this.orientation === Types.Orientations.LEFT) this.x -= 1;
-            else if (this.orientation === Types.Orientations.UP) this.y -= 1;
-            else if (this.orientation === Types.Orientations.RIGHT) this.x += 1;
-            else if (this.orientation === Types.Orientations.DOWN) this.y += 1;
+            if (this.orientation === Types.Orientations.LEFT) this.x -= 2;
+            else if (this.orientation === Types.Orientations.UP) this.y -= 2;
+            else if (this.orientation === Types.Orientations.RIGHT) this.x += 2;
+            else if (this.orientation === Types.Orientations.DOWN) this.y += 2;
             this.emit('shift', this);
 
             if (this.x / 16 <= this.gridX-1 || this.x / 16 >= this.gridX+1 ||

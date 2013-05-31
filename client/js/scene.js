@@ -68,6 +68,7 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
             this.sprite = sprite;
             this.animations = sprite.createAnimations();
             this._setDirty();
+            this.oldDirtyRect = this.dirtyRect;
             return this;
         },
 
