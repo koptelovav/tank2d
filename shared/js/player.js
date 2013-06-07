@@ -9,7 +9,7 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
             this.isDead = false;
             this.isPlay = false;
             this.isMovable = false;
-            this.fire = true;
+            this.canFire = true;
 
             this.bullets = {};
 
@@ -31,6 +31,10 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
                 this.isReady
             ];
             return state;
+        },
+
+        toggleFire: function(){
+            this.canFire = !this.canFire;
         }
     });
 

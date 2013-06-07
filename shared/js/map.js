@@ -39,6 +39,7 @@ define(['../../shared/js/model'],
                 return false;
             },
 
+
             isBulletColliding: function (bullet) {
 
                 var x = bullet.x / 16 >> 0,
@@ -47,10 +48,6 @@ define(['../../shared/js/model'],
                     id,
                     w,
                     h;
-
-                if (this.isOutOfBounds(x, y)) {
-                    return true;
-                }
 
                 var colliding = {};
 

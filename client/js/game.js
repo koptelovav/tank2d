@@ -129,21 +129,19 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                                 entity.move();
                             }
                         }else if(entity instanceof Bullet){
-                            var hit = this.map.isBulletColliding.call(this.map, entity);
-
-                            if(hit === true){
-                                entity.toggleMovable();
-                                this.removeEntity(entity);
-                            }else if(_.isObject(hit) && !_.isEmpty(hit)){
-                                entity.toggleMovable();
-                                this.removeEntity(entity);
-
-                                _.each(hit, function(item){
-                                    this.removeEntity(item);
-                                }, this);
-                            }
-                            else{
-                                entity.move();
+                            if(!this.map.isOutOfBounds(entity.gridX, entity.gridY)){
+                                var hit = this.map.isBulletColliding.call(this.map, entity);
+                                if(_.isObject(hit) && !_.isEmpty(hit)){
+                                    entity.toggleMovable();
+                                    this.removeEntity(entity);
+                                    entity.player.toggleFire();
+                                    _.each(hit, function(item){
+                                        this.removeEntity(item);
+                                    }, this);
+                                }
+                                else{
+                                    entity.move();
+                                }
                             }
                         }
                     }
@@ -264,16 +262,12 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             playerFire: function(id){
-                if(this.player.fire){
-                this.player.fire = false;
+                if(this.player.canFire){
+                this.player.toggleFire();
                 var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 200);
                 this.addMovableEntity(bullet);
                 this.addToScene(bullet);
-               bullet.toggleMovable();
-                    var self = this;
-                    setTimeout(function(){
-                        self.player.fire = true;
-                    },500);
+                bullet.toggleMovable();
                 }
             },
 
