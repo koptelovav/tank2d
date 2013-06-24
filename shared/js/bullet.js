@@ -4,6 +4,7 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this._super(id, type, kind);
             this.player = player;
             this.speed = speed;
+            this.damage = 1;
             this.orientation = player.orientation;
 
             this.setPosition(player.gridX, player.gridY);
@@ -29,6 +30,23 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
                 this.x = this.player.x + 12;
                 this.y = this.player.y + 28;
             }
+        },
+
+        destroy: function(){
+            this.toggleMovable();
+            this.player.toggleFire();
+        },
+
+        getNextPosition: function(){
+            var x = this.gridX,
+                y = this.gridY;
+
+            if (this.orientation === Types.Orientations.LEFT) x--;
+            else if (this.orientation === Types.Orientations.UP) y--;
+            else if (this.orientation === Types.Orientations.RIGHT) x++;
+            else if (this.orientation === Types.Orientations.DOWN) y++;
+
+            return [x, y];
         }
     });
 

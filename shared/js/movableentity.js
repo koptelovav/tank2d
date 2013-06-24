@@ -20,7 +20,7 @@ define(['../../shared/js/entity'],function (Entity) {
             }
         },
 
-        move: function () {
+        move: function (dt) {
             this.emit('beforeMove', this);
 
             if (this.orientation === Types.Orientations.LEFT) this.x -= 2;

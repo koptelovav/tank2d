@@ -129,22 +129,26 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                                 entity.move();
                             }
                         }else if(entity instanceof Bullet){
-                            if(!this.map.isOutOfBounds(entity.gridX, entity.gridY)){
+
                                 var hit = this.map.isBulletColliding.call(this.map, entity);
                                 if(_.isObject(hit) && !_.isEmpty(hit)){
-                                    entity.toggleMovable();
+                                    entity.destroy();
                                     this.removeEntity(entity);
-                                    entity.player.toggleFire();
                                     _.each(hit, function(item){
                                         this.removeEntity(item);
                                     }, this);
                                 }
                                 else{
+                                    if(!this.map.isOutOfBounds.apply(this.map, entity.getNextPosition()))
                                     entity.move();
+                                    else{
+                                        entity.destroy();
+                                        this.removeEntity(entity);
+                                    }
                                 }
                             }
                         }
-                    }
+
                 }, this);
             },
 
@@ -262,7 +266,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             playerFire: function(id){
-                if(this.player.canFire){
+                if(this.player.canFire()){
                 this.player.toggleFire();
                 var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 200);
                 this.addMovableEntity(bullet);

@@ -9,8 +9,10 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
             this.isDead = false;
             this.isPlay = false;
             this.isMovable = false;
-            this.canFire = true;
 
+            this.fire = true;
+            this.fireDelay = 250;
+            this.lastFireTime = Date.now();
             this.bullets = {};
 
             this._super(id, type, kind, {
@@ -34,7 +36,17 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
         },
 
         toggleFire: function(){
-            this.canFire = !this.canFire;
+            this.fire = !this.fire;
+        },
+
+        canFire: function(){
+            var dateNow = Date.now();
+
+            if(this.fire && (dateNow - this.lastFireTime > this.fireDelay)){
+                this.lastFireTime = dateNow;
+                return true
+            }
+            return false;
         }
     });
 
