@@ -268,7 +268,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             playerFire: function(id){
                 if(this.player.canFire()){
                 this.player.toggleFire();
-                var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 200);
+                var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 8);
                 this.addMovableEntity(bullet);
                 this.addToScene(bullet);
                 bullet.toggleMovable();

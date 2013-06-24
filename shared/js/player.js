@@ -16,7 +16,7 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
             this.bullets = {};
 
             this._super(id, type, kind, {
-                "speed": 200,
+                "speed": 2,
                 "armor": 1,
                 "bullet": 1
             });

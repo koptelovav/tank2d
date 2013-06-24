@@ -1,13 +1,13 @@
 <?php
+/*
 
-
-/*AuthFromSystem();
+AuthFromSystem();
 
 $countFiles = 0;
 $offset = 0;
 
 while(true){
-    $data = downloadFile('https://dev.flurry.com/eventsLogCsv.do?projectID=197320&versionCut=versionsAll&intervalCut=customInterval2012_05_16-2013_05_01&stream=true&direction=1&offset='.$offset);
+    $data = downloadFile('https://dev.flurry.com/eventsLogCsv.do?projectID=197320&versionCut=versionsAll&intervalCut=customInterval2012_05_23-2013_06_03&stream=true&direction=1&offset='.$offset);
     if (strlen($data) > 90) {
         if(preg_match('/App Advertising and Analytics/',$data) || preg_match('/Service Temporarily Unavailable/',$data)){
             sleep(15);
@@ -22,7 +22,7 @@ while(true){
         break;
     }
 }*/
-merge_file('BEGIN-2013_05_01.csv', 265);
+merge_file('2013_05_23-2013_06_03.csv', 278);
 
 function downloadFile($url)
 {

@@ -41,7 +41,7 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
             this.isDirty = false;
             this.isAnimated = false;
 
-            entity.on('shift changeOrientation', function(){
+            entity.on('redraw', function(){
                 this._setDirty();
             }, this);
 
