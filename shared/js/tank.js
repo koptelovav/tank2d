@@ -4,7 +4,7 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
         init: function (id, type, kind, config) {
             this._params = config;
             this.speed = this._params['speed'];
-            this.armor = this._params['armor'];
+            this.strength = this._params['armor'];
             this.bullet = this._params['bullet'];
 
             this.tankColliding = true;

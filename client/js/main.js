@@ -100,7 +100,7 @@ define(['jquery', 'app'], function ($, App) {
                     keyFire = false;
                 }else{
                     keyMove = false;
-                    app.game.playerStopMove()
+                     app.game.playerStopMove()
                 }
 
             }, false);

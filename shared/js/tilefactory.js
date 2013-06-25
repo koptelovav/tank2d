@@ -10,31 +10,31 @@ define(['../../shared/js/tile'],function (Tile) {
 
     Tiles.wall = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, true, true);
+            this._super(id, 'tile', kind, x, y);
         }
     });
 
     Tiles.armoredwall = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, true, true);
+            this._super(id, 'tile', kind, x, y);
         }
     });
 
     Tiles.trees = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, false, false);
+            this._super(id, 'tile', kind, x, y);
         }
     });
 
     Tiles.water = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, true, false);
+            this._super(id, 'tile', kind, x, y);
         }
     });
 
     Tiles.ice = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y, false, false);
+            this._super(id, 'tile', kind, x, y);
         }
     });
 

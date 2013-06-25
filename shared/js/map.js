@@ -34,7 +34,8 @@ define(['../../shared/js/model'],
                     return true;
                 }
                 for (var id in this.game.entityGrid[x][y]) {
-                    if (this.game.entityGrid[x][y][id]['tankColliding'] && id !== eId) return true;
+                    if (Types.getCollidingArray(this.game.entityGrid[x][y][id].kind).indexOf('tank') >= 0)
+                        return true;
                 }
                 return false;
             },

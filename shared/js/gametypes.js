@@ -111,38 +111,45 @@ var kindConfig = {
     ice: {
         layer: "background",
         animated: false,
+        strength: 0,
         colliding: []
     },
     wall: {
         layer:"background",
         animated: false,
+        strength: 30,
         colliding: ['tank','bullet']
     },
     armoredwall: {
         layer: "background",
         animated: false,
+        strength: 60,
         colliding: ['tank','bullet']
     },
     trees: {
         layer: "foreground",
         animated: false,
+        strength: 0,
         colliding: []
     },
     water: {
         layer: "background",
         animated: true,
+        strength: 0,
         colliding: ['tank']
     },
     tank: {
         layer: "entities",
         animated: true,
-        colliding: ['tank','bullet']
+        strength: 1,
+        colliding: ['tank','bullet','wall','armoredwall','water']
 
     },
     bullet: {
         layer: "entities",
         animated: false,
-        colliding: ['tank','bullet']
+        strength: 1,
+        colliding: ['tank','bullet','wall','armoredwall']
     }
 };
 
@@ -184,6 +191,12 @@ Types.getIsAnimateAsKind = function(kind) {
 
 Types.getCollidingArray = function(kind) {
     return kindConfig[kind]['colliding'];
+};
+
+Types.getKindConfig = function(kind, param) {
+    if(param) return kindConfig[kind][param];
+    else return kindConfig[kind];
+
 };
 
 Types.isPlayer = function(kind) {

@@ -124,7 +124,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 _.each(this.movableEntities, function(entity){
                     if(entity.isMovable){
                         if(entity instanceof Player){
-
                            if(this.isValidPlayerMove(entity)){
                                 entity.move();
                             }
@@ -132,21 +131,18 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                             if(!this.map.isOutOfBounds.apply(this.map, entity.move(1, true))){
                                 var hit = this.map.isBulletColliding.call(this.map, entity);
                                 if(_.isObject(hit) && !_.isEmpty(hit)){
-                                    entity.destroy();
-                                    this.removeEntity(entity);
                                     _.each(hit, function(item){
-                                        this.removeEntity(item);
+                                       if(item.strength <= entity.damage)
+                                            this.removeEntity(item);
                                     }, this);
                                 }
                                 else{
-
                                     entity.move();
-
+                                    return;
                                 }
-                            }else{
-                                entity.destroy();
-                                this.removeEntity(entity);
                             }
+                            entity.destroy();
+                            this.removeEntity(entity);
                         }
                     }
 

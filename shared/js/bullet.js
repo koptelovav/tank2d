@@ -4,13 +4,13 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this._super(id, type, kind);
             this.player = player;
             this.speed = speed;
-            this.damage = 1;
+            this.damage = 30;
+            this.strength = 1;
             this.orientation = player.orientation;
 
             this.setPosition(player.gridX, player.gridY);
             this.setStartPosition();
             this.setSize(2);
-
         },
 
         setStartPosition: function () {
