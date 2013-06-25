@@ -40,61 +40,31 @@ define(['../../shared/js/model'],
                 return false;
             },
 
-
             isBulletColliding: function (bullet) {
-
-                var x = bullet.x / 16 >> 0,
-                    y = bullet.y / 16 >> 0,
-                    entity,
+                var entity,
                     id,
-                    w,
-                    h;
+                    gridX,
+                    gridY,
+                    colliding = {},
+                    chunk = bullet.getViewChunk();
 
-                var colliding = {};
+                _.each(chunk, function(pos){
+                    gridX = pos[0] / 16 >> 0;
+                    gridY = pos[1] / 16 >> 0;
 
-                for (id in this.game.entityGrid[x][y]) {
-                    entity = this.game.entityGrid[x][y][id];
-                    if (bullet.id !== entity.id &&
-                        bullet.x >= entity.x && bullet.x <= (entity.x + entity.width) &&
-                        bullet.y >= entity.y && bullet.y <= (entity.y + entity.height)) {
-                        if (Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0) {
-                            colliding[entity.id] = entity;
+                    for (id in this.game.entityGrid[gridX][gridY]) {
+                        entity = this.game.entityGrid[gridX][gridY][id];
+
+                        if (bullet.id !== entity.id &&
+                            (pos[0]) >= entity.x && (pos[0]) <= (entity.x + entity.width) &&
+                            (pos[1]) >= entity.y && (pos[1]) <= (entity.y + entity.height)) {
+                            if (Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0) {
+                                colliding[entity.id] = entity;
+                            }
                         }
                     }
-                }
+                }, this);
 
-                if (bullet.orientation === Types.Orientations.LEFT) {
-                    y++;
-                    w = 16;
-                    h = 0;
-                }
-                else if (bullet.orientation === Types.Orientations.UP) {
-                    x++;
-                    w = 0;
-                    h = 16;
-                }
-                else if (bullet.orientation === Types.Orientations.RIGHT) {
-                    y++;
-                    w = 16;
-                    h = 0;
-                }
-                else if (bullet.orientation === Types.Orientations.DOWN) {
-                    x++;
-                    w = 0;
-                    h = 16;
-                }
-
-
-                for (id in this.game.entityGrid[x][y]) {
-                    entity = this.game.entityGrid[x][y][id];
-                    if (bullet.id !== entity.id &&
-                        (bullet.x + h) >= entity.x && (bullet.x + h) <= (entity.x + entity.width) &&
-                        (bullet.y + w) >= entity.y && (bullet.y + w) <= (entity.y + entity.height)) {
-                        if (Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0) {
-                            colliding[entity.id] = entity;
-                        }
-                    }
-                }
                 return colliding;
             }
         });
