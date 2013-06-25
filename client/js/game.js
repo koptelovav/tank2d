@@ -46,7 +46,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                                 clearInterval(waitStartGame);
                             }
                         }, 1000);
-
                         clearInterval(waitGameLoadData);
                 }, 100);
             },
@@ -55,7 +54,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 this.initGrids();
                 this.initMap();
                 this.tick();
-//                console.info("Game loop started.");
             },
 
             tick: function () {
@@ -259,7 +257,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
             },
 
             sendChatMessage: function (message) {
-                this.connection.send(Types.Messages.CHAT);
+                this.connection.send(Types.Messages.CHAT, message);
             },
 
             playerFire: function(id){
@@ -307,15 +305,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                 }
             },
 
-            isColliding: function(entity){
-                if(entity instanceof Player){
-                    return this.isValidPlayerMove(entity);
-                }else if(entity instanceof Bullet){
-                    return this.isValidBulletMove(entity);
-                }
-                return false;
-            },
-
             isValidPlayerMove: function (player) {
                 if (this.map && player) {
                     var chunk = player.getChunk();
@@ -331,26 +320,6 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                     }
                     else if (player.orientation === Types.Orientations.DOWN) {
                         return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1, player.id) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1, player.id);
-                    }
-                }
-                return false;
-            },
-
-            isValidBulletMove: function (player) {
-                if (this.map && player) {
-                    var chunk = player.getChunk();
-
-                    if (player.orientation === Types.Orientations.LEFT) {
-                        return !this.map.isBulletColliding.call(this.map, chunk[0][0] - 1, chunk[0][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[2][0] - 1, chunk[2][1], player.id);
-                    }
-                    else if (player.orientation === Types.Orientations.UP) {
-                        return !this.map.isBulletColliding.call(this.map, chunk[0][0], chunk[0][1] - 1, player.id) && !this.map.isBulletColliding.call(this.map, chunk[1][0], chunk[1][1] - 1, player.id);
-                    }
-                    else if (player.orientation === Types.Orientations.RIGHT) {
-                        return !this.map.isBulletColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id) && !this.map.isBulletColliding.call(this.map, chunk[3][0] + 1, chunk[3][1], player.id);
-                    }
-                    else if (player.orientation === Types.Orientations.DOWN) {
-                        return !this.map.isBulletColliding.call(this.map, chunk[2][0], chunk[2][1] + 1, player.id) && !this.map.isBulletColliding.call(this.map, chunk[3][0], chunk[3][1] + 1, player.id);
                     }
                 }
                 return false;
