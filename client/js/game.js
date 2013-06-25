@@ -129,7 +129,7 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                                 entity.move();
                             }
                         }else if(entity instanceof Bullet){
-
+                            if(!this.map.isOutOfBounds.apply(this.map, entity.move(1, true))){
                                 var hit = this.map.isBulletColliding.call(this.map, entity);
                                 if(_.isObject(hit) && !_.isEmpty(hit)){
                                     entity.destroy();
@@ -139,15 +139,16 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
                                     }, this);
                                 }
                                 else{
-                                    if(!this.map.isOutOfBounds.apply(this.map, entity.getNextPosition()))
+
                                     entity.move();
-                                    else{
-                                        entity.destroy();
-                                        this.removeEntity(entity);
-                                    }
+
                                 }
+                            }else{
+                                entity.destroy();
+                                this.removeEntity(entity);
                             }
                         }
+                    }
 
                 }, this);
             },

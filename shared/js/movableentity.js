@@ -9,39 +9,55 @@ define(['../../shared/js/entity'],function (Entity) {
         },
 
         setOrientation: function (newOrientation) {
+            var x,
+                y;
             if (this.orientation !== newOrientation) {
                 this.orientation = newOrientation;
+                x = this.x % 16 >= 8 ? Math.ceil(this.x / 16) : Math.round(this.x / 16);
+                y = this.y % 16 >= 8 ? Math.ceil(this.y / 16) : Math.round(this.y / 16);
+                this.setPosition(x, y);
+
                 this.emit('changeOrientation', this.orientation);
                 this.emit('redraw');
-
-              /*  var x = this.x % 16 >= 8 ? Math.ceil(this.x / 16) : Math.round(this.x / 16);
-                var y = this.y % 16 >= 8 ? Math.ceil(this.y / 16) : Math.round(this.y / 16);*/
-
-                this.setPosition(this.gridX, this.gridY);
             }
         },
 
-        move: function (dt) {
-            var dt = dt || 1;
-            this.emit('beforeMove', this);
+        move: function (dt, predict) {
+            var dt = dt || 1,
+                gridX = this.gridX,
+                gridY = this.gridY,
+                x = this.x,
+                y = this.y;
 
-            if (this.orientation === Types.Orientations.LEFT) this.x -= this.speed * dt;
-            else if (this.orientation === Types.Orientations.UP) this.y -= this.speed * dt;
-            else if (this.orientation === Types.Orientations.RIGHT) this.x += this.speed * dt;
-            else if (this.orientation === Types.Orientations.DOWN) this.y += this.speed * dt;
-            this.emit('shift', this);
 
-            if (this.x / 16 <= this.gridX-1 || this.x / 16 >= this.gridX+1 ||
-                this.y / 16 <= this.gridY-1 || this.y / 16 >= this.gridY+1) {
+            if (this.orientation === Types.Orientations.LEFT) x -= this.speed * dt;
+            else if (this.orientation === Types.Orientations.UP) y -= this.speed * dt;
+            else if (this.orientation === Types.Orientations.RIGHT) x += this.speed * dt;
+            else if (this.orientation === Types.Orientations.DOWN) y += this.speed * dt;
 
-                if (this.orientation === Types.Orientations.LEFT) this.gridX--;
-                else if (this.orientation === Types.Orientations.UP) this.gridY--;
-                else if (this.orientation === Types.Orientations.RIGHT) this.gridX++;
-                else if (this.orientation === Types.Orientations.DOWN) this.gridY++;
+            if (x / 16 <= gridX-1 || x / 16 >= gridX+1 ||
+                y / 16 <= gridY-1 || y / 16 >= gridY+1) {
+
+                if (this.orientation === Types.Orientations.LEFT) gridX--;
+                else if (this.orientation === Types.Orientations.UP) gridY--;
+                else if (this.orientation === Types.Orientations.RIGHT) gridX++;
+                else if (this.orientation === Types.Orientations.DOWN) gridY++;
             }
 
-            this.emit('afterMove', this);
-            this.emit('redraw');
+            if(predict){
+                return [gridX, gridY];
+            }else{
+                this.emit('beforeMove', this);
+
+                this.x = x;
+                this.y = y;
+                this.gridX = gridX;
+                this.gridY = gridY;
+
+                this.emit('shift', this);
+                this.emit('afterMove', this);
+                this.emit('redraw');
+            }
         },
 
         syncPososition: function(x, y, gridX, gridY){

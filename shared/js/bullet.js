@@ -35,18 +35,6 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
         destroy: function(){
             this.toggleMovable();
             this.player.toggleFire();
-        },
-
-        getNextPosition: function(){
-            var x = this.gridX,
-                y = this.gridY;
-
-            if (this.orientation === Types.Orientations.LEFT) x--;
-            else if (this.orientation === Types.Orientations.UP) y--;
-            else if (this.orientation === Types.Orientations.RIGHT) x++;
-            else if (this.orientation === Types.Orientations.DOWN) y++;
-
-            return [x, y];
         }
     });
 
