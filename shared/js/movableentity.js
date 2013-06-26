@@ -25,12 +25,10 @@ define(['../../shared/js/entity'],function (Entity) {
         },
 
         move: function (dt, predict) {
-            var dt = dt || 1,
-                gridX = this.gridX,
+            var gridX = this.gridX,
                 gridY = this.gridY,
                 x = this.x,
                 y = this.y;
-
 
             if (this.orientation === Types.Orientations.LEFT) x -= this.speed * dt;
             else if (this.orientation === Types.Orientations.UP) y -= this.speed * dt;
