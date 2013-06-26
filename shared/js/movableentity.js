@@ -9,13 +9,15 @@ define(['../../shared/js/entity'],function (Entity) {
         },
 
         setOrientation: function (newOrientation) {
-            var x,
-                y;
+            var gridX,
+                gridY;
             if (this.orientation !== newOrientation) {
                 this.orientation = newOrientation;
-                x = this.x % 16 >= 8 ? Math.ceil(this.x / 16) : Math.round(this.x / 16);
-                y = this.y % 16 >= 8 ? Math.ceil(this.y / 16) : Math.round(this.y / 16);
-                this.setPosition(x, y);
+
+                gridX = (this.x / 16 + 0.5) << 0;
+                gridY = (this.y / 16 + 0.5) << 0;
+
+                this.setPosition(gridX, gridY);
 
                 this.emit('changeOrientation', this.orientation);
                 this.emit('redraw');

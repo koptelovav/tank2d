@@ -47,27 +47,39 @@ define(['../../shared/js/model'],
                     id,
                     gridX,
                     gridY,
+                    x,
+                    y,
+                    collides,
                     colliding = {},
                     chunk = bullet.getViewChunk();
 
                 _.each(chunk, function(pos){
-                    gridX = pos[0] / 16 >> 0;
-                    gridY = pos[1] / 16 >> 0;
+                    x = pos[0];
+                    y = pos[1];
+                    gridX = x / 16 >> 0;
+                    gridY = y / 16 >> 0;
 
                     for (id in this.game.entityGrid[gridX][gridY]) {
                         entity = this.game.entityGrid[gridX][gridY][id];
 
+                        collides = this.collides(x, y,
+                            x + bullet.height, y + bullet.width,
+                            entity.x, entity.y,
+                            entity.x + entity.height, entity.y + entity.width);
+
                         if (bullet.id !== entity.id &&
-                            (pos[0]) >= entity.x && (pos[0]) <= (entity.x + entity.width) &&
-                            (pos[1]) >= entity.y && (pos[1]) <= (entity.y + entity.height)) {
-                            if (Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0) {
+                            collides &&
+                            Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0)
                                 colliding[entity.id] = entity;
-                            }
-                        }
                     }
                 }, this);
 
                 return colliding;
+            },
+
+            collides: function(x, y, r, b, x2, y2, r2, b2) {
+                return !(r <= x2 || x > r2 ||
+                    b <= y2 || y > b2);
             }
         });
         return Map;
