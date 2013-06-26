@@ -76,8 +76,8 @@ define(['../../shared/js/model'],
                         y = frame.y,
                         w = sprite.width,
                         h = sprite.height,
-                        ox = entity.getX(),
-                        oy = entity.getY(),
+                        ox = (0.5 + entity.getX()) << 0,
+                        oy = (0.5 + entity.getY()) << 0,
                         dw = w,
                         dh = h;
 
@@ -88,7 +88,7 @@ define(['../../shared/js/model'],
             },
 
             clearDirtyRect: function(layer,r) {
-                layer.ctx.clearRect(r.x >> 0, r.y >> 0, r.w, r.h);
+                layer.ctx.clearRect((0.5 + r.x) << 0, (0.5 + r.y) << 0, r.w, r.h);
             },
 
             renderLayer: function(layer){
