@@ -307,22 +307,14 @@ define(['../../shared/js/gamebase','../../shared/js/bullet','spritemanager','sce
 
             isValidPlayerMove: function (player) {
                 if (this.map && player) {
-                    var chunk = player.getChunk();
+                    var result = true,
+                        chunk = player.getChunk(true);
 
-                    if (player.orientation === Types.Orientations.LEFT) {
-                        return !this.map.isTankColliding.call(this.map, chunk[0][0] - 1, chunk[0][1], player.id) && !this.map.isTankColliding.call(this.map, chunk[2][0] - 1, chunk[2][1], player.id);
-                    }
-                    else if (player.orientation === Types.Orientations.UP) {
-                        return !this.map.isTankColliding.call(this.map, chunk[0][0], chunk[0][1] - 1, player.id) && !this.map.isTankColliding.call(this.map, chunk[1][0], chunk[1][1] - 1, player.id);
-                    }
-                    else if (player.orientation === Types.Orientations.RIGHT) {
-                        return !this.map.isTankColliding.call(this.map, chunk[1][0] + 1, chunk[1][1], player.id) && !this.map.isTankColliding.call(this.map, chunk[3][0] + 1, chunk[3][1], player.id);
-                    }
-                    else if (player.orientation === Types.Orientations.DOWN) {
-                        return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1, player.id) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1, player.id);
-                    }
+                    _.each(chunk, function(pos){
+                        result = result && !this.map.isTankColliding.call(this.map,pos[0],pos[1],player.id);
+                    },this);
                 }
-                return false;
+                return result;
             }
         });
 
