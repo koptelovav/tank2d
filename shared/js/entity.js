@@ -22,13 +22,6 @@ define(['../../shared/js/model'], function (Model) {
             this.gridY = y;
         },
 
-        getChunk2: function () {
-            return [
-                [this.gridX, this.gridY  ],[this.gridX+1, this.gridY  ],
-                [this.gridX, this.gridY+1],[this.gridX+1, this.gridY+1]
-            ];
-        },
-
         getChunk: function (predict) {
             var i,
                 j,

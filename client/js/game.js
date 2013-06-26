@@ -20,6 +20,8 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.entities = {};
                 this.movableEntities = {};
 
+                this.lastTime = 0;
+
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet"];
             },
 
@@ -58,9 +60,14 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             tick: function () {
                 if (this.started) {
+                    var now = Date.now();
+                    var dt = (now - this.lastTime) / 1000.0;
+
                     this.emit('tick');
-                    this.moveEntities();
+                    this.moveEntities(dt);
                     this.scene.refreshFrame();
+
+                    this.lastTime = now;
                 }
                 requestAnimFrame(this.tick.bind(this));
             },
@@ -118,15 +125,15 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 }
             },
 
-            moveEntities: function () {
+            moveEntities: function (dt) {
                 _.each(this.movableEntities, function (entity) {
                     if (entity.isMovable) {
                         if (entity instanceof Player) {
                             if (this.isValidPlayerMove(entity)) {
-                                entity.move();
+                                entity.move(dt);
                             }
                         } else if (entity instanceof Bullet) {
-                            if (!this.map.isOutOfBounds.apply(this.map, entity.move(1, true))) {
+                            if (!this.map.isOutOfBounds.apply(this.map, entity.move(dt, true))) {
                                 var hit = this.map.isBulletColliding.call(this.map, entity);
                                 if (_.isObject(hit) && !_.isEmpty(hit)) {
                                     _.each(hit, function (item) {
@@ -135,7 +142,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                     }, this);
                                 }
                                 else {
-                                    entity.move();
+                                    entity.move(dt);
                                     return;
                                 }
                             }
@@ -263,7 +270,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
             playerFire: function (id) {
                 if (this.player.canFire()) {
                     this.player.toggleFire();
-                    var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 8);
+                    var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 300);
                     this.addMovableEntity(bullet);
                     this.addToScene(bullet);
                     bullet.toggleMovable();

@@ -1,4 +1,4 @@
-define(['jquery', 'app'], function ($, App) {
+define(['jquery', 'app','input'], function ($, App) {
     var app, game;
 
     var initApp = function () {
@@ -80,14 +80,6 @@ define(['jquery', 'app'], function ($, App) {
                 app.addChatMessage(palyerId,message);
             });
 
-            $("body").keydown(function(e) {
-               /* var code = (e.keyCode ? e.keyCode : e.which);
-                if(code == 13 && app.$chatInput.val()) {
-                    app.sendChatMessage(app.$chatInput.val());
-                    app.$chatInput.val('');
-                }*/
-            });
-
             var keyFire,
                 keyMove;
 
@@ -106,19 +98,20 @@ define(['jquery', 'app'], function ($, App) {
             }, false);
 
             game.on('tick', function(){
-                if (38 === keyMove || 87 === keyMove) { // Player holding up
-                    app.game.playerMoveUp();
-                }
-                else if (40 === keyMove || 83 === keyMove) { // Player holding down
+                if(input.isDown('DOWN') || input.isDown('s')) {
                     app.game.playerMoveDown();
                 }
-                else if (37 === keyMove || 65 === keyMove) { // Player holding left
+                else if(input.isDown('UP') || input.isDown('w')) {
+                    app.game.playerMoveUp();
+                }
+                else if(input.isDown('LEFT') || input.isDown('a')) {
                     app.game.playerMoveLeft();
                 }
-                else if (39 === keyMove || 68 === keyMove) { // Player holding right
+                else if(input.isDown('RIGHT') || input.isDown('d')) {
                     app.game.playerMoveRight();
                 }
-                if(32 === keyFire){
+
+                if(input.isDown('SPACE')) {
                     app.game.playerFire();
                 }
             });

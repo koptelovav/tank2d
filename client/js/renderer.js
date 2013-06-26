@@ -88,7 +88,7 @@ define(['../../shared/js/model'],
             },
 
             clearDirtyRect: function(layer,r) {
-                layer.ctx.clearRect(r.x, r.y, r.w, r.h);
+                layer.ctx.clearRect(r.x >> 0, r.y >> 0, r.w, r.h);
             },
 
             renderLayer: function(layer){

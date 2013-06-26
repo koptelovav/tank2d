@@ -10,7 +10,7 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
 
             this.setPosition(player.gridX, player.gridY);
             this.setStartPosition();
-            this.setSize(4);
+            this.setSize(8);
         },
 
         setStartPosition: function () {
