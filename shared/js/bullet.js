@@ -9,7 +9,6 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.orientation = player.orientation;
 
             this.setPosition(player.gridX, player.gridY);
-            this.setStartPosition();
 
             if (this.orientation === Types.Orientations.LEFT ||
                 this.orientation === Types.Orientations.RIGHT) {
@@ -19,25 +18,13 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
                 this.orientation === Types.Orientations.DOWN) {
                 this.setSize(8,16);
             }
+            this.setStartPosition();
         },
 
         setStartPosition: function () {
-            if (this.orientation === Types.Orientations.LEFT) {
-                this.x = this.player.x-4;
-                this.y = this.player.y + 12
-            }
-            else if (this.orientation === Types.Orientations.UP) {
-                this.x = this.player.x + 12;
-                this.y = this.player.y-4
-            }
-            else if (this.orientation === Types.Orientations.RIGHT) {
-                this.x = this.player.x + 28;
-                this.y = this.player.y + 12
-            }
-            else if (this.orientation === Types.Orientations.DOWN) {
-                this.x = this.player.x + 12;
-                this.y = this.player.y + 28;
-            }
+
+            this.x = this.player.x + this.player.height / 2 - this.width / 2;
+            this.y = this.player.y + this.player.width / 2 - this.height / 2;
         },
 
         destroy: function(){
