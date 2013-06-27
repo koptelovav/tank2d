@@ -10,7 +10,15 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
 
             this.setPosition(player.gridX, player.gridY);
             this.setStartPosition();
-            this.setSize(8);
+
+            if (this.orientation === Types.Orientations.LEFT ||
+                this.orientation === Types.Orientations.RIGHT) {
+                this.setSize(16,8);
+            }
+            else if (this.orientation === Types.Orientations.UP ||
+                this.orientation === Types.Orientations.DOWN) {
+                this.setSize(8,16);
+            }
         },
 
         setStartPosition: function () {
@@ -35,47 +43,6 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
         destroy: function(){
             this.toggleMovable();
             this.player.toggleFire();
-        },
-
-        getChunk: function(){
-            var chunk = [[this.gridX, this.gridY]],
-                gridX2 = this.gridX,
-                gridY2 = this.gridY;
-
-            if (this.orientation === Types.Orientations.LEFT ||
-                this.orientation === Types.Orientations.RIGHT) {
-                gridY2 ++;
-            }
-            else if (this.orientation === Types.Orientations.UP ||
-                this.orientation === Types.Orientations.DOWN) {
-                gridX2 ++;
-            }
-
-            chunk.push([gridX2,gridY2]);
-
-            return chunk;
-        },
-
-        getViewChunk: function(){
-            var chunk = [[this.x, this.y]],
-                x2 = this.x,
-                y2 = this.y;
-
-            if (this.orientation === Types.Orientations.LEFT ||
-                this.orientation === Types.Orientations.RIGHT) {
-                y2 += 16;
-                chunk.push([this.x,y2]);
-                chunk.push([this.x+this.height,y2]);
-                chunk.push([this.x+this.height,this.y]);
-            }
-            else if (this.orientation === Types.Orientations.UP ||
-                this.orientation === Types.Orientations.DOWN) {
-                x2 +=16;
-                chunk.push([x2,this.y])
-                chunk.push([x2,this.y+this.width]);
-                chunk.push([this.x,this.y+this.width]);
-            }
-            return chunk;
         }
     });
 

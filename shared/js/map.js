@@ -51,7 +51,7 @@ define(['../../shared/js/model'],
                     y,
                     collides,
                     colliding = {},
-                    chunk = bullet.getViewChunk();
+                    chunk = bullet.getViewBox();
 
                 _.each(chunk, function(pos){
                     x = pos[0];

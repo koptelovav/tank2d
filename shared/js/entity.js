@@ -42,7 +42,16 @@ define(['../../shared/js/model'], function (Model) {
                 }
 
             return chunk;
-        }
+        },
+
+        getViewBox: function () {
+        return [
+            [this.x, this.y],
+            [this.x, this.y+this.width],
+            [this.x+this.height, this.y],
+            [this.x+this.height, this.y+this.width]
+        ];
+    }
     });
 
     return Entity;
