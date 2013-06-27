@@ -64,14 +64,17 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             if (this.orientation === Types.Orientations.LEFT ||
                 this.orientation === Types.Orientations.RIGHT) {
                 y2 += 16;
+                chunk.push([this.x,y2]);
+                chunk.push([this.x+this.height,y2]);
+                chunk.push([this.x+this.height,this.y]);
             }
             else if (this.orientation === Types.Orientations.UP ||
                 this.orientation === Types.Orientations.DOWN) {
                 x2 +=16;
+                chunk.push([x2,this.y])
+                chunk.push([x2,this.y+this.width]);
+                chunk.push([this.x,this.y+this.width]);
             }
-
-            chunk.push([x2,y2]);
-
             return chunk;
         }
     });
