@@ -59,20 +59,21 @@ define(['../../shared/js/model'],
                     gridX = x / 16 >> 0;
                     gridY = y / 16 >> 0;
 
-                    for (id in this.game.entityGrid[gridX][gridY]) {
-                        entity = this.game.entityGrid[gridX][gridY][id];
+                    if (!this.isOutOfBounds(gridX, gridY))
+                        for (id in this.game.entityGrid[gridX][gridY]) {
+                            entity = this.game.entityGrid[gridX][gridY][id];
 
-                        collides = this.collides(x, y,
-                            x + bullet.height, y + bullet.width,
-                            entity.x, entity.y,
-                            entity.x + entity.height, entity.y + entity.width);
+                            collides = this.collides(x, y,
+                                x + bullet.height, y + bullet.width,
+                                entity.x, entity.y,
+                                entity.x + entity.height, entity.y + entity.width);
 
-                        if (bullet.id !== entity.id &&
-                            bullet.player.id !== entity.id &&
-                            collides &&
-                            Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0)
-                                colliding[entity.id] = entity;
-                    }
+                            if (bullet.id !== entity.id &&
+                                bullet.player.id !== entity.id &&
+                                collides &&
+                                Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0)
+                                    colliding[entity.id] = entity;
+                        }
                 }, this);
 
                 return colliding;
