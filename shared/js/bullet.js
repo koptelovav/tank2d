@@ -22,9 +22,14 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
         },
 
         setStartPosition: function () {
+            var dSize = this.height > this.width ? this.width : this.height;
+            this.x = this.player.x + this.player.height / 2 - dSize / 2;
+            this.y = this.player.y + this.player.width / 2 - dSize / 2;
 
-            this.x = this.player.x + this.player.height / 2 - this.width / 2;
-            this.y = this.player.y + this.player.width / 2 - this.height / 2;
+            if (this.orientation === Types.Orientations.LEFT) this.x -= this.player.height / 2;
+            else if (this.orientation === Types.Orientations.UP) this.y -= this.player.width / 2;
+            else if (this.orientation === Types.Orientations.RIGHT) this.x += this.player.height / 2;
+            else if (this.orientation === Types.Orientations.DOWN) this.y += this.player.width / 2;
         },
 
         destroy: function(){
