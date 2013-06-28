@@ -19,6 +19,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
             this.spawns = {};
             this.players = {};
+            this.base = {};
             this.entities = {};
             this.movableEntities = {};
             this.teams = {};
@@ -53,7 +54,8 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                         this.teamCount,
                         this.minPlayers,
                         this.maxPlayers,
-                        this.getPlayersInfo(player.id)
+                        this.getPlayersInfo(player.id),
+                        this.base
                     );
                 }, this);
 
@@ -131,6 +133,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 this.minPlayers = this.map.minPlayers;
                 this.maxPlayers = this.map.maxPlayers;
                 this.teamCount = this.map.teamCount;
+                this.base = this.map.base;
                 this.initEntityGrid();
                 this.initMapTails();
                 this.initTeams();

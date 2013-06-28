@@ -15,8 +15,6 @@ define(['../../shared/js/model'],
                 this.frameCount = 0;
                 this.realFPS = 0;
 
-                this.buffer = document.createElement('canvas');
-                this.bufferCtx = this.buffer.getContext('2d');
             },
 
             renderFrame: function () {
@@ -85,9 +83,7 @@ define(['../../shared/js/model'],
                         dh = h;
 
 
-
-                    //layer.ctx.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
-                    this.bufferCtx.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
+                    layer.ctx.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
                 }
             },
 
@@ -97,15 +93,14 @@ define(['../../shared/js/model'],
 
             renderLayer: function(layer){
                 var self = this;
-                this.buffer.width = layer.canvas.width;
-                this.buffer.height = layer.canvas.height;
 
                 layer.forEachAnimatedEntities(function(entity){
                     entity.currentAnimation.update(new Date());
                 });
 
-                this.clearLayerDirtyRects(layer);
+               this.clearLayerDirtyRects(layer);
 
+                layer.ctx.save();
                 layer.forEachDirtyEntities(function(entity){
                     if (entity.sprite.isLoaded) {
                             self.drawEntity(entity, layer);
@@ -114,9 +109,6 @@ define(['../../shared/js/model'],
                             entity.dirtyRect = null;
                         }
                 });
-
-                layer.ctx.save();
-                layer.ctx.drawImage(this.buffer, 0, 0);
                 layer.ctx.restore();
             },
 

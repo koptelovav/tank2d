@@ -14,6 +14,12 @@ define(['../../shared/js/tile'],function (Tile) {
         }
     });
 
+    Tiles.base = Tile.extend({
+        init: function (id, kind, x, y) {
+            this._super(id, 'tile', kind, x, y);
+        }
+    });
+
     Tiles.armoredwall = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);

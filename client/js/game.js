@@ -18,11 +18,12 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.minPlayers = null;
 
                 this.entities = {};
+                this.base = {};
                 this.movableEntities = {};
 
                 this.lastTime = 0;
 
-                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet"];
+                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base"];
             },
 
             setup: function (entities, background, foreground) {
@@ -96,6 +97,23 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                         }
                     }
                 }
+
+                _.each(this.base, function(pos, index){
+                    id = 5000 + '45645'+ index;
+                    tile = TileFactory.create(id, 'base', pos[0], pos[1]);
+
+                    _.each(tile.getChunk(), function(pos){
+                        console.log(pos[0],pos[1]);
+                        for (id in this.entityGrid[pos[0]][pos[1]]) {
+                            this.removeEntity(this.entityGrid[pos[0]][pos[1]][id]);
+                        }
+                    }, this);
+
+                    this.addToEntityGrid(tile);
+                    this.addEntity(tile);
+                    this.addToScene(tile);
+                }, this);
+
             },
 
             addToScene: function (entity) {
@@ -156,7 +174,9 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             removeEntity: function (entity) {
                 this.removeFromScene(entity);
-                this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
+                _.each(entity.getChunk(), function(pos){
+                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
+                }, this);
                 delete this.entities[entity.id];
 
             },
@@ -174,12 +194,15 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                     this.emit('playerWelcome');
                 }, this);
 
-                this.connection.on('gameData', function (id, population, teamCount, minPlayers, maxPlayers, players) {
+                this.connection.on('gameData', function (id, population, teamCount, minPlayers, maxPlayers, players, base) {
                     this.id = id;
                     this.setPopulation(population);
                     this.teamCount = teamCount;
                     this.minPlayers = minPlayers;
                     this.maxPlayers = maxPlayers;
+                    this.base = base;
+
+                    console.log(this.base);
 
                     _.each(players, function (playerData) {
                         this.addPlayer(playerData);

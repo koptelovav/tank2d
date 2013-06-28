@@ -108,34 +108,52 @@ Types.getMessageCode = function(name) {
 };
 
 var kindConfig = {
+    base: {
+        layer: "background",
+        animated: false,
+        strength: 0,
+        width: 32,
+        height: 32,
+        colliding: ['tank','bullet']
+    },
     ice: {
         layer: "background",
         animated: false,
         strength: 0,
+        width: 16,
+        height: 16,
         colliding: []
     },
     wall: {
         layer:"background",
         animated: false,
         strength: 30,
+        width: 16,
+        height: 16,
         colliding: ['tank','bullet']
     },
     armoredwall: {
         layer: "background",
         animated: false,
         strength: 60,
+        width: 16,
+        height: 16,
         colliding: ['tank','bullet']
     },
     trees: {
         layer: "foreground",
         animated: false,
         strength: 0,
+        width: 16,
+        height: 16,
         colliding: []
     },
     water: {
         layer: "background",
         animated: true,
         strength: 0,
+        width: 16,
+        height: 16,
         colliding: ['tank']
     },
     tank: {

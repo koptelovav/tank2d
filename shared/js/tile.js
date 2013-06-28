@@ -4,19 +4,7 @@ define(['../../shared/js/entity'], function (Entity) {
             this._super(id, type, kind);
             this.strength = Types.getKindConfig(kind,'strength');
             this.setPosition(x,y);
-            this.setSize(16);
-        },
-
-        isBulletColliding: function () {
-            return this.bulletColliding;
-        },
-
-        isTankColliding: function () {
-            return this.tankColliding;
-        },
-
-        getChunk:function(){
-            return [[this.gridX, this.gridY]];
+            this.setSize(Types.getKindConfig(kind,'width'),Types.getKindConfig(kind,'height'));
         }
     });
 
