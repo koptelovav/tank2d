@@ -68,6 +68,7 @@ define(['../../shared/js/model'],
                             entity.x + entity.height, entity.y + entity.width);
 
                         if (bullet.id !== entity.id &&
+                            bullet.player.id !== entity.id &&
                             collides &&
                             Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0)
                                 colliding[entity.id] = entity;
