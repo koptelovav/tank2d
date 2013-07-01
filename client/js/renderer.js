@@ -92,10 +92,11 @@ define(['../../shared/js/model'],
             },
 
             renderLayer: function(layer){
-                var self = this;
+                var self = this,
+                    now = Date.now();;
 
                 layer.forEachAnimatedEntities(function(entity){
-                    entity.currentAnimation.update(new Date());
+                    entity.currentAnimation.update(now);
                 });
 
                this.clearLayerDirtyRects(layer);
