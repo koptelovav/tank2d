@@ -20,6 +20,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.entities = {};
                 this.base = {};
                 this.movableEntities = {};
+                this.entityGrid = [];
 
                 this.lastTime = 0;
 
@@ -54,7 +55,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
             },
 
             start: function () {
-                this.initGrids();
+                this.initEntityGrid();
                 this.initMap();
                 this.tick();
             },
@@ -78,41 +79,10 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.map.setData(data);
             },
 
-            initMap: function () {
-                var kind,
-                    tile,
-                    mId = 1,
-                    id;
-
-                for (var j, i = 0; i < this.map.height; i++) {
-                    for (j = 0; j < this.map.width; j++) {
-                        if ((kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
-                            id = 5000 + mId + String(i) + String(j);
-                            tile = TileFactory.create(id, kind, i, j);
-                            this.addToEntityGrid(tile);
-                            this.addEntity(tile);
-                            this.addToScene(tile);
-
-                            mId++;
-                        }
-                    }
-                }
-
-                _.each(this.map.teams, function(team, index){
-                    id = 5000 + '45645'+ index;
-                    tile = TileFactory.create(id, 'base', team.base.x, team.base.y);
-                    tile.setTeam(team);
-
-                    _.each(tile.getChunk(), function(pos){
-                        for (id in this.entityGrid[pos[0]][pos[1]]) {
-                            this.removeEntity(this.entityGrid[pos[0]][pos[1]][id]);
-                        }
-                    }, this);
-
-                    this.addToEntityGrid(tile);
-                    this.addEntity(tile);
-                    this.addToScene(tile);
-                }, this);
+            addStaticEntity: function(entity){
+                this.addEntity(entity);
+                this.addToEntityGrid(entity);
+                this.addToScene(entity);
             },
 
             addToScene: function (entity) {
@@ -126,20 +96,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             removeFromScene: function (entity) {
                 this.scene.removeFromLayer(entity, Types.getLayerAsKind(entity.kind));
-            },
-
-
-            initGrids: function () {
-                this.tiles = [];
-                this.entityGrid = [];
-                for (var i = 0; i < this.map.height; i++) {
-                    this.tiles[i] = [];
-                    this.entityGrid[i] = [];
-                    for (var j = 0; j < this.map.width; j++) {
-                        this.tiles[i][j] = {};
-                        this.entityGrid[i][j] = {};
-                    }
-                }
             },
 
             moveEntities: function (dt) {
@@ -156,6 +112,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                     _.each(hit, function (item) {
                                         if (item.strength <= entity.damage)
                                             this.removeEntity(item);
+                                            this.removeFromScene(item);
                                     }, this);
                                 }
                                 else {
@@ -165,19 +122,11 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                             }
                             entity.destroy();
                             this.removeEntity(entity);
+                            this.removeFromScene(entity);
                         }
                     }
 
                 }, this);
-            },
-
-            removeEntity: function (entity) {
-                this.removeFromScene(entity);
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                }, this);
-                delete this.entities[entity.id];
-
             },
 
             connect: function () {

@@ -3,7 +3,8 @@ Types = {
         PLAYER: 1,
         GAMESERVER: 2,
         CONNECTION: 3,
-        TAIL: 4
+        TAIL: 4,
+        BASE: 5
     },
 
     Messages: {

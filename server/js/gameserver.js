@@ -135,7 +135,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 this.teamCount = this.map.teamCount;
                 this.base = this.map.base;
                 this.initEntityGrid();
-                this.initMapTails();
+                this.initMap();
                 this.initTeams();
                 this.initSpawns(this.map.spawns);
             }, this);
@@ -155,37 +155,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.isPlay = false;
             this.population = 0;
             this.initEntityGrid();
-            this.initMapTails();
-        },
-
-        initEntityGrid: function () {
-            for (var j, i = 0; i < this.map.height; i++) {
-                this.entityGrid[i] = [];
-                for (j = 0; j < this.map.width; j++) {
-                    this.entityGrid[i][j] = {};
-                }
-            }
-        },
-
-        initMapTails: function () {
-            var id,
-                kind,
-                tail,
-                mId = 1;
-            for (var j, i = 0; i < this.map.height; i++) {
-                for (j = 0; j < this.map.width; j++) {
-                    if (this.map.tiles[i][j] !== 0 && (kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
-                        id = 5000 + mId + String(i) + String(j);
-                        tail = TileFactory.create(id, kind, i, j);
-                        this.entities[tail.id] = tail;
-                        this.addToEntityGrid(tail);
-                        mId++;
-                    }
-                }
-            }
-            if (this.isLoaded) {
-                console.info("Collision grid generated.");
-            }
+            this.initMap();
         },
 
         moveEntities: function(){
