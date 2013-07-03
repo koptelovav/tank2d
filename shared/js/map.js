@@ -17,6 +17,7 @@ define(['../../shared/js/model'],
                 this.teamCount = map.teamcount;
                 this.spawns = map.spawns;
                 this.base = map.base;
+                this.teams = map.teams;
                 this.isLoaded = true;
 
                 this.emit('init');

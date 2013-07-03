@@ -4,7 +4,7 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this._super(id, type, kind);
             this.player = player;
             this.speed = speed;
-            this.damage = 30;
+            this.damage = 70;
             this.strength = 1;
             this.orientation = player.orientation;
 

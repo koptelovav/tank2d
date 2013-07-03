@@ -14,7 +14,6 @@ define(['../../shared/js/model'],
                 this.lastTime = new Date();
                 this.frameCount = 0;
                 this.realFPS = 0;
-
             },
 
             renderFrame: function () {
@@ -77,8 +76,8 @@ define(['../../shared/js/model'],
                         y = frame.y,
                         w = sprite.width,
                         h = sprite.height,
-                        ox = (0.5 + entity.getX()) << 0,
-                        oy = (0.5 + entity.getY()) << 0,
+                        ox = entity.getX(),
+                        oy = entity.getY(),
                         dw = w,
                         dh = h;
 
@@ -88,7 +87,7 @@ define(['../../shared/js/model'],
             },
 
             clearDirtyRect: function(layer,r) {
-                layer.ctx.clearRect((0.5 + r.x) << 0, (0.5 + r.y) << 0, r.w, r.h);
+                layer.ctx.clearRect(r.x, r.y, r.w, r.h);
             },
 
             renderLayer: function(layer){

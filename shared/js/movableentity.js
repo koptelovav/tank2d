@@ -28,12 +28,13 @@ define(['../../shared/js/entity'],function (Entity) {
             var gridX = this.gridX,
                 gridY = this.gridY,
                 x = this.x,
-                y = this.y;
+                y = this.y,
+                dPosition = (0.5 + this.speed * dt) << 0;
 
-            if (this.orientation === Types.Orientations.LEFT) x -= this.speed * dt;
-            else if (this.orientation === Types.Orientations.UP) y -= this.speed * dt;
-            else if (this.orientation === Types.Orientations.RIGHT) x += this.speed * dt;
-            else if (this.orientation === Types.Orientations.DOWN) y += this.speed * dt;
+            if (this.orientation === Types.Orientations.LEFT) x -= dPosition;
+            else if (this.orientation === Types.Orientations.UP) y -= dPosition;
+            else if (this.orientation === Types.Orientations.RIGHT) x += dPosition;
+            else if (this.orientation === Types.Orientations.DOWN) y += dPosition;
 
             if (x / 16 <= gridX-1 || x / 16 >= gridX+1 ||
                 y / 16 <= gridY-1 || y / 16 >= gridY+1) {

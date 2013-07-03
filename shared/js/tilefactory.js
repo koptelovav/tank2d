@@ -17,6 +17,11 @@ define(['../../shared/js/tile'],function (Tile) {
     Tiles.base = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
+            this.team = null;
+        },
+
+        setTeam: function(team){
+            this.team = team;
         }
     });
 
