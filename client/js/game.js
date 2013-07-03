@@ -98,6 +98,15 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.scene.removeFromLayer(entity, Types.getLayerAsKind(entity.kind));
             },
 
+            removeEntity: function (entity) {
+                this.removeFromScene(entity);
+                _.each(entity.getChunk(), function(pos){
+                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
+                }, this);
+                delete this.entities[entity.id];
+                delete this.movableEntities[entity.id];
+            },
+
             moveEntities: function (dt) {
                 _.each(this.movableEntities, function (entity) {
                     if (entity.isMovable) {
@@ -112,7 +121,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                     _.each(hit, function (item) {
                                         if (item.strength <= entity.damage)
                                             this.removeEntity(item);
-                                            this.removeFromScene(item);
                                     }, this);
                                 }
                                 else {
@@ -122,7 +130,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                             }
                             entity.destroy();
                             this.removeEntity(entity);
-                            this.removeFromScene(entity);
                         }
                     }
 
