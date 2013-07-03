@@ -134,6 +134,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 this.maxPlayers = this.map.maxPlayers;
                 this.teamCount = this.map.teamCount;
                 this.base = this.map.base;
+
                 this.initEntityGrid();
                 this.initMap();
                 this.initTeams();
