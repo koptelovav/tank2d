@@ -1,4 +1,9 @@
 Types = {
+    Layers: {
+        ENTITIES: 'entities',
+        BACKGROUND: 'background',
+        FOREGROUND: 'foreground'
+    },
     Prefixes: {
         PLAYER: 1,
         GAMESERVER: 2,
@@ -110,7 +115,7 @@ Types.getMessageCode = function(name) {
 
 var kindConfig = {
     base: {
-        layer: "background",
+        layer: Types.Layers.BACKGROUND,
         animated: false,
         strength: 0,
         width: 32,
@@ -118,7 +123,7 @@ var kindConfig = {
         colliding: ['tank','bullet']
     },
     ice: {
-        layer: "background",
+        layer: Types.Layers.BACKGROUND,
         animated: false,
         strength: 0,
         width: 16,
@@ -126,7 +131,7 @@ var kindConfig = {
         colliding: []
     },
     wall: {
-        layer:"background",
+        layer: Types.Layers.BACKGROUND,
         animated: false,
         strength: 30,
         width: 16,
@@ -134,7 +139,7 @@ var kindConfig = {
         colliding: ['tank','bullet']
     },
     armoredwall: {
-        layer: "background",
+        layer: Types.Layers.BACKGROUND,
         animated: false,
         strength: 60,
         width: 16,
@@ -142,7 +147,7 @@ var kindConfig = {
         colliding: ['tank','bullet']
     },
     trees: {
-        layer: "foreground",
+        layer: Types.Layers.FOREGROUND,
         animated: false,
         strength: 0,
         width: 16,
@@ -150,7 +155,7 @@ var kindConfig = {
         colliding: []
     },
     water: {
-        layer: "background",
+        layer: Types.Layers.BACKGROUND,
         animated: true,
         strength: 0,
         width: 16,
@@ -158,14 +163,14 @@ var kindConfig = {
         colliding: ['tank']
     },
     tank: {
-        layer: "entities",
+        layer: Types.Layers.ENTITIES,
         animated: true,
         strength: 1,
         colliding: ['tank','bullet','wall','armoredwall','water']
 
     },
     bullet: {
-        layer: "entities",
+        layer: Types.Layers.ENTITIES,
         animated: false,
         strength: 1,
         colliding: ['tank','bullet','wall','armoredwall']

@@ -1,10 +1,14 @@
 define(['../../shared/js/entity'], function (Entity) {
     var Tile = Entity.extend({
         init: function (id, type, kind, x, y) {
+            var config = Types.getKindConfig(kind);
+
             this._super(id, type, kind);
-            this.strength = Types.getKindConfig(kind,'strength');
+            this.strength = config.strength;
+            this.colliding = config.colliding;
             this.setPosition(x,y);
-            this.setSize(Types.getKindConfig(kind,'width'),Types.getKindConfig(kind,'height'));
+            this.setSize(config.width, config.height);
+
         }
     });
 
