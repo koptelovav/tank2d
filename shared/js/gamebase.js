@@ -6,11 +6,9 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             unregisterEntityPosition: function(entity) {
-                if(entity && entity.x && entity.y) {
-                    _.each(entity.getChunk(), function(pos){
-                        this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                    }, this);
-                }
+                _.each(entity.getChunk(), function(pos){
+                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
+                }, this);
             },
 
             addToEntityGrid: function(entity) {
@@ -78,17 +76,28 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 }
 
                 _.each(this.map.teams, function(team, index){
-                    tile = TileFactory.create((Types.Prefixes.BASE +''+ index), 'base', team.base.x, team.base.y);
-                    tile.setTeam(team);
+                    this.teams[index] = {};
+                    this.teams[index].players = {};
+                    this.teams[index].spawns = team.spawns;
 
-                    _.each(tile.getChunk(), function(pos){
-                        for (var id in this.entityGrid[pos[0]][pos[1]]) {
-                            this.removeEntity(this.entityGrid[pos[0]][pos[1]][id]);
-                        }
-                    }, this);
-
-                    this.addStaticEntity(tile);
+                    if(team.base !== undefined){
+                        this.addBase(index, team.base.x, team.base.y);
+                    }
                 }, this);
+            },
+
+            addBase: function(teamNumber, x,y){
+                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), 'base', x, y);
+                tile.setTeam(teamNumber);
+
+                _.each(tile.getChunk(), function(pos){
+                    for (var id in this.entityGrid[pos[0]][pos[1]]) {
+                        this.removeEntity(this.entityGrid[pos[0]][pos[1]][id]);
+                    }
+                }, this);
+
+                this.addStaticEntity(tile);
+                this.teams[teamNumber]['base'] = tile;
             },
 
             addStaticEntity: function(tile){
@@ -96,9 +105,15 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             removeEntity: function (entity) {
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                }, this);
+                if(entity.kind === 'base'){
+                    delete this.teams[entity.team]['base'];
+                }
+                else if(entity.kind === 'player'){
+                    delete this.players[entity.id];
+                    delete this.teams.players[entity.id];
+                }
+
+                this.unregisterEntityPosition(entity);
                 delete this.entities[entity.id];
                 delete this.movableEntities[entity.id];
             },

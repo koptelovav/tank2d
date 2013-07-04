@@ -19,9 +19,9 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
             this.spawns = {};
             this.players = {};
-            this.base = {};
             this.entities = {};
             this.movableEntities = {};
+
             this.teams = {};
             this.entityGrid = [];
 
@@ -31,7 +31,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
 
             this.on('connect', function (connection) {
-                var player = new Player(connection.id, 'player', 'tank', this.getPlayerTeam(), false);
+                var player = new Player(connection.id, 'player', 'tank', this.getFreeTeamNumber(), false);
                 this.addPlayer(player);
 
                 this.listener.addConnection(connection);
@@ -87,7 +87,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 }, this);
 
                 player.on('gameLoad', function () {
-                    
+
                     player.isLoad = true;
 
                     if (this._checkAllLoaded() && !this.isPlay) {
@@ -100,8 +100,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 }, this);
 
                 player.on('playerBeginMove', function (orientation) {
-                    
-
                     player.setOrientation(orientation);
 
                     if(!player.isMovable){
@@ -137,8 +135,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
                 this.initEntityGrid();
                 this.initMap();
-                this.initTeams();
-                this.initSpawns(this.map.spawns);
             }, this);
 
             this.map.setData(JSON.parse(data));
@@ -162,10 +158,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
         moveEntities: function(){
             _.each(this.movableEntities, function(entity){
                 if(entity.isMovable){
-                    if (this.isValidPlayerMove(entity, entity.orientation)) {
-                        this.unregisterEntityPosition(entity);
-                        entity.move();
-                    }
+
                 }
             }, this);
         },
@@ -190,27 +183,8 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             return result;
         },
 
-        initTeams: function () {
-            for (var i = 0; i < this.teamCount; i++) {
-                this.teams[i] = [];
-            }
-        },
-
-        initSpawns: function (spawns) {
-            var self = this,
-                sId = 1;
-            _.each(spawns, function (teamSpaws, teamId) {
-                self.spawns[teamId] = [];
-                _.each(teamSpaws, function (spawn) {
-
-                    self.spawns[teamId].push(new Spawn(sId, teamId, spawn[0], spawn[1], spawn[2]));
-                    sId++;
-                });
-            });
-        },
-
-        getRandomSpawn: function (team) {
-            var teamSpawns = this.spawns[team];
+        getRandomSpawn: function (teamNumber) {
+            var teamSpawns = this.teams[teamNumber].spawns;
             return teamSpawns[Math.floor(Math.random() * teamSpawns.length)];
         },
 
@@ -232,14 +206,12 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
         },
 
         addPlayer: function (player) {
-            var spawn;
+            var spawn = this.getRandomSpawn(player.team);
 
-            spawn = this.getRandomSpawn(player.team);
             player.setPosition(spawn.x, spawn.y);
             player.orientation = spawn.orientation;
             player.isPlay = true;
 
-            this.teams[player.team].push(player.id);
             this.players[player.id] = player;
             this.outgoingQueues[player.id] = [];
 
@@ -247,14 +219,14 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.addMovableEntity(player);
         },
 
-        getPlayerTeam: function(){
+        getFreeTeamNumber: function(){
             var selectedTeam = null,
                 minTeamCount = 0;
 
-            for (var id in this.teams) {
-                if (_.isNull(selectedTeam) || minTeamCount > this.teams[id].length) {
-                    selectedTeam = id;
-                    minTeamCount = this.teams[id].length;
+            for (var number in this.teams) {
+                if (_.isNull(selectedTeam) || minTeamCount > this.teams[number].players.length) {
+                    selectedTeam = number;
+                    minTeamCount = this.teams[number].players.length;
                 }
             }
             return parseInt(selectedTeam);
@@ -275,32 +247,14 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             delete this.entities[player.id];
             delete this.movableEntities[player.id];
             delete this.outgoingQueues[player.id];
-            this.teams[player.team].splice(this.teams[player.team].indexOf(player.id), 1);
         },
 
-        isValidPlayerMove: function (player, orientation) {
-            if (this.map && player) {
-                var chunk = player.getChunk();
-                if (orientation === Types.Orientations.LEFT) {
-                    return !this.map.isTankColliding.call(this.map, chunk[0][0] - 1, chunk[0][1]) && !this.map.isTankColliding.call(this.map, chunk[2][0] - 1, chunk[2][1]);
-                }
-                else if (orientation === Types.Orientations.UP) {
-                    return !this.map.isTankColliding.call(this.map, chunk[0][0], chunk[0][1] - 1) && !this.map.isTankColliding.call(this.map, chunk[1][0], chunk[1][1] - 1);
-                }
-                else if (orientation === Types.Orientations.RIGHT) {
-                    return !this.map.isTankColliding.call(this.map, chunk[1][0] + 1, chunk[1][1]) && !this.map.isTankColliding.call(this.map, chunk[3][0] + 1, chunk[3][1]);
-                }
-                else if (orientation === Types.Orientations.DOWN) {
-                    return !this.map.isTankColliding.call(this.map, chunk[2][0], chunk[2][1] + 1) && !this.map.isTankColliding.call(this.map, chunk[3][0], chunk[3][1] + 1);
-                }
-            }
-
-            return false;
-        },
 
         isFull: function () {
             return this.population === this.maxPlayers;
         },
+
+        /* Send messages */
 
         pushToPlayer: function(playerId){
             var args = _.toArray(arguments).slice(1);

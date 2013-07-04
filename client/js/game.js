@@ -22,6 +22,9 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.movableEntities = {};
                 this.entityGrid = [];
 
+                this.teams = {};
+                this.players = {};
+
                 this.lastTime = 0;
 
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base"];
@@ -230,6 +233,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 var player = new Player(d[0], d[1], d[2], d[5], d[6]);
                 player.setPosition(d[3], d[4]);
                 this.addMovableEntity(player);
+                this.players[player.id] = player;
                 this.emit('playerJoin', player);
                 return player;
             },
