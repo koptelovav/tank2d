@@ -18,20 +18,23 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.minPlayers = null;
 
                 this.entities = {};
-                this.base = {};
                 this.movableEntities = {};
+
+                this.teams = {};
+                
                 this.entityGrid = [];
 
-                this.lastTime = 0;
+
+                this.lastUpdateTime = 0;
 
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base"];
             },
 
             setup: function (entities, background, foreground) {
                 this.scene = new Scene(768, 768);
-                this.scene.newLayer('entities', entities);
-                this.scene.newLayer('background', background);
-                this.scene.newLayer('foreground', foreground);
+                this.scene.newLayer(Types.Layers.ENTITIES, entities);
+                this.scene.newLayer(Types.Layers.BACKGROUND, background);
+                this.scene.newLayer(Types.Layers.FOREGROUND, foreground);
             },
 
             run: function () {
@@ -63,13 +66,13 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
             tick: function () {
                 if (this.started) {
                     var now = Date.now();
-                    var dt = (now - this.lastTime) / 1000.0;
+                    var dt = (now - this.lastUpdateTime) / 1000.0;
 
                     this.emit('tick');
                     this.moveEntities(dt);
                     this.scene.refreshFrame();
 
-                    this.lastTime = now;
+                    this.lastUpdateTime = now;
                 }
                 requestAnimFrame(this.tick.bind(this));
             },
