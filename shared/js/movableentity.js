@@ -3,6 +3,7 @@ define(['../../shared/js/entity'],function (Entity) {
         init: function (id, type, kind, speed){
             this._super(id, type, kind);
 
+            this.moveable = true;
             this.orientation = 1;
             this.speed = speed;
             this.isMovable = false;

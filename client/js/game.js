@@ -5,7 +5,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
             init: function (app) {
                 this.app = app;
                 this.spriteManager = new SpriteManager();
-                this.connection = new Connection('127.0.0.1', '8000');
+                this.connection = new Connection('127.0.0.1', '9000');
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -229,7 +229,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
             addPlayer: function (d) {
                 var player = new Player(d[0], d[1], d[2], d[5], d[6]);
                 player.setPosition(d[3], d[4]);
-                this.addMovableEntity(player);
+                this.addEntity(player);
                 this.players[player.id] = player;
                 this.emit('playerJoin', player);
                 return player;
@@ -247,7 +247,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 if (this.player.canFire()) {
                     this.player.toggleFire();
                     var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 300);
-                    this.addMovableEntity(bullet);
+                    this.addEntity(bullet);
                     this.addToScene(bullet);
                     bullet.toggleMovable();
                 }

@@ -26,12 +26,14 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             addEntity: function (entity) {
-                this.entities[entity.id] = entity;
-            },
+                if(this[entity.kind] === undefined)
+                    this[entity.kind] = {};
 
-            addMovableEntity: function (entity) {
-                this.addEntity(entity);
-                this.movableEntities[entity.id] = entity;
+                if(entity.moveable)
+                    this.movableEntities[entity.id] = entity;
+
+                this.entities[entity.id] = entity;
+                this[entity.kind][entity.id] = entity;
             },
 
             incrementPopulation: function () {

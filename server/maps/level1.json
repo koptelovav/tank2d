@@ -5,14 +5,6 @@
     "maxplayers": 10,
     "teamcount": 2,
     "tilesize" : 16,
-    "spawns": [
-        [[0,0,1],[0,0,1]],
-        [[0,3,1],[0,0,1]]
-    ],
-    "base": [
-        [23,0],
-        [23,46]
-    ],
     "teams": [
         {
             "spawns": [

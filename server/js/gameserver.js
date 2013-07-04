@@ -31,7 +31,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
 
             this.on('connect', function (connection) {
-                var player = new Player(connection.id, 'player', 'tank', this.getFreeTeamNumber(), false);
+                var player = new Player(connection.id, 'players', 'tank', this.getFreeTeamNumber(), false);
                 this.addPlayer(player);
 
                 this.listener.addConnection(connection);
@@ -54,8 +54,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                         this.teamCount,
                         this.minPlayers,
                         this.maxPlayers,
-                        this.getPlayersInfo(player.id),
-                        this.base
+                        this.getPlayersInfo(player.id)
                     );
                 }, this);
 
@@ -131,7 +130,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
                 this.minPlayers = this.map.minPlayers;
                 this.maxPlayers = this.map.maxPlayers;
                 this.teamCount = this.map.teamCount;
-                this.base = this.map.base;
 
                 this.initEntityGrid();
                 this.initMap();
@@ -216,7 +214,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.outgoingQueues[player.id] = [];
 
             this.addToEntityGrid(player);
-            this.addMovableEntity(player);
+            this.addEntity(player);
         },
 
         getFreeTeamNumber: function(){
