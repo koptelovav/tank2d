@@ -92,8 +92,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 var element = this.scene.createElement(entity);
                 element.setSprite(this.spriteManager.getSprite(entity.kind));
                 element.setAnimation('idle', 800);
-                element.isAnimated = Types.getIsAnimateAsKind(entity.kind);
-
                 this.scene.addToLayer(element, Types.getLayerAsKind(entity.kind));
             },
 

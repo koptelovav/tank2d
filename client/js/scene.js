@@ -39,7 +39,7 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
 
             this.isLoaded = false;
             this.isDirty = false;
-            this.isAnimated = false;
+            this.isAnimated = Types.getKindConfig(entity.kind,'animated');
 
             entity.on('redraw', function(){
                 this._setDirty();
