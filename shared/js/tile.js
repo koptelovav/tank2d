@@ -7,7 +7,7 @@ define(['../../shared/js/entity'], function (Entity) {
             this.strength = config.strength;
             this.colliding = config.colliding;
             this.setPosition(x,y);
-            this.setSize(this.width, this.height);
+            this.setSize(config.width, config.height);
 
         }
     });
