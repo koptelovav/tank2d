@@ -17,14 +17,13 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.maxPlayers = null;
                 this.minPlayers = null;
 
-                this.entities = {};
-                this.movableEntities = {};
-
-                this.teams = {};
-                
                 this.entityGrid = [];
 
+                this.entities = {};
+                this.movableEntities = {};
+                this.players = {};
 
+                this.teams = {};
                 this.lastUpdateTime = 0;
 
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base"];
