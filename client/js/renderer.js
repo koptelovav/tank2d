@@ -5,13 +5,8 @@ define(['../../shared/js/model'],
             init: function (scene) {
                 this.scene = scene;
 
-                this.images = {};
-
-                this.tilesize = 16;
-
-
                 //debug
-                this.lastTime = new Date();
+                this.lastRenderTime = new Date();
                 this.frameCount = 0;
                 this.realFPS = 0;
             },
@@ -28,12 +23,12 @@ define(['../../shared/js/model'],
 
             drawFPS: function () {
                 var nowTime = new Date(),
-                    diffTime = nowTime.getTime() - this.lastTime.getTime();
+                    diffTime = nowTime.getTime() - this.lastRenderTime.getTime();
 
                 if (diffTime >= 1000) {
                     this.realFPS = this.frameCount;
                     this.frameCount = 0;
-                    this.lastTime = nowTime;
+                    this.lastRenderTime = nowTime;
                 }
                 this.frameCount++;
 
