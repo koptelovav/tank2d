@@ -42,7 +42,7 @@ define(['../../shared/js/model'],
             },
 
             drawText: function (text, x, y, centered, color, strokeColor) {
-                var ctx = this.scene.layers['foreground'].ctx;
+                var ctx = this.scene.layers[Types.Layers.FOREGROUND].ctx;
 
                 if (text && x && y) {
                     ctx.save();

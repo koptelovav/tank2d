@@ -4,6 +4,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
     var GameServer = GameBase.extend({
         init: function (id, name, websocketServer) {
             this.id = id;
+            this.env = Types.Environment.SERVER;
             this.server = websocketServer;
             this.listener = new Listener();
 

@@ -4,6 +4,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
         var Game = GameBase.extend({
             init: function (app) {
                 this.app = app;
+                this.env = Types.Environment.CLIENT;
                 this.spriteManager = new SpriteManager();
                 this.connection = new Connection('127.0.0.1', '9000');
                 this.ready = false;
@@ -91,11 +92,11 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 var element = this.scene.createElement(entity);
                 element.setSprite(this.spriteManager.getSprite(entity.kind));
                 element.setAnimation('idle', 800);
-                this.scene.addToLayer(element, Types.getLayerAsKind(entity.kind));
+                this.scene.addToLayer(element, Types.getKindLayer(entity.kind));
             },
 
             removeFromScene: function (entity) {
-                this.scene.removeFromLayer(entity, Types.getLayerAsKind(entity.kind));
+                this.scene.removeFromLayer(entity, Types.getKindLayer(entity.kind));
             },
 
             removeEntity: function (entity) {

@@ -1,8 +1,12 @@
 Types = {
+    Environment:{
+      CLIENT: 1,
+      SERVER: 2
+    },
     Layers: {
-        ENTITIES: 'entities',
-        BACKGROUND: 'background',
-        FOREGROUND: 'foreground'
+        ENTITIES: 1,
+        BACKGROUND: 2,
+        FOREGROUND: 3
     },
     Prefixes: {
         PLAYER: 1,
@@ -206,7 +210,7 @@ var kinds = {
     }
 };
 
-Types.getLayerAsKind = function(kind) {
+Types.getKindLayer = function(kind) {
     return kindConfig[kind]['layer'];
 };
 Types.getIsAnimateAsKind = function(kind) {
