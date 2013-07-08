@@ -6,7 +6,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.app = app;
                 this.env = Types.Environment.CLIENT;
                 this.spriteManager = new SpriteManager();
-                this.connection = new Connection('127.0.0.1', '9000');
+                this.connection = new Connection('127.0.0.1', '8000');
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -19,12 +19,9 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.minPlayers = null;
 
                 this.entityGrid = [];
-
-                this.entities = {};
-                this.movableEntities = {};
-                this.players = {};
-
+                this.collections = {};
                 this.teams = {};
+
                 this.lastUpdateTime = 0;
 
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base"];
@@ -77,66 +74,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 requestAnimFrame(this.tick.bind(this));
             },
 
-            loadMap: function (data) {
-                this.map = new Map(this);
-                this.map.setData(data);
-            },
-
-            addStaticEntity: function(entity){
-                this.addEntity(entity);
-                this.addToEntityGrid(entity);
-                this.addToScene(entity);
-            },
-
-            addToScene: function (entity) {
-                var element = this.scene.createElement(entity);
-                element.setSprite(this.spriteManager.getSprite(entity.kind));
-                element.setAnimation('idle', 800);
-                this.scene.addToLayer(element, Types.getKindLayer(entity.kind));
-            },
-
-            removeFromScene: function (entity) {
-                this.scene.removeFromLayer(entity, Types.getKindLayer(entity.kind));
-            },
-
-            removeEntity: function (entity) {
-                this.removeFromScene(entity);
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                }, this);
-                delete this.entities[entity.id];
-                delete this.movableEntities[entity.id];
-            },
-
-            moveEntities: function (dt) {
-                _.each(this.movableEntities, function (entity) {
-                    if (entity.isMovable) {
-                        if (entity instanceof Player) {
-                            if (this.isValidPlayerMove(entity)) {
-                                entity.move(dt);
-                            }
-                        } else if (entity instanceof Bullet) {
-                            if (!this.map.isOutOfBounds.apply(this.map, entity.move(dt, true))) {
-                                var hit = this.map.isBulletColliding.call(this.map, entity);
-                                if (_.isObject(hit) && !_.isEmpty(hit)) {
-                                    _.each(hit, function (item) {
-                                        if (item.strength <= entity.damage)
-                                            this.removeEntity(item);
-                                    }, this);
-                                }
-                                else {
-                                    entity.move(dt);
-                                    return;
-                                }
-                            }
-                            entity.destroy();
-                            this.removeEntity(entity);
-                        }
-                    }
-
-                }, this);
-            },
-
             connect: function () {
                 this.connection.connect();
 
@@ -180,7 +117,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
                 this.connection.on('leftGame', function (playerId) {
                     this.decrementPopulation();
-                    delete this.entities[playerId];
+                    this.removeEntity(this.getEntityById(playerId), true);
 
                     this.emit('playerLeft', playerId);
                 }, this);
@@ -200,12 +137,11 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                         player = this.getEntityById(id);
                         player.setPosition(x, y);
                         player.setOrientation(orientation);
-                        this.addToEntityGrid(player);
+                        this.addEntity(player, true);
 
-                        this.addToScene(player);
 
                         player.on('move', function () {
-                            this.addToEntityGrid(player);
+                            this.registerEntityPosition(player);
                         }, this);
                     }
                 }, this);
@@ -223,7 +159,51 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 }, this);
 
                 this.connection.on('syncPos', function (id, x, y, gridX, gridY) {
-                    this.entities[id].syncPososition(x, y, gridX, gridY);
+                }, this);
+            },
+
+            loadMap: function (data) {
+                this.map = new Map(this);
+                this.map.setData(data);
+            },
+
+            addToScene: function (entity) {
+                var element = this.scene.createElement(entity);
+                element.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
+                element.setAnimation('idle', 800);
+                this.scene.addToLayer(element, Types.getKindLayer(entity.kind));
+            },
+
+            removeFromScene: function (entity) {
+                this.scene.removeFromLayer(entity, Types.getKindLayer(entity.kind));
+            },
+
+            moveEntities: function (dt) {
+                _.each(this.collections[Types.Collections.MOVABLE], function (entity) {
+                    if (entity.isMovable) {
+                        if (entity instanceof Player) {
+                            if (this.isValidPlayerMove(entity)) {
+                                entity.move(dt);
+                            }
+                        } else if (entity instanceof Bullet) {
+                            if (!this.map.isOutOfBounds.apply(this.map, entity.move(dt, true))) {
+                                var hit = this.map.isBulletColliding.call(this.map, entity);
+                                if (_.isObject(hit) && !_.isEmpty(hit)) {
+                                    _.each(hit, function (item) {
+                                        if (item.strength <= entity.damage)
+                                            this.removeEntity(item, true);
+                                    }, this);
+                                }
+                                else {
+                                    entity.move(dt);
+                                    return;
+                                }
+                            }
+                            entity.destroy();
+                            this.removeEntity(entity, true);
+                        }
+                    }
+
                 }, this);
             },
 
@@ -231,7 +211,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 var player = new Player(d[0], d[1], d[2], d[5], d[6]);
                 player.setPosition(d[3], d[4]);
                 this.addEntity(player);
-                this.players[player.id] = player;
                 this.emit('playerJoin', player);
                 return player;
             },
@@ -240,22 +219,19 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.connection.send(Types.Messages.IREADY);
             },
 
-            sendChatMessage: function (message) {
-                this.connection.send(Types.Messages.CHAT, message);
-            },
+
 
             playerFire: function (id) {
                 if (this.player.canFire()) {
                     this.player.toggleFire();
-                    var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 300);
+                    var bullet = new Bullet(Date.now(), 'easy', Types.Entities.BULLET, this.player, 300);
                     this.addEntity(bullet);
                     this.addToScene(bullet);
-                    bullet.toggleMovable();
                 }
             },
 
             playerStopMove: function (id) {
-                var player = id ? this.entities[id] : this.player;
+                var player = id ? this.collections[Types.Collections.PLAYER][id] : this.player;
 
                 if (player.isMovable) {
                     player.toggleMovable();
@@ -291,24 +267,23 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             isValidPlayerMove: function (player) {
                 if (this.map && player) {
-                    var x,
-                        y,
-                        chunk = player.getChunk(true),
-                        result = _.any(chunk, function (pos) {
-                            x = pos[0];
-                            y = pos[1];
-
-                            if (this.map.isOutOfBounds(x, y)) {
+                    var chunk = player.getChunk(true),
+                        result = _.any(chunk, function (tile) {
+                            if (this.map.isOutOfBounds(tile.x, tile.y)) {
                                 return true;
                             }
-                            for (var id in this.entityGrid[x][y]) {
-                                if (player.id != id && Types.getCollidingArray(this.entityGrid[x][y][id].kind).indexOf('tank') >= 0)
+                            for (var id in this.entityGrid[tile.x][tile.y]) {
+                                if (player.id != id && Types.getCollidingArray(this.entityGrid[tile.x][tile.y][id].kind).indexOf(Types.Entities.TANK) >= 0)
                                     return true;
                             }
                             return false;
                         }, this);
                 }
                 return !result;
+            },
+
+            sendChatMessage: function (message) {
+                this.connection.send(Types.Messages.CHAT, message);
             }
         });
 

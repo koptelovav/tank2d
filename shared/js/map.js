@@ -54,9 +54,9 @@ define(['../../shared/js/model'],
                     colliding = {},
                     chunk = bullet.getViewBox();
 
-                _.each(chunk, function(pos){
-                    x = pos[0];
-                    y = pos[1];
+                _.each(chunk, function(tile){
+                    x = tile.x;
+                    y = tile.y;
                     gridX = x / 16 >> 0;
                     gridY = y / 16 >> 0;
 

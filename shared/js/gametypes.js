@@ -37,6 +37,7 @@ Types = {
     },
 
     Entities: {
+        ENTITY: 99,
         TANK: 100,
         BULLET: 101,
 
@@ -53,6 +54,14 @@ Types = {
 
         // Objects
         FLAG: 160
+    },
+
+    Collections: {
+        ENTITY: 0,
+        MOVABLE: 1,
+        PLAYER: 2,
+        BULLET: 3,
+        TILE : 4
     },
 
     MapElements: {
@@ -124,7 +133,7 @@ var kindConfig = {
         strength: 0,
         width: 32,
         height: 32,
-        colliding: ['tank','bullet']
+        colliding: [Types.Entities.TANK,Types.Entities.BULLET]
     },
     ice: {
         layer: Types.Layers.BACKGROUND,
@@ -140,7 +149,7 @@ var kindConfig = {
         strength: 30,
         width: 16,
         height: 16,
-        colliding: ['tank','bullet']
+        colliding: [Types.Entities.TANK,Types.Entities.BULLET]
     },
     armoredwall: {
         layer: Types.Layers.BACKGROUND,
@@ -148,7 +157,7 @@ var kindConfig = {
         strength: 60,
         width: 16,
         height: 16,
-        colliding: ['tank','bullet']
+        colliding: [Types.Entities.TANK,Types.Entities.BULLET]
     },
     trees: {
         layer: Types.Layers.FOREGROUND,
@@ -164,7 +173,7 @@ var kindConfig = {
         strength: 0,
         width: 16,
         height: 16,
-        colliding: ['tank']
+        colliding: [Types.Entities.TANK]
     },
     tank: {
         layer: Types.Layers.ENTITIES,
@@ -183,6 +192,7 @@ var kindConfig = {
 
 var kinds = {
     tank: [Types.Entities.TANK, "player"],
+    bullet: [Types.Entities.BULLET, "bullet"],
 
 
     live: [Types.Entities.LIVE, "bonus"],
@@ -204,27 +214,37 @@ var kinds = {
     portal2: [Types.MapElements.PORTAL2, "tile"],
     base: [Types.MapElements.BASE, "tile"],
 
-
     getType: function(kind) {
         return kinds[Types.getKindAsString(kind)][1];
+    },
+    getKindString: function(kind) {
+        for(var name in kinds){
+            if(kinds[name][0] === kind)
+                return name;
+        }
     }
 };
 
 Types.getKindLayer = function(kind) {
-    return kindConfig[kind]['layer'];
+    return kindConfig[kinds.getKindString(kind)]['layer'];
 };
 Types.getIsAnimateAsKind = function(kind) {
-    return kindConfig[kind]['animated'];
+    return kindConfig[kinds.getKindString(kind)]['animated'];
 };
 
 Types.getCollidingArray = function(kind) {
-    return kindConfig[kind]['colliding'];
+    return kindConfig[kinds.getKindString(kind)]['colliding'];
 };
 
 Types.getKindConfig = function(kind, param) {
-    if(param) return kindConfig[kind][param];
-    else return kindConfig[kind];
+   // console.log(kinds.getKindString(kind),kind);
+    if(param) return kindConfig[kinds.getKindString(kind)][param];
+    else return kindConfig[kinds.getKindString(kind)];
 
+};
+
+Types.getKindString = function(kind) {
+    return kinds.getKindString(kind);
 };
 
 Types.isPlayer = function(kind) {

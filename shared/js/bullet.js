@@ -5,8 +5,10 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.player = player;
             this.speed = speed;
             this.damage = 70;
+            this.isMovable = true;
             this.strength = 1;
             this.orientation = player.orientation;
+            this.collections = this.collections.concat([Types.Collections.BULLET]);
 
             this.setPosition(player.gridX, player.gridY);
 

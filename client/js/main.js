@@ -25,12 +25,9 @@ define(['jquery', 'app','input'], function ($, App) {
                 foreground = document.getElementById("foreground");
 
             game = new Game(app);
+            game.setup(entities, background, foreground);
             app.setGame(game);
 
-            game.on('start',function(){
-                game.setup(entities, background, foreground);
-//                game.loadMap();
-            });
 
             game.on('load',function(){
                 for(var i = 0; i < app.game.teamCount; i++){

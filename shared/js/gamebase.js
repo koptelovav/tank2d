@@ -5,18 +5,18 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             init: function () {
             },
 
-            unregisterEntityPosition: function(entity) {
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                }, this);
-            },
-
-            addToEntityGrid: function(entity) {
+            registerEntityPosition: function(entity){
                 if(entity) {
-                    _.each(entity.getChunk(), function(pos){
-                        this.entityGrid[pos[0]][pos[1]][entity.id] = entity;
+                    _.each(entity.getChunk(), function(tile){
+                        this.entityGrid[tile.x][tile.y][entity.id] = entity;
                     }, this);
                 }
+            },
+
+            unRegisterEntityPosition: function(entity) {
+                _.each(entity.getChunk(), function(tile){
+                    this.removeFromEntityGrid(entity, tile.x, tile.y);
+                }, this);
             },
 
             removeFromEntityGrid: function (entity, x, y) {
@@ -25,15 +25,46 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 }
             },
 
-            addEntity: function (entity) {
-                if(this[entity.kind] === undefined)
-                    this[entity.kind] = {};
+            addEntity: function (entity, registerPosition) {
+                if(this.env === Types.Environment.CLIENT)
+                    this.addToScene(entity);
 
-                if(entity.moveable)
-                    this.movableEntities[entity.id] = entity;
+                if(registerPosition === true)
+                    this.registerEntityPosition(entity);
 
-                this.entities[entity.id] = entity;
-                this[entity.kind][entity.id] = entity;
+                this.addToCollection(entity);
+            },
+
+            removeEntity: function (entity, unRegisterPosition) {
+                if(entity.kind === Types.MapElements.BASE){
+                    delete this.teams[entity.team].base;
+                }
+                else if(entity.kind === Types.Entities.PLAYER){
+                    delete this.teams.players[entity.id];
+                }
+
+                if(this.env === Types.Environment.CLIENT)
+                    this.removeFromScene(entity);
+
+                if(unRegisterPosition === true)
+                    this.unRegisterEntityPosition(entity);
+
+                this.removeFromCollection(entity);
+            },
+
+            addToCollection: function(entity){
+                _.each(entity.collections, function(collection){
+                    if(this.collections[collection] === undefined)
+                        this.collections[collection] = {};
+
+                    this.collections[collection][entity.id] = entity;
+                }, this);
+            },
+
+            removeFromCollection: function(entity){
+                _.each(entity.collections, function(collection){
+                    delete this.collections[collection][entity.id];
+                }, this);
             },
 
             incrementPopulation: function () {
@@ -50,12 +81,12 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             entityIdExists: function (id) {
-                return id in this.entities;
+                return id in this.collections[Types.Collections.ENTITY];
             },
 
             getEntityById: function (id) {
-                if (id in this.entities) {
-                    return this.entities[id];
+                if (id in this.collections[Types.Collections.ENTITY]) {
+                    return this.collections[Types.Collections.ENTITY][id];
                 }
                 else {
                     log.error("Unknown entity id : " + id, true);
@@ -70,8 +101,8 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 for (var j, i = 0; i < this.map.height; i++) {
                     for (j = 0; j < this.map.width; j++) {
                         if ((kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
-                            tile = TileFactory.create((Types.Prefixes.TAIL +''+count), kind, i, j);
-                            this.addStaticEntity(tile);
+                            tile = TileFactory.create((Types.Prefixes.TAIL +''+count), this.map.tiles[i][j], i, j);
+                            this.addEntity(tile, true);
                             count++;
                         }
                     }
@@ -89,40 +120,17 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             addBase: function(teamNumber, x,y){
-                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), 'base', x, y);
+                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), Types.MapElements.BASE, x, y);
                 tile.setTeam(teamNumber);
 
-                _.each(tile.getChunk(), function(pos){
-                    for (var id in this.entityGrid[pos[0]][pos[1]]) {
-                        this.removeEntity(this.entityGrid[pos[0]][pos[1]][id]);
+                _.each(tile.getChunk(), function(tile){
+                    for (var id in this.entityGrid[tile.x][tile.y]) {
+                        this.removeEntity(this.entityGrid[tile.x][tile.y][id]);
                     }
                 }, this);
 
-                this.addStaticEntity(tile);
+                this.addEntity(tile, true);
                 this.teams[teamNumber]['base'] = tile;
-            },
-
-            addStaticEntity: function(tile){
-                throw "Not implemented";
-            },
-
-            removeEntity: function (entity) {
-                if(entity.kind === 'base'){
-                    delete this.teams[entity.team]['base'];
-                }
-                else if(entity.kind === 'player'){
-                    delete this.players[entity.id];
-                    delete this.teams.players[entity.id];
-                }
-
-                this.unregisterEntityPosition(entity);
-                delete this.entities[entity.id];
-                delete this.movableEntities[entity.id];
-            },
-
-            addStaticEntity: function(entity){
-                this.addToEntityGrid(entity);
-                this.addEntity(entity);
             },
 
             initEntityGrid: function () {
