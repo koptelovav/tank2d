@@ -162,7 +162,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
                 this.connection.on('leftGame', function (playerId) {
                     this.decrementPopulation();
-                 //   delete this.entities[playerId];
+                    this.removeEntity(this.getEntityById(playerId));
 
                     this.emit('playerLeft', playerId);
                 }, this);
@@ -205,7 +205,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 }, this);
 
                 this.connection.on('syncPos', function (id, x, y, gridX, gridY) {
-                    //this.entities[id].syncPososition(x, y, gridX, gridY);
                 }, this);
             },
 

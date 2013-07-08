@@ -19,13 +19,24 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 }
             },
 
+            registerEntityPosition: function(entity){
+                this.addToEntityGrid(entity);
+            },
+
             removeFromEntityGrid: function (entity, x, y) {
                 if (this.entityGrid[x][y][entity.id]) {
                     delete this.entityGrid[x][y][entity.id];
                 }
             },
 
-            addEntity: function (entity) {
+            addEntity: function (entity, registerPosition) {
+                if(this.env === Types.Environment.CLIENT)
+                    this.addToScene(entity);
+
+                if(registerPosition === true)
+                    this.registerEntityPosition(entity);
+
+
                 this.addToCollection(entity);
             },
 
@@ -79,7 +90,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                     for (j = 0; j < this.map.width; j++) {
                         if ((kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
                             tile = TileFactory.create((Types.Prefixes.TAIL +''+count), kind, i, j);
-                            this.addStaticEntity(tile);
+                            this.addEntity(tile, true);
                             count++;
                         }
                     }
@@ -106,7 +117,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                     }
                 }, this);
 
-                this.addStaticEntity(tile);
+                this.addEntity(tile, true);
                 this.teams[teamNumber]['base'] = tile;
             },
 
@@ -123,14 +134,6 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
 
                 this.unregisterEntityPosition(entity);
                 this.removeFromCollection(entity);
-            },
-
-            addStaticEntity: function(entity){
-                if(this.env === Types.Environment.CLIENT)
-                    this.addToScene(entity);
-
-                this.addToEntityGrid(entity);
-                this.addEntity(entity);
             },
 
             initEntityGrid: function () {
