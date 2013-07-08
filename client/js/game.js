@@ -6,7 +6,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.app = app;
                 this.env = Types.Environment.CLIENT;
                 this.spriteManager = new SpriteManager();
-                this.connection = new Connection('127.0.0.1', '9000');
+                this.connection = new Connection('127.0.0.1', '8000');
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -81,7 +81,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             addToScene: function (entity) {
                 var element = this.scene.createElement(entity);
-                element.setSprite(this.spriteManager.getSprite(entity.kind));
+                element.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
                 element.setAnimation('idle', 800);
                 this.scene.addToLayer(element, Types.getKindLayer(entity.kind));
             },
@@ -227,7 +227,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
             playerFire: function (id) {
                 if (this.player.canFire()) {
                     this.player.toggleFire();
-                    var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 300);
+                    var bullet = new Bullet(Date.now(), 'easy', Types.Entities.BULLET, this.player, 300);
                     this.addEntity(bullet);
                     this.addToScene(bullet);
                 }
@@ -281,7 +281,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                 return true;
                             }
                             for (var id in this.entityGrid[x][y]) {
-                                if (player.id != id && Types.getCollidingArray(this.entityGrid[x][y][id].kind).indexOf('tank') >= 0)
+                                if (player.id != id && Types.getCollidingArray(this.entityGrid[x][y][id].kind).indexOf(Types.Entities.TANK) >= 0)
                                     return true;
                             }
                             return false;

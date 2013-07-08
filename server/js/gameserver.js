@@ -27,7 +27,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
 
             this.on('connect', function (connection) {
-                var player = new Player(connection.id, 'players', 'tank', this.getFreeTeamNumber(), false);
+                var player = new Player(connection.id, 'players', Types.Entities.TANK, this.getFreeTeamNumber(), false);
                 this.addPlayer(player);
 
                 this.listener.addConnection(connection);

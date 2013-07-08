@@ -89,7 +89,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 for (var j, i = 0; i < this.map.height; i++) {
                     for (j = 0; j < this.map.width; j++) {
                         if ((kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
-                            tile = TileFactory.create((Types.Prefixes.TAIL +''+count), kind, i, j);
+                            tile = TileFactory.create((Types.Prefixes.TAIL +''+count), this.map.tiles[i][j], i, j);
                             this.addEntity(tile, true);
                             count++;
                         }
@@ -108,7 +108,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             addBase: function(teamNumber, x,y){
-                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), 'base', x, y);
+                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), Types.MapElements.BASE, x, y);
                 tile.setTeam(teamNumber);
 
                 _.each(tile.getChunk(), function(pos){
@@ -122,10 +122,10 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             removeEntity: function (entity) {
-                if(entity.kind === 'base'){
-                    delete this.teams[entity.team]['base'];
+                if(entity.kind === Types.MapElements.BASE){
+                    delete this.teams[entity.team].base;
                 }
-                else if(entity.kind === 'player'){
+                else if(entity.kind === Types.Entities.PLAYER){
                     delete this.teams.players[entity.id];
                 }
 

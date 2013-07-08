@@ -1,20 +1,21 @@
-define(['../../shared/js/tile'],function (Tile) {
+define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
 
     var Tiles = {};
 
     var TileFactory = {
         create: function (id, kind, x, y) {
+          //  console.log([kind,Tiles[kind]]);
             return new Tiles[kind](id, kind, x, y);
         }
     };
 
-    Tiles.wall = Tile.extend({
+    Tiles[Types.MapElements.WALL] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles.base = Tile.extend({
+    Tiles[Types.MapElements.BASE] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
             this.team = null;
@@ -25,25 +26,25 @@ define(['../../shared/js/tile'],function (Tile) {
         }
     });
 
-    Tiles.armoredwall = Tile.extend({
+    Tiles[Types.MapElements.ARMOREDWALL] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles.trees = Tile.extend({
+    Tiles[Types.MapElements.TREES] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles.water = Tile.extend({
+    Tiles[Types.MapElements.WATER] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles.ice = Tile.extend({
+    Tiles[Types.MapElements.ICE] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
