@@ -9,13 +9,13 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
         }
     };
 
-    Tiles[Types.MapElements.WALL] = Tile.extend({
+    Tiles[Types.Entities.WALL] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles[Types.MapElements.BASE] = Tile.extend({
+    Tiles[Types.Entities.BASE] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
             this.team = null;
@@ -26,25 +26,25 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
         }
     });
 
-    Tiles[Types.MapElements.ARMOREDWALL] = Tile.extend({
+    Tiles[Types.Entities.ARMOREDWALL] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles[Types.MapElements.TREES] = Tile.extend({
+    Tiles[Types.Entities.TREES] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles[Types.MapElements.WATER] = Tile.extend({
+    Tiles[Types.Entities.WATER] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }
     });
 
-    Tiles[Types.MapElements.ICE] = Tile.extend({
+    Tiles[Types.Entities.ICE] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
         }

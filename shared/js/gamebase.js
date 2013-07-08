@@ -36,7 +36,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             removeEntity: function (entity, unRegisterPosition) {
-                if(entity.kind === Types.MapElements.BASE){
+                if(entity.kind === Types.Entities.BASE){
                     delete this.teams[entity.team].base;
                 }
                 else if(entity.kind === Types.Entities.PLAYER){
@@ -120,7 +120,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             addBase: function(teamNumber, x,y){
-                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), Types.MapElements.BASE, x, y);
+                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), Types.Entities.BASE, x, y);
                 tile.setTeam(teamNumber);
 
                 _.each(tile.getChunk(), function(tile){

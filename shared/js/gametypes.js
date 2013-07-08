@@ -37,6 +37,14 @@ Types = {
     },
 
     Entities: {
+        //Map elements
+        WALL: 1,
+        ARMOREDWALL: 2,
+        TREES: 3,
+        WATER: 4,
+        ICE: 5,
+        BASE: 6,
+
         ENTITY: 99,
         TANK: 100,
         BULLET: 101,
@@ -64,30 +72,11 @@ Types = {
         TILE : 4
     },
 
-    MapElements: {
-        WALL: 1,
-        ARMOREDWALL: 2,
-        TREES: 3,
-        WATER: 4,
-        ICE: 5,
-        BASE: 6,
-        PORTAL1: 7,
-        PORTAL2: 8
-    },
-    
     Orientations: {
         UP: 1,
         DOWN: 2,
         LEFT: 3,
         RIGHT: 4
-    },
-
-    Weapons: {
-
-    },
-
-    Armors: {
-
     }
 };
 
@@ -205,14 +194,12 @@ var kinds = {
 
     flag: [Types.Entities.FLAG, "object"],
 
-    wall: [Types.MapElements.WALL, "tile"],
-    armoredwall: [Types.MapElements.ARMOREDWALL, "tile"],
-    trees: [Types.MapElements.TREES, "tile"],
-    ice: [Types.MapElements.ICE, "tile"],
-    water: [Types.MapElements.WATER, "tile"],
-    portal1: [Types.MapElements.PORTAL1, "tile"],
-    portal2: [Types.MapElements.PORTAL2, "tile"],
-    base: [Types.MapElements.BASE, "tile"],
+    wall: [Types.Entities.WALL, "tile"],
+    armoredwall: [Types.Entities.ARMOREDWALL, "tile"],
+    trees: [Types.Entities.TREES, "tile"],
+    ice: [Types.Entities.ICE, "tile"],
+    water: [Types.Entities.WATER, "tile"],
+    base: [Types.Entities.BASE, "tile"],
 
     getType: function(kind) {
         return kinds[Types.getKindAsString(kind)][1];
