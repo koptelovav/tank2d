@@ -110,24 +110,25 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 this.teams[teamNumber]['base'] = tile;
             },
 
-            addStaticEntity: function(tile){
-                throw "Not implemented";
-            },
-
             removeEntity: function (entity) {
                 if(entity.kind === 'base'){
                     delete this.teams[entity.team]['base'];
                 }
                 else if(entity.kind === 'player'){
-                    delete this.players[entity.id];
                     delete this.teams.players[entity.id];
                 }
+
+                if(this.env === Types.Environment.CLIENT)
+                    this.removeFromScene(entity);
 
                 this.unregisterEntityPosition(entity);
                 this.removeFromCollection(entity);
             },
 
             addStaticEntity: function(entity){
+                if(this.env === Types.Environment.CLIENT)
+                    this.addToScene(entity);
+
                 this.addToEntityGrid(entity);
                 this.addEntity(entity);
             },

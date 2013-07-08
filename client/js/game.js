@@ -79,12 +79,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.map.setData(data);
             },
 
-            addStaticEntity: function(entity){
-                this.addEntity(entity);
-                this.addToEntityGrid(entity);
-                this.addToScene(entity);
-            },
-
             addToScene: function (entity) {
                 var element = this.scene.createElement(entity);
                 element.setSprite(this.spriteManager.getSprite(entity.kind));
@@ -94,15 +88,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             removeFromScene: function (entity) {
                 this.scene.removeFromLayer(entity, Types.getKindLayer(entity.kind));
-            },
-
-            removeEntity: function (entity) {
-                this.removeFromScene(entity);
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                }, this);
-                this.removeFromCollection(entity);
-               // delete this.entities[entity.id];
             },
 
             moveEntities: function (dt) {
