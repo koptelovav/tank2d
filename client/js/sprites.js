@@ -1,12 +1,12 @@
 
-define(['text!../sprites/armoredwall.json',
-        'text!../sprites/ice.json',
-        'text!../sprites/trees.json',
-        'text!../sprites/wall.json',
-        'text!../sprites/water.json',
-        'text!../sprites/tank.json',
-        'text!../sprites/bullet.json',
-        'text!../sprites/base.json'], function() {
+define(['lib/text!../sprites/armoredwall.json',
+        'lib/text!../sprites/ice.json',
+        'lib/text!../sprites/trees.json',
+        'lib/text!../sprites/wall.json',
+        'lib/text!../sprites/water.json',
+        'lib/text!../sprites/tank.json',
+        'lib/text!../sprites/bullet.json',
+        'lib/text!../sprites/base.json'], function() {
     
     var sprites = {};
     
