@@ -103,7 +103,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                 if (_.isObject(hit) && !_.isEmpty(hit)) {
                                     _.each(hit, function (item) {
                                         if (item.strength <= entity.damage)
-                                            this.removeEntity(item);
+                                            this.removeEntity(item, true);
                                     }, this);
                                 }
                                 else {
@@ -112,7 +112,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                 }
                             }
                             entity.destroy();
-                            this.removeEntity(entity);
+                            this.removeEntity(entity, true);
                         }
                     }
 
@@ -162,7 +162,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
                 this.connection.on('leftGame', function (playerId) {
                     this.decrementPopulation();
-                    this.removeEntity(this.getEntityById(playerId));
+                    this.removeEntity(this.getEntityById(playerId), true);
 
                     this.emit('playerLeft', playerId);
                 }, this);

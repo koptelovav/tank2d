@@ -150,14 +150,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.initMap();
         },
 
-        moveEntities: function(){
-            _.each(this.collections[Types.Collections.ENTITY], function(entity){
-                if(entity.isMovable){
-
-                }
-            }, this);
-        },
-
         _checkAllStarted: function () {
             var result = true;
             for (var id in this.collections[Types.Collections.PLAYER]) {
@@ -178,39 +170,12 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             return result;
         },
 
-        getRandomSpawn: function (teamNumber) {
-            var teamSpawns = this.teams[teamNumber].spawns;
-            return teamSpawns[Math.floor(Math.random() * teamSpawns.length)];
-        },
+        moveEntities: function(){
+            _.each(this.collections[Types.Collections.ENTITY], function(entity){
+                if(entity.isMovable){
 
-        spawnAll: function () {
-            for (var id in this.collections[Types.Collections.PLAYER]) {
-                this.playerSpawn(id);
-            }
-        },
-
-        playerSpawn: function (id) {
-            var player = this.getEntityById(id);
-
-            this.pushToAll(Types.Messages.SPAWN,
-                player.id,
-                player.gridX,
-                player.gridY,
-                player.orientation
-            );
-        },
-
-        addPlayer: function (player) {
-            var spawn = this.getRandomSpawn(player.team);
-
-            player.setPosition(spawn.x, spawn.y);
-            player.orientation = spawn.orientation;
-            player.isPlay = true;
-
-            this.outgoingQueues[player.id] = [];
-
-            this.addToEntityGrid(player);
-            this.addEntity(player);
+                }
+            }, this);
         },
 
         getFreeTeamNumber: function(){
@@ -226,6 +191,45 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             return parseInt(selectedTeam);
         },
 
+        getRandomSpawn: function (teamNumber) {
+            var teamSpawns = this.teams[teamNumber].spawns;
+            return teamSpawns[Math.floor(Math.random() * teamSpawns.length)];
+        },
+
+        playerSpawn: function (id) {
+            var player = this.getEntityById(id);
+
+            this.pushToAll(Types.Messages.SPAWN,
+                player.id,
+                player.gridX,
+                player.gridY,
+                player.orientation
+            );
+        },
+
+        spawnAll: function () {
+            for (var id in this.collections[Types.Collections.PLAYER]) {
+                this.playerSpawn(id);
+            }
+        },
+
+        addPlayer: function (player) {
+            var spawn = this.getRandomSpawn(player.team);
+
+            player.setPosition(spawn.x, spawn.y);
+            player.orientation = spawn.orientation;
+            player.isPlay = true;
+
+            this.outgoingQueues[player.id] = [];
+
+            this.addEntity(player, true);
+        },
+
+        removePlayer: function (player) {
+            this.removeEntity(player, true);
+            delete this.outgoingQueues[player.id];
+        },
+
         getPlayersInfo: function (ignoreId) {
             var playersInfo = [];
             _.each(this.collections[Types.Collections.PLAYER], function (player) {
@@ -234,12 +238,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             });
             return playersInfo;
         },
-
-        removePlayer: function (player) {
-            this.unregisterEntityPosition(player);
-            delete this.outgoingQueues[player.id];
-        },
-
 
         isFull: function () {
             return this.population === this.maxPlayers;

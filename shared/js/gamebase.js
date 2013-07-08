@@ -36,8 +36,24 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 if(registerPosition === true)
                     this.registerEntityPosition(entity);
 
-
                 this.addToCollection(entity);
+            },
+
+            removeEntity: function (entity, unRegisterPosition) {
+                if(entity.kind === Types.MapElements.BASE){
+                    delete this.teams[entity.team].base;
+                }
+                else if(entity.kind === Types.Entities.PLAYER){
+                    delete this.teams.players[entity.id];
+                }
+
+                if(this.env === Types.Environment.CLIENT)
+                    this.removeFromScene(entity);
+
+                if(unRegisterPosition === true)
+                    this.unregisterEntityPosition(entity);
+
+                this.removeFromCollection(entity);
             },
 
             addToCollection: function(entity){
@@ -119,21 +135,6 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
 
                 this.addEntity(tile, true);
                 this.teams[teamNumber]['base'] = tile;
-            },
-
-            removeEntity: function (entity) {
-                if(entity.kind === Types.MapElements.BASE){
-                    delete this.teams[entity.team].base;
-                }
-                else if(entity.kind === Types.Entities.PLAYER){
-                    delete this.teams.players[entity.id];
-                }
-
-                if(this.env === Types.Environment.CLIENT)
-                    this.removeFromScene(entity);
-
-                this.unregisterEntityPosition(entity);
-                this.removeFromCollection(entity);
             },
 
             initEntityGrid: function () {
