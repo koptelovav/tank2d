@@ -18,16 +18,11 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.isStart = false;
             this.isPlay = false;
 
-            this.spawns = {};
-            this.players = {};
-            this.entities = {};
-            this.movableEntities = {};
-
+            this.collections = {};
             this.teams = {};
+
             this.entityGrid = [];
-
             this.outgoingQueues = {};
-
             this.population = 0;
 
 
@@ -150,12 +145,13 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             this.isStart = false;
             this.isPlay = false;
             this.population = 0;
+            this.collections = {};
             this.initEntityGrid();
             this.initMap();
         },
 
         moveEntities: function(){
-            _.each(this.movableEntities, function(entity){
+            _.each(this.collections[Types.Collections.ENTITY], function(entity){
                 if(entity.isMovable){
 
                 }
@@ -164,15 +160,15 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
         _checkAllStarted: function () {
             var result = true;
-            for (var player in this.players) {
-                result = result && (this.players[player].isReady === true);
+            for (var id in this.collections[Types.Collections.PLAYER]) {
+                result = result && (this.collections[Types.Collections.PLAYER][id].isReady === true);
             }
             return result;
         },
 
         _checkAllLoaded: function () {
             var result = true;
-            _.each(this.players, function (player) {
+            _.each(this.collections[Types.Collections.PLAYER], function (player) {
                 if (player.isLoad !== true) {
                     console.log(player.id);
                 }
@@ -188,7 +184,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
         },
 
         spawnAll: function () {
-            for (var id in this.players) {
+            for (var id in this.collections[Types.Collections.PLAYER]) {
                 this.playerSpawn(id);
             }
         },
@@ -211,7 +207,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
             player.orientation = spawn.orientation;
             player.isPlay = true;
 
-            this.players[player.id] = player;
             this.outgoingQueues[player.id] = [];
 
             this.addToEntityGrid(player);
@@ -233,7 +228,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
         getPlayersInfo: function (ignoreId) {
             var playersInfo = [];
-            _.each(this.players, function (player) {
+            _.each(this.collections[Types.Collections.PLAYER], function (player) {
                 if(player.id !== ignoreId)
                     playersInfo.push(player.getState());
             });
@@ -242,9 +237,6 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
 
         removePlayer: function (player) {
             this.unregisterEntityPosition(player);
-            delete this.players[player.id];
-            delete this.entities[player.id];
-            delete this.movableEntities[player.id];
             delete this.outgoingQueues[player.id];
         },
 

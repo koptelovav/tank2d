@@ -19,13 +19,9 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.minPlayers = null;
 
                 this.entityGrid = [];
-
-                this.entities = {};
                 this.collections = {};
-                this.movableEntities = {};
-                this.players = {};
-
                 this.teams = {};
+
                 this.lastUpdateTime = 0;
 
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base"];
@@ -105,12 +101,12 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 _.each(entity.getChunk(), function(pos){
                     this.removeFromEntityGrid(entity, pos[0], pos[1]);
                 }, this);
-                delete this.entities[entity.id];
-                delete this.movableEntities[entity.id];
+                this.removeFromCollection(entity);
+               // delete this.entities[entity.id];
             },
 
             moveEntities: function (dt) {
-                _.each(this.movableEntities, function (entity) {
+                _.each(this.collections[Types.Collections.MOVABLE], function (entity) {
                     if (entity.isMovable) {
                         if (entity instanceof Player) {
                             if (this.isValidPlayerMove(entity)) {
@@ -181,7 +177,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
                 this.connection.on('leftGame', function (playerId) {
                     this.decrementPopulation();
-                    delete this.entities[playerId];
+                 //   delete this.entities[playerId];
 
                     this.emit('playerLeft', playerId);
                 }, this);
@@ -224,7 +220,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 }, this);
 
                 this.connection.on('syncPos', function (id, x, y, gridX, gridY) {
-                    this.entities[id].syncPososition(x, y, gridX, gridY);
+                    //this.entities[id].syncPososition(x, y, gridX, gridY);
                 }, this);
             },
 
@@ -232,7 +228,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 var player = new Player(d[0], d[1], d[2], d[5], d[6]);
                 player.setPosition(d[3], d[4]);
                 this.addEntity(player);
-                this.players[player.id] = player;
                 this.emit('playerJoin', player);
                 return player;
             },
@@ -251,12 +246,11 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                     var bullet = new Bullet(Date.now(), 'easy', 'bullet', this.player, 300);
                     this.addEntity(bullet);
                     this.addToScene(bullet);
-                    bullet.toggleMovable();
                 }
             },
 
             playerStopMove: function (id) {
-                var player = id ? this.entities[id] : this.player;
+                var player = id ? this.collections[Types.Collections.PLAYER][id] : this.player;
 
                 if (player.isMovable) {
                     player.toggleMovable();

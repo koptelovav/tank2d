@@ -26,10 +26,6 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             addEntity: function (entity) {
-                if(entity.movable)
-                    this.movableEntities[entity.id] = entity;
-
-                this.entities[entity.id] = entity;
                 this.addToCollection(entity);
             },
 
@@ -62,12 +58,12 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             entityIdExists: function (id) {
-                return id in this.entities;
+                return id in this.collections[Types.Collections.ENTITY];
             },
 
             getEntityById: function (id) {
-                if (id in this.entities) {
-                    return this.entities[id];
+                if (id in this.collections[Types.Collections.ENTITY]) {
+                    return this.collections[Types.Collections.ENTITY][id];
                 }
                 else {
                     log.error("Unknown entity id : " + id, true);
@@ -128,8 +124,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 }
 
                 this.unregisterEntityPosition(entity);
-                delete this.entities[entity.id];
-                delete this.movableEntities[entity.id];
+                this.removeFromCollection(entity);
             },
 
             addStaticEntity: function(entity){
