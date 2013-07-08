@@ -42,10 +42,12 @@ define(['../../shared/js/model', '../../shared/js/tilefactory'],
                 }
 
                 if (entity.destroy.indexOf(Types.Destroy.COLLIDING) >= 0) {
-                    this.unRegisterEntityPosition(entity);
+                    entity.colliding = [];
                 }
 
                 if (entity.destroy.indexOf(Types.Destroy.FULL) >= 0) {
+                    this.unRegisterEntityPosition(entity);
+
                     if (entity.kind === Types.Entities.BASE) {
                         delete this.teams[entity.team].base;
                     }
