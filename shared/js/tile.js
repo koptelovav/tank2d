@@ -8,7 +8,7 @@ define(['../../shared/js/entity'], function (Entity) {
             this.colliding = config.colliding;
             this.setPosition(x,y);
             this.setSize(config.width, config.height);
-
+            this.collections = this.collections.concat([Types.Collections.TILE]);
         }
     });
 

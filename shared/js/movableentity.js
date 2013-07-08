@@ -3,10 +3,12 @@ define(['../../shared/js/entity'],function (Entity) {
         init: function (id, type, kind, speed){
             this._super(id, type, kind);
 
-            this.moveable = true;
+            this.movable = true;
             this.orientation = 1;
             this.speed = speed;
             this.isMovable = false;
+
+            this.collections = this.collections.concat([Types.Collections.MOVABLE]);
         },
 
         setOrientation: function (newOrientation) {

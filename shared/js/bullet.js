@@ -7,6 +7,7 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.damage = 70;
             this.strength = 1;
             this.orientation = player.orientation;
+            this.collections = this.collections.concat([Types.Collections.BULLET]);
 
             this.setPosition(player.gridX, player.gridY);
 
@@ -19,6 +20,8 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
                 this.setSize(8,16);
             }
             this.setStartPosition();
+
+            console.log(this.collections);
         },
 
         setStartPosition: function () {

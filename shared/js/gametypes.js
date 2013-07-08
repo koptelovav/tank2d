@@ -37,6 +37,7 @@ Types = {
     },
 
     Entities: {
+        ENTITY: 99,
         TANK: 100,
         BULLET: 101,
 
@@ -53,6 +54,14 @@ Types = {
 
         // Objects
         FLAG: 160
+    },
+
+    Collections: {
+        ENTITY: 0,
+        MOVABLE: 1,
+        PLAYER: 2,
+        BULLET: 3,
+        TILE : 4
     },
 
     MapElements: {

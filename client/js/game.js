@@ -21,6 +21,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.entityGrid = [];
 
                 this.entities = {};
+                this.collections = {};
                 this.movableEntities = {};
                 this.players = {};
 

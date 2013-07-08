@@ -4,6 +4,8 @@ define(['../../shared/js/model'], function (Model) {
             this.id = parseInt(id);
             this.kind = kind;
             this.type = type;
+
+            this.collections = [Types.Collections.ENTITY];
         },
 
         setSize: function (width, height) {

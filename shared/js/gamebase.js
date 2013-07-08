@@ -26,14 +26,26 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             addEntity: function (entity) {
-                if(this[entity.kind] === undefined)
-                    this[entity.kind] = {};
-
-                if(entity.moveable)
+                if(entity.movable)
                     this.movableEntities[entity.id] = entity;
 
                 this.entities[entity.id] = entity;
-                this[entity.kind][entity.id] = entity;
+                this.addToCollection(entity);
+            },
+
+            addToCollection: function(entity){
+                _.each(entity.collections, function(collection){
+                    if(this.collections[collection] === undefined)
+                        this.collections[collection] = {};
+
+                    this.collections[collection][entity.id] = entity;
+                }, this);
+            },
+
+            removeFromCollection: function(entity){
+                _.each(entity.collections, function(collection){
+                    delete this.collections[collection][entity.id];
+                }, this);
             },
 
             incrementPopulation: function () {
