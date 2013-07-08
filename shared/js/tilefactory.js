@@ -14,9 +14,9 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.layer = Types.Layers.BACKGROUND;
             this.animated = false;
             this.strength = 30;
-            this.width = 16;
-            this.height = 16;
-            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET]
+            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
+
+            this.setSize(16);
         }
     });
 
@@ -26,10 +26,10 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.layer = Types.Layers.BACKGROUND;
             this.animated = false;
             this.strength = 0;
-            this.width = 32;
-            this.height = 32;
-            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET]
+            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
             this.team = null;
+
+            this.setSize(32);
         },
 
         setTeam: function(team){
@@ -43,9 +43,9 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.layer = Types.Layers.BACKGROUND;
             this.animated = false;
             this.strength = 60;
-            this.width = 16;
-            this.height = 16;
-            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET]
+            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
+
+            this.setSize(16);
         }
     });
 
@@ -55,9 +55,9 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.layer = Types.Layers.FOREGROUND;
             this.animated = false;
             this.strength = 0;
-            this.width = 16;
-            this.height = 16;
-            this.colliding = []
+            this.colliding = [];
+
+            this.setSize(16);
         }
     });
 
@@ -67,9 +67,9 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.layer = Types.Layers.BACKGROUND;
             this.animated = true;
             this.strength = 0;
-            this.width = 16;
-            this.height = 16;
-            this.colliding = [Types.Entities.TANK]
+            this.colliding = [Types.Entities.TANK];
+
+            this.setSize(16);
         }
     });
 
@@ -79,9 +79,9 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.layer = Types.Layers.BACKGROUND;
             this.animated = false;
             this.strength = 0;
-            this.width = 16;
-            this.height = 16;
-            this.colliding = []
+            this.colliding = [];
+
+            this.setSize(16);
         }
     });
 
