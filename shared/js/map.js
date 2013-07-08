@@ -30,19 +30,6 @@ define(['../../shared/js/model'],
                 return x < 0 || x >= this.width || y < 0 || y >= this.height;
             },
 
-            isTankColliding: function (x, y, eId) {
-                if (this.isOutOfBounds(x, y)) {
-                    return true;
-                }
-                for (var id in this.game.entityGrid[x][y]) {
-                    if (eId != id && Types.getCollidingArray(this.game.entityGrid[x][y][id].kind).indexOf('tank') >= 0){
-                        console.log(this.game.entityGrid[x][y][id]);
-                        return true;
-                    }
-                }
-                return false;
-            },
-
             isBulletColliding: function (bullet) {
                 var entity,
                     id,
@@ -72,7 +59,7 @@ define(['../../shared/js/model'],
                             if (bullet.id !== entity.id &&
                                 bullet.player.id !== entity.id &&
                                 collides &&
-                                Types.getCollidingArray(entity.kind).indexOf(bullet.kind) >= 0)
+                                entity.colliding.indexOf(bullet.kind) >= 0)
                                     colliding[entity.id] = entity;
                         }
                 }, this);

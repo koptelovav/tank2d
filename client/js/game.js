@@ -171,11 +171,11 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 var element = this.scene.createElement(entity);
                 element.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
                 element.setAnimation('idle', 800);
-                this.scene.addToLayer(element, Types.getKindLayer(entity.kind));
+                this.scene.addToLayer(element, entity.layer);
             },
 
             removeFromScene: function (entity) {
-                this.scene.removeFromLayer(entity, Types.getKindLayer(entity.kind));
+                this.scene.removeFromLayer(entity, entity.layer);
             },
 
             moveEntities: function (dt) {
@@ -273,13 +273,14 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                 return true;
                             }
                             for (var id in this.entityGrid[tile.x][tile.y]) {
-                                if (player.id != id && Types.getCollidingArray(this.entityGrid[tile.x][tile.y][id].kind).indexOf(Types.Entities.TANK) >= 0)
+                                if (player.id != id && this.entityGrid[tile.x][tile.y][id].colliding.indexOf(Types.Entities.TANK) >= 0)
                                     return true;
                             }
                             return false;
                         }, this);
+                    return !result;
                 }
-                return !result;
+                return false;
             },
 
             sendChatMessage: function (message) {

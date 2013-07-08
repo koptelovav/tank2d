@@ -94,13 +94,12 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             initMap: function () {
-                var kind,
-                    tile,
+                var tile,
                     count = 0;
 
                 for (var j, i = 0; i < this.map.height; i++) {
                     for (j = 0; j < this.map.width; j++) {
-                        if ((kind = Types.getKindAsString(this.map.tiles[i][j])) !== undefined) {
+                        if (Types.getKindAsString(this.map.tiles[i][j])) {
                             tile = TileFactory.create((Types.Prefixes.TAIL +''+count), this.map.tiles[i][j], i, j);
                             this.addEntity(tile, true);
                             count++;

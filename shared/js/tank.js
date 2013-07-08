@@ -8,6 +8,17 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.bullet = this._params['bullet'];
             this._super(id, type, kind, this.speed);
 
+            this.layer = Types.Layers.ENTITIES;
+            this.animated = true;
+            this.strength = 1;
+            this.colliding =  [
+                Types.Entities.TANK,
+                Types.Entities.BULLET,
+                Types.Entities.WALL,
+                Types.Entities.ARMOREDWALL,
+                Types.Entities.WATER
+            ];
+
             this.setSize(32);
         }
     });

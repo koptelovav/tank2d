@@ -10,6 +10,16 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.orientation = player.orientation;
             this.collections = this.collections.concat([Types.Collections.BULLET]);
 
+            this.layer = Types.Layers.ENTITIES;
+            this.animated = true;
+            this.strength = 1;
+            this.colliding =  [
+                Types.Entities.TANK,
+                Types.Entities.BULLET,
+                Types.Entities.WALL,
+                Types.Entities.ARMOREDWALL
+            ];
+
             this.setPosition(player.gridX, player.gridY);
 
             if (this.orientation === Types.Orientations.LEFT ||

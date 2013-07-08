@@ -115,78 +115,6 @@ Types.getMessageCode = function (name) {
     return messages[name][0];
 };
 
-var kindConfig = {};
-
-kindConfig[Types.Entities.BASE] = {
-    layer: Types.Layers.BACKGROUND,
-    animated: false,
-    strength: 0,
-    width: 32,
-    height: 32,
-    colliding: [Types.Entities.TANK, Types.Entities.BULLET]
-};
-
-kindConfig[Types.Entities.ICE] = {
-    layer: Types.Layers.BACKGROUND,
-    animated: false,
-    strength: 0,
-    width: 16,
-    height: 16,
-    colliding: []
-};
-
-kindConfig[Types.Entities.WALL] = {
-    layer: Types.Layers.BACKGROUND,
-    animated: false,
-    strength: 30,
-    width: 16,
-    height: 16,
-    colliding: [Types.Entities.TANK, Types.Entities.BULLET]
-};
-
-kindConfig[Types.Entities.ARMOREDWALL] = {
-    layer: Types.Layers.BACKGROUND,
-    animated: false,
-    strength: 60,
-    width: 16,
-    height: 16,
-    colliding: [Types.Entities.TANK, Types.Entities.BULLET]
-};
-
-kindConfig[Types.Entities.TREES] = {
-    layer: Types.Layers.FOREGROUND,
-    animated: false,
-    strength: 0,
-    width: 16,
-    height: 16,
-    colliding: []
-};
-
-kindConfig[Types.Entities.WATER] = {
-    layer: Types.Layers.BACKGROUND,
-    animated: true,
-    strength: 0,
-    width: 16,
-    height: 16,
-    colliding: [Types.Entities.TANK]
-};
-
-kindConfig[Types.Entities.TANK] = {
-    layer: Types.Layers.ENTITIES,
-    animated: true,
-    strength: 1,
-    colliding: ['tank', 'bullet', 'wall', 'armoredwall', 'water']
-
-};
-
-kindConfig[Types.Entities.BULLET] = {
-    layer: Types.Layers.ENTITIES,
-    animated: false,
-    strength: 1,
-    colliding: ['tank', 'bullet', 'wall', 'armoredwall']
-};
-
-
 var kinds = {
     tank: [Types.Entities.TANK, "player"],
     bullet: [Types.Entities.BULLET, "bullet"],
@@ -220,45 +148,10 @@ var kinds = {
     }
 };
 
-Types.getKindLayer = function (kind) {
-    return kindConfig[kind]['layer'];
-};
-Types.getIsAnimateAsKind = function (kind) {
-    return kindConfig[kind]['animated'];
-};
-
-Types.getCollidingArray = function (kind) {
-    return kindConfig[kind]['colliding'];
-};
-
-Types.getKindConfig = function (kind, param) {
-    // console.log(kinds.getKindString(kind),kind);
-    if (param) return kindConfig[kind][param];
-    else return kindConfig[kind];
-
-};
-
 Types.getKindString = function (kind) {
     return kinds.getKindString(kind);
 };
 
-Types.isPlayer = function (kind) {
-    return kinds.getType(kind) === "player";
-};
-
-Types.isMapElement = function (kind) {
-    return kinds.getType(kind) === "mapelement";
-};
-
-Types.isObject = function (kind) {
-    return kinds.getType(kind) === "object";
-};
-
-Types.getKindFromString = function (kind) {
-    if (kind in kinds) {
-        return kinds[kind][0];
-    }
-};
 
 Types.getKindAsString = function (kind) {
     for (var k in kinds) {
@@ -266,52 +159,6 @@ Types.getKindAsString = function (kind) {
             return k;
         }
     }
-};
-
-Types.forEachKind = function (callback) {
-    for (var k in kinds) {
-        callback(kinds[k][0], k);
-    }
-};
-
-
-Types.getOrientationAsString = function (orientation) {
-    switch (orientation) {
-        case Types.Orientations.LEFT:
-            return "left";
-            break;
-        case Types.Orientations.RIGHT:
-            return "right";
-            break;
-        case Types.Orientations.UP:
-            return "up";
-            break;
-        case Types.Orientations.DOWN:
-            return "down";
-            break;
-    }
-};
-
-Types.getRandomItemKind = function (item) {
-    var all = _.union(this.rankedWeapons, this.rankedArmors),
-        forbidden = [Types.Entities.SWORD1, Types.Entities.CLOTHARMOR],
-        itemKinds = _.difference(all, forbidden),
-        i = Math.floor(Math.random() * _.size(itemKinds));
-
-    return itemKinds[i];
-};
-
-Types.getMessageTypeAsString = function (type) {
-    var typeName;
-    _.each(Types.Messages, function (value, name) {
-        if (value === type) {
-            typeName = name;
-        }
-    });
-    if (!typeName) {
-        typeName = "UNKNOWN";
-    }
-    return typeName;
 };
 
 if (!(typeof exports === 'undefined')) {
