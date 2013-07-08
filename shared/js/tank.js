@@ -11,6 +11,7 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.layer = Types.Layers.ENTITIES;
             this.animated = true;
             this.strength = 1;
+            this.life = 1;
             this.colliding =  [
                 Types.Entities.TANK,
                 Types.Entities.BULLET,

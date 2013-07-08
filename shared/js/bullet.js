@@ -9,10 +9,17 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             this.strength = 1;
             this.orientation = player.orientation;
             this.collections = this.collections.concat([Types.Collections.BULLET]);
+            this.impact = [
+                {
+                    type: Types.Impact.DAMAGE,
+                    power: 70
+                }
+            ];
 
             this.layer = Types.Layers.ENTITIES;
             this.animated = true;
             this.strength = 1;
+            this.life = 1;
             this.colliding =  [
                 Types.Entities.TANK,
                 Types.Entities.BULLET,
@@ -44,7 +51,7 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             else if (this.orientation === Types.Orientations.DOWN) this.y += this.player.width / 2;
         },
 
-        destroy: function(){
+        destroyFn: function(){
             this.toggleMovable();
             this.player.toggleFire();
         }

@@ -1,20 +1,20 @@
-define(['../../shared/js/model','../../shared/js/tilefactory'],
+define(['../../shared/js/model', '../../shared/js/tilefactory'],
     function (Model, TileFactory) {
 
         var GameBase = Model.extend({
             init: function () {
             },
 
-            registerEntityPosition: function(entity){
-                if(entity) {
-                    _.each(entity.getChunk(), function(tile){
+            registerEntityPosition: function (entity) {
+                if (entity) {
+                    _.each(entity.getChunk(), function (tile) {
                         this.entityGrid[tile.x][tile.y][entity.id] = entity;
                     }, this);
                 }
             },
 
-            unRegisterEntityPosition: function(entity) {
-                _.each(entity.getChunk(), function(tile){
+            unRegisterEntityPosition: function (entity) {
+                _.each(entity.getChunk(), function (tile) {
                     this.removeFromEntityGrid(entity, tile.x, tile.y);
                 }, this);
             },
@@ -26,43 +26,47 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             },
 
             addEntity: function (entity, registerPosition) {
-                if(this.env === Types.Environment.CLIENT)
+                if (this.env === Types.Environment.CLIENT)
                     this.addToScene(entity);
 
-                if(registerPosition === true)
+                if (registerPosition === true)
                     this.registerEntityPosition(entity);
 
                 this.addToCollection(entity);
             },
 
-            removeEntity: function (entity, unRegisterPosition) {
-                if(entity.kind === Types.Entities.BASE){
-                    delete this.teams[entity.team].base;
-                }
-                else if(entity.kind === Types.Entities.PLAYER){
-                    delete this.teams.players[entity.id];
+            removeEntity: function (entity) {
+                if (entity.destroy.indexOf(Types.Destroy.VIEW) >= 0) {
+                    if (this.env === Types.Environment.CLIENT)
+                        this.removeFromScene(entity);
                 }
 
-                if(this.env === Types.Environment.CLIENT)
-                    this.removeFromScene(entity);
-
-                if(unRegisterPosition === true)
+                if (entity.destroy.indexOf(Types.Destroy.COLLIDING) >= 0) {
                     this.unRegisterEntityPosition(entity);
+                }
 
-                this.removeFromCollection(entity);
+                if (entity.destroy.indexOf(Types.Destroy.FULL) >= 0) {
+                    if (entity.kind === Types.Entities.BASE) {
+                        delete this.teams[entity.team].base;
+                    }
+                    else if (entity.kind === Types.Entities.PLAYER) {
+                        delete this.teams.players[entity.id];
+                    }
+                    this.removeFromCollection(entity);
+                }
             },
 
-            addToCollection: function(entity){
-                _.each(entity.collections, function(collection){
-                    if(this.collections[collection] === undefined)
+            addToCollection: function (entity) {
+                _.each(entity.collections, function (collection) {
+                    if (this.collections[collection] === undefined)
                         this.collections[collection] = {};
 
                     this.collections[collection][entity.id] = entity;
                 }, this);
             },
 
-            removeFromCollection: function(entity){
-                _.each(entity.collections, function(collection){
+            removeFromCollection: function (entity) {
+                _.each(entity.collections, function (collection) {
                     delete this.collections[collection][entity.id];
                 }, this);
             },
@@ -100,29 +104,29 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 for (var j, i = 0; i < this.map.height; i++) {
                     for (j = 0; j < this.map.width; j++) {
                         if (Types.getKindAsString(this.map.tiles[i][j])) {
-                            tile = TileFactory.create((Types.Prefixes.TAIL +''+count), this.map.tiles[i][j], i, j);
+                            tile = TileFactory.create((Types.Prefixes.TAIL + '' + count), this.map.tiles[i][j], i, j);
                             this.addEntity(tile, true);
                             count++;
                         }
                     }
                 }
 
-                _.each(this.map.teams, function(team, index){
+                _.each(this.map.teams, function (team, index) {
                     this.teams[index] = {};
                     this.teams[index].players = {};
                     this.teams[index].spawns = team.spawns;
 
-                    if(team.base !== undefined){
+                    if (team.base !== undefined) {
                         this.addBase(index, team.base.x, team.base.y);
                     }
                 }, this);
             },
 
-            addBase: function(teamNumber, x,y){
-                var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), Types.Entities.BASE, x, y);
+            addBase: function (teamNumber, x, y) {
+                var tile = TileFactory.create((Types.Prefixes.BASE + '' + teamNumber), Types.Entities.BASE, x, y);
                 tile.setTeam(teamNumber);
 
-                _.each(tile.getChunk(), function(tile){
+                _.each(tile.getChunk(), function (tile) {
                     for (var id in this.entityGrid[tile.x][tile.y]) {
                         this.removeEntity(this.entityGrid[tile.x][tile.y][id]);
                     }

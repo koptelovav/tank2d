@@ -15,7 +15,7 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.animated = false;
             this.strength = 30;
             this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
-
+            this.externalImpact = [Types.Impact.DAMAGE];
             this.setSize(16);
         }
     });
@@ -25,8 +25,11 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this._super(id, 'tile', kind, x, y);
             this.layer = Types.Layers.BACKGROUND;
             this.animated = false;
-            this.strength = 0;
+            this.strength = 1;
             this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
+            this.externalImpact = [Types.Impact.DAMAGE];
+            this.destroy = [Types.Destroy.COLLIDING];
+
             this.team = null;
 
             this.setSize(32);
@@ -44,6 +47,7 @@ define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
             this.animated = false;
             this.strength = 60;
             this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
+            this.externalImpact = [Types.Impact.DAMAGE];
 
             this.setSize(16);
         }

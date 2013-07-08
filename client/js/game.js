@@ -117,7 +117,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
                 this.connection.on('leftGame', function (playerId) {
                     this.decrementPopulation();
-                    this.removeEntity(this.getEntityById(playerId), true);
+                    this.removeEntity(this.getEntityById(playerId));
 
                     this.emit('playerLeft', playerId);
                 }, this);
@@ -190,8 +190,9 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                 var hit = this.map.isBulletColliding.call(this.map, entity);
                                 if (_.isObject(hit) && !_.isEmpty(hit)) {
                                     _.each(hit, function (item) {
-                                        if (item.strength <= entity.damage)
-                                            this.removeEntity(item, true);
+                                        item.processImpact(entity.impact);
+                                        if(item.life <= 0)
+                                            this.removeEntity(item);
                                     }, this);
                                 }
                                 else {
@@ -199,8 +200,8 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                     return;
                                 }
                             }
-                            entity.destroy();
-                            this.removeEntity(entity, true);
+                            entity.destroyFn();
+                            this.removeEntity(entity);
                         }
                     }
 
@@ -218,8 +219,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
             sendReady: function () {
                 this.connection.send(Types.Messages.IREADY);
             },
-
-
 
             playerFire: function (id) {
                 if (this.player.canFire()) {

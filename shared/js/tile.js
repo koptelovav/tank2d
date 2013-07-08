@@ -3,6 +3,7 @@ define(['../../shared/js/entity'], function (Entity) {
         init: function (id, type, kind, x, y) {
 
             this._super(id, type, kind);
+            this.life = 1;
             this.setPosition(x,y);
             this.collections = this.collections.concat([Types.Collections.TILE]);
         }

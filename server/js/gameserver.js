@@ -226,7 +226,7 @@ define(['../../shared/js/gamebase', '../../shared/js/map', '../../shared/js/tile
         },
 
         removePlayer: function (player) {
-            this.removeEntity(player, true);
+            this.removeEntity(player);
             delete this.outgoingQueues[player.id];
         },
 

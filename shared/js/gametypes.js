@@ -77,6 +77,19 @@ Types = {
         DOWN: 2,
         LEFT: 3,
         RIGHT: 4
+    },
+
+    Impact: {
+        DAMAGE: 1,
+        FIRE: 2,
+        ICE: 3,
+        BANG: 4
+    },
+
+    Destroy: {
+        VIEW: 1,
+        COLLIDING: 2,
+        FULL: 3
     }
 };
 
