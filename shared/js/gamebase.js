@@ -5,13 +5,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
             init: function () {
             },
 
-            unregisterEntityPosition: function(entity) {
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
-                }, this);
-            },
-
-            addToEntityGrid: function(entity) {
+            registerEntityPosition: function(entity){
                 if(entity) {
                     _.each(entity.getChunk(), function(pos){
                         this.entityGrid[pos[0]][pos[1]][entity.id] = entity;
@@ -19,8 +13,10 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 }
             },
 
-            registerEntityPosition: function(entity){
-                this.addToEntityGrid(entity);
+            unRegisterEntityPosition: function(entity) {
+                _.each(entity.getChunk(), function(pos){
+                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
+                }, this);
             },
 
             removeFromEntityGrid: function (entity, x, y) {
@@ -51,7 +47,7 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                     this.removeFromScene(entity);
 
                 if(unRegisterPosition === true)
-                    this.unregisterEntityPosition(entity);
+                    this.unRegisterEntityPosition(entity);
 
                 this.removeFromCollection(entity);
             },

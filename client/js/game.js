@@ -74,51 +74,6 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 requestAnimFrame(this.tick.bind(this));
             },
 
-            loadMap: function (data) {
-                this.map = new Map(this);
-                this.map.setData(data);
-            },
-
-            addToScene: function (entity) {
-                var element = this.scene.createElement(entity);
-                element.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
-                element.setAnimation('idle', 800);
-                this.scene.addToLayer(element, Types.getKindLayer(entity.kind));
-            },
-
-            removeFromScene: function (entity) {
-                this.scene.removeFromLayer(entity, Types.getKindLayer(entity.kind));
-            },
-
-            moveEntities: function (dt) {
-                _.each(this.collections[Types.Collections.MOVABLE], function (entity) {
-                    if (entity.isMovable) {
-                        if (entity instanceof Player) {
-                            if (this.isValidPlayerMove(entity)) {
-                                entity.move(dt);
-                            }
-                        } else if (entity instanceof Bullet) {
-                            if (!this.map.isOutOfBounds.apply(this.map, entity.move(dt, true))) {
-                                var hit = this.map.isBulletColliding.call(this.map, entity);
-                                if (_.isObject(hit) && !_.isEmpty(hit)) {
-                                    _.each(hit, function (item) {
-                                        if (item.strength <= entity.damage)
-                                            this.removeEntity(item, true);
-                                    }, this);
-                                }
-                                else {
-                                    entity.move(dt);
-                                    return;
-                                }
-                            }
-                            entity.destroy();
-                            this.removeEntity(entity, true);
-                        }
-                    }
-
-                }, this);
-            },
-
             connect: function () {
                 this.connection.connect();
 
@@ -182,12 +137,11 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                         player = this.getEntityById(id);
                         player.setPosition(x, y);
                         player.setOrientation(orientation);
-                        this.addToEntityGrid(player);
+                        this.addEntity(player, true);
 
-                        this.addToScene(player);
 
                         player.on('move', function () {
-                            this.addToEntityGrid(player);
+                            this.registerEntityPosition(player);
                         }, this);
                     }
                 }, this);
@@ -208,6 +162,51 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 }, this);
             },
 
+            loadMap: function (data) {
+                this.map = new Map(this);
+                this.map.setData(data);
+            },
+
+            addToScene: function (entity) {
+                var element = this.scene.createElement(entity);
+                element.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
+                element.setAnimation('idle', 800);
+                this.scene.addToLayer(element, Types.getKindLayer(entity.kind));
+            },
+
+            removeFromScene: function (entity) {
+                this.scene.removeFromLayer(entity, Types.getKindLayer(entity.kind));
+            },
+
+            moveEntities: function (dt) {
+                _.each(this.collections[Types.Collections.MOVABLE], function (entity) {
+                    if (entity.isMovable) {
+                        if (entity instanceof Player) {
+                            if (this.isValidPlayerMove(entity)) {
+                                entity.move(dt);
+                            }
+                        } else if (entity instanceof Bullet) {
+                            if (!this.map.isOutOfBounds.apply(this.map, entity.move(dt, true))) {
+                                var hit = this.map.isBulletColliding.call(this.map, entity);
+                                if (_.isObject(hit) && !_.isEmpty(hit)) {
+                                    _.each(hit, function (item) {
+                                        if (item.strength <= entity.damage)
+                                            this.removeEntity(item, true);
+                                    }, this);
+                                }
+                                else {
+                                    entity.move(dt);
+                                    return;
+                                }
+                            }
+                            entity.destroy();
+                            this.removeEntity(entity, true);
+                        }
+                    }
+
+                }, this);
+            },
+
             addPlayer: function (d) {
                 var player = new Player(d[0], d[1], d[2], d[5], d[6]);
                 player.setPosition(d[3], d[4]);
@@ -220,9 +219,7 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                 this.connection.send(Types.Messages.IREADY);
             },
 
-            sendChatMessage: function (message) {
-                this.connection.send(Types.Messages.CHAT, message);
-            },
+
 
             playerFire: function (id) {
                 if (this.player.canFire()) {
@@ -288,6 +285,10 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                         }, this);
                 }
                 return !result;
+            },
+
+            sendChatMessage: function (message) {
+                this.connection.send(Types.Messages.CHAT, message);
             }
         });
 
