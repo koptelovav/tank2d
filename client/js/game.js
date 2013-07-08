@@ -200,8 +200,8 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
                                     return;
                                 }
                             }
-                            entity.destroyFn();
                             this.removeEntity(entity);
+                            entity.player.bulletCount -= 1;
                         }
                     }
 
@@ -222,10 +222,9 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             playerFire: function (id) {
                 if (this.player.canFire()) {
-                    this.player.toggleFire();
+                    this.player.bulletCount += 1;
                     var bullet = new Bullet(Date.now(), 'easy', Types.Entities.BULLET, this.player, 300);
                     this.addEntity(bullet);
-                    this.addToScene(bullet);
                 }
             },
 

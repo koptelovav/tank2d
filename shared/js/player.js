@@ -18,6 +18,8 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
 
             this.fire = true;
             this.fireDelay = 250;
+            this.bulletCount = 0;
+            this.maxBulletCount = 1;
             this.lastFireTime = Date.now();
             this.bullets = {};
 
@@ -37,14 +39,10 @@ define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
             return state;
         },
 
-        toggleFire: function(){
-            this.fire = !this.fire;
-        },
-
         canFire: function(){
             var dateNow = Date.now();
 
-            if(this.fire && (dateNow - this.lastFireTime > this.fireDelay)){
+            if((dateNow - this.lastFireTime > this.fireDelay) && this.bulletCount < this.maxBulletCount){
                 this.lastFireTime = dateNow;
                 return true
             }

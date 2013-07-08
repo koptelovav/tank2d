@@ -79,7 +79,9 @@ define(['../../shared/js/model'], function (Model) {
                     }
                 }
             }, this);
-        }
+        },
+
+        onDestroy: function(){}
     });
 
     return Entity;

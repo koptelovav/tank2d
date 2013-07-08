@@ -49,11 +49,6 @@ define(['../../shared/js/movableentity'], function (MovableEntity) {
             else if (this.orientation === Types.Orientations.UP) this.y -= this.player.width / 2;
             else if (this.orientation === Types.Orientations.RIGHT) this.x += this.player.height / 2;
             else if (this.orientation === Types.Orientations.DOWN) this.y += this.player.width / 2;
-        },
-
-        destroyFn: function(){
-            this.toggleMovable();
-            this.player.toggleFire();
         }
     });
 
