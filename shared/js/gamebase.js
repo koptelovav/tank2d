@@ -7,15 +7,15 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
 
             registerEntityPosition: function(entity){
                 if(entity) {
-                    _.each(entity.getChunk(), function(pos){
-                        this.entityGrid[pos[0]][pos[1]][entity.id] = entity;
+                    _.each(entity.getChunk(), function(tile){
+                        this.entityGrid[tile.x][tile.y][entity.id] = entity;
                     }, this);
                 }
             },
 
             unRegisterEntityPosition: function(entity) {
-                _.each(entity.getChunk(), function(pos){
-                    this.removeFromEntityGrid(entity, pos[0], pos[1]);
+                _.each(entity.getChunk(), function(tile){
+                    this.removeFromEntityGrid(entity, tile.x, tile.y);
                 }, this);
             },
 
@@ -123,9 +123,9 @@ define(['../../shared/js/model','../../shared/js/tilefactory'],
                 var tile = TileFactory.create((Types.Prefixes.BASE +''+ teamNumber), Types.MapElements.BASE, x, y);
                 tile.setTeam(teamNumber);
 
-                _.each(tile.getChunk(), function(pos){
-                    for (var id in this.entityGrid[pos[0]][pos[1]]) {
-                        this.removeEntity(this.entityGrid[pos[0]][pos[1]][id]);
+                _.each(tile.getChunk(), function(tile){
+                    for (var id in this.entityGrid[tile.x][tile.y]) {
+                        this.removeEntity(this.entityGrid[tile.x][tile.y][id]);
                     }
                 }, this);
 

@@ -267,18 +267,13 @@ define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', '
 
             isValidPlayerMove: function (player) {
                 if (this.map && player) {
-                    var x,
-                        y,
-                        chunk = player.getChunk(true),
-                        result = _.any(chunk, function (pos) {
-                            x = pos[0];
-                            y = pos[1];
-
-                            if (this.map.isOutOfBounds(x, y)) {
+                    var chunk = player.getChunk(true),
+                        result = _.any(chunk, function (tile) {
+                            if (this.map.isOutOfBounds(tile.x, tile.y)) {
                                 return true;
                             }
-                            for (var id in this.entityGrid[x][y]) {
-                                if (player.id != id && Types.getCollidingArray(this.entityGrid[x][y][id].kind).indexOf(Types.Entities.TANK) >= 0)
+                            for (var id in this.entityGrid[tile.x][tile.y]) {
+                                if (player.id != id && Types.getCollidingArray(this.entityGrid[tile.x][tile.y][id].kind).indexOf(Types.Entities.TANK) >= 0)
                                     return true;
                             }
                             return false;

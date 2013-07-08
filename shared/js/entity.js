@@ -40,7 +40,7 @@ define(['../../shared/js/model'], function (Model) {
 
             for(i=0; i<(this.height / 16 >> 0); i++)
                 for(j=0; j<(this.width / 16 >> 0); j++){
-                    chunk.push([gridX+i, gridY+j]);
+                    chunk.push({"x":gridX+i, "y":gridY+j});
                 }
 
             return chunk;
@@ -48,10 +48,10 @@ define(['../../shared/js/model'], function (Model) {
 
         getViewBox: function () {
         return [
-            [this.x, this.y],
-            [this.x, this.y+this.width],
-            [this.x+this.height, this.y],
-            [this.x+this.height, this.y+this.width]
+            {"x":this.x, "y":this.y},
+            {"x":this.x, "y":this.y+this.width},
+            {"x":this.x+this.height, "y":this.y},
+            {"x":this.x+this.height, "y":this.y+this.width}
         ];
     }
     });
