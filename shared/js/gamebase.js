@@ -38,16 +38,16 @@ define(['../../shared/js/model', '../../shared/js/tilefactory'],
             removeEntity: function (entity) {
                 entity.onDestroy();
 
-                if (entity.destroy.indexOf(Types.Destroy.VIEW) >= 0) {
+                if (_.indexOf(entity.destroy, Types.Destroy.VIEW) !== -1) {
                     if (this.env === Types.Environment.CLIENT)
                         this.removeFromScene(entity);
                 }
 
-                if (entity.destroy.indexOf(Types.Destroy.COLLIDING) >= 0) {
+                if (_.indexOf(entity.destroy, Types.Destroy.COLLIDING) !== -1) {
                     entity.colliding = [];
                 }
 
-                if (entity.destroy.indexOf(Types.Destroy.FULL) >= 0) {
+                if (_.indexOf(entity.destroy, Types.Destroy.FULL) !== -1) {
                     this.unRegisterEntityPosition(entity);
 
                     if (entity.kind === Types.Entities.BASE) {
