@@ -168,10 +168,9 @@ define(['../../shared/js/baseGame', '../../shared/js/bullet', 'spritemanager', '
             },
 
             addToScene: function (entity) {
-                var element = this.scene.createElement(entity);
-                element.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
-                element.setAnimation('idle', 800);
-                this.scene.addToLayer(element, entity.layer);
+                entity.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
+                entity.setAnimation('idle', 800);
+                this.scene.add(entity);
             },
 
             removeFromScene: function (entity) {

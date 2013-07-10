@@ -71,8 +71,8 @@ define(['../../shared/js/model'],
                         y = frame.y,
                         w = sprite.width,
                         h = sprite.height,
-                        ox = entity.getX(),
-                        oy = entity.getY(),
+                        ox = entity.x,
+                        oy = entity.y,
                         dw = w,
                         dh = h;
 
