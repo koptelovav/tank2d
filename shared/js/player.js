@@ -1,4 +1,4 @@
-define(['../../shared/js/tank', '../../shared/js/bullet'], function (Tank) {
+define(['./tank', './bullet'], function (Tank) {
     var Player = Tank.extend({
         init: function (id, type, kind, team, isReady) {
             this._super(id, type, kind, {

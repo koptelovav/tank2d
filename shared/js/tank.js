@@ -1,4 +1,4 @@
-define(['../../shared/js/movableentity'], function (MovableEntity) {
+define(['./movableentity'], function (MovableEntity) {
 
     var Tank = MovableEntity.extend({
         init: function (id, type, kind, config) {

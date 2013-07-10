@@ -1,4 +1,4 @@
-define(['../../shared/js/tile', '../../shared/js/gametypes'],function (Tile) {
+define(['./tile', './gametypes'],function (Tile) {
 
     var Tiles = {};
 
