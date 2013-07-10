@@ -1,4 +1,4 @@
-define(['../../shared/js/gamebase', '../../shared/js/bullet', 'spritemanager', 'scene', '../../shared/js/map', '../../shared/js/tilefactory', '../../shared/js/player', 'connection', '../../shared/js/gametypes'],
+define(['../../shared/js/baseGame', '../../shared/js/bullet', 'spritemanager', 'scene', '../../shared/js/map', '../../shared/js/tilefactory', '../../shared/js/player', 'connection', '../../shared/js/gametypes'],
     function (GameBase, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection) {
 
         var Game = GameBase.extend({

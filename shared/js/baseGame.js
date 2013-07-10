@@ -1,7 +1,7 @@
 define(['../../shared/js/model', '../../shared/js/tilefactory'],
     function (Model, TileFactory) {
 
-        var GameBase = Model.extend({
+        var BaseGame = Model.extend({
             init: function () {
             },
 
@@ -150,5 +150,5 @@ define(['../../shared/js/model', '../../shared/js/tilefactory'],
             },
         });
 
-        return GameBase;
+        return BaseGame;
     });
