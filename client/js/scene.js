@@ -42,10 +42,10 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
         },
 
         newLayer: function(id,canvas){
-            if(!this._layerExist(id)){
+            if(!(id in this.layers)){
                 var layer = new Layer(id,canvas);
                 layer.setSize(this.width,this.height);
-                this._addLayer(layer);
+                this.layers[layer.id] = layer;
             }
         },
 
@@ -56,14 +56,6 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
         remove: function(entity){
             this.renderer.clearDirtyRect(this.layers[entity.layer], this.layers[entity.layer]['entities'][entity.id].oldDirtyRect);
             delete this.layers[entity.layer]['entities'][entity.id];
-        },
-
-        _addLayer: function(layer){
-            this.layers[layer.id] = layer;
-        },
-
-        _layerExist: function(id){
-            return id in this.layers;
         }
     });
 
