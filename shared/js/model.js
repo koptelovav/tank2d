@@ -1,4 +1,4 @@
-define(['../../shared/lib/class','../../shared/lib/events'], function () {
+define(['./lib/class','./lib/events'], function () {
     Class.super_ = Events;
     Class.prototype = Object.create(Events.prototype, {
         constructor: {
