@@ -1,4 +1,4 @@
-define(['../../shared/js/entity'],function (Entity) {
+define(['entity'],function (Entity) {
     var MovableEntity = Entity.extend({
         init: function (id, type, kind, speed){
             this._super(id, type, kind);

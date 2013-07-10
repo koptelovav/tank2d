@@ -1,4 +1,4 @@
-define(['../../shared/js/entity'], function (Entity) {
+define(['entity'], function (Entity) {
     var Tile = Entity.extend({
         init: function (id, type, kind, x, y) {
 

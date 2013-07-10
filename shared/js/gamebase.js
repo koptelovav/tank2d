@@ -36,7 +36,7 @@ define(['../../shared/js/model', '../../shared/js/tilefactory'],
             },
 
             removeEntity: function (entity) {
-                entity.onDestroy();
+                entity.emit('destroy');
 
                 if (_.indexOf(entity.destroy, Types.Destroy.VIEW) !== -1) {
                     if (this.env === Types.Environment.CLIENT)

@@ -1,5 +1,5 @@
 define(['../../shared/js/model'], function (Model) {
-    var Entity = Model.extend({
+    var BaseEntity = Model.extend({
         init: function (id, type, kind) {
             this.id = parseInt(id);
             this.kind = kind;
@@ -61,9 +61,7 @@ define(['../../shared/js/model'], function (Model) {
         },
 
         processImpact: function (impactArray) {
-
             _.each(impactArray, function (impact) {
-
                 if (this.externalImpact.indexOf(impact.type) >= 0) {
                     switch (impact.type) {
                         case Types.Impact.DAMAGE:
@@ -84,5 +82,5 @@ define(['../../shared/js/model'], function (Model) {
         onDestroy: function(){}
     });
 
-    return Entity;
+    return BaseEntity;
 });
