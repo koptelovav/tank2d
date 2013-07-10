@@ -174,7 +174,7 @@ define(['../../shared/js/baseGame', '../../shared/js/bullet', 'spritemanager', '
             },
 
             removeFromScene: function (entity) {
-                this.scene.removeFromLayer(entity, entity.layer);
+                this.scene.remove(entity);
             },
 
             moveEntities: function (dt) {

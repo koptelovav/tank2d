@@ -49,17 +49,13 @@ define(['../../shared/js/model','renderer'], function(Model, Renderer){
             }
         },
 
-        createElement: function(entity){
-            return new SceneElement(entity);
-        },
-
         add: function(entity){
             this.layers[entity.layer]['entities'][entity.id] = entity;
         },
 
-        removeFromLayer: function(entity,layerName){
-            this.renderer.clearDirtyRect(this.layers[layerName], this.layers[layerName]['entities'][entity.id].oldDirtyRect);
-            delete this.layers[layerName]['entities'][entity.id];
+        remove: function(entity){
+            this.renderer.clearDirtyRect(this.layers[entity.layer], this.layers[entity.layer]['entities'][entity.id].oldDirtyRect);
+            delete this.layers[entity.layer]['entities'][entity.id];
         },
 
         _addLayer: function(layer){
