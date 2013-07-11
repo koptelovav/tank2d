@@ -64,13 +64,6 @@ define(['entity'],function (Entity) {
             }
         },
 
-        syncPososition: function(x, y, gridX, gridY){
-            this.x = x;
-            this.y = y;
-            this.gridX = gridX;
-            this.gridY = gridY;
-        },
-
         toggleMovable: function () {
             this.isMovable = !this.isMovable;
 

@@ -1,4 +1,4 @@
-define(['../../shared/js/model'], function (Model) {
+define(['model'], function (Model) {
     var Listener = Model.extend({
         init: function () {
             this.connections = {};

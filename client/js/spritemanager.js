@@ -1,4 +1,4 @@
-define(['../../shared/js/model','sprite'], function(Model, Sprite){
+define(['model','sprite'], function(Model, Sprite){
     var SpriteManager = Model.extend({
         init: function(){
             this.sprites = {};

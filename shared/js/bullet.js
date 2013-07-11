@@ -1,4 +1,4 @@
-define(['./movableentity'], function (MovableEntity) {
+define(['movableentity'], function (MovableEntity) {
     var Bullet = MovableEntity.extend({
         init: function (id, type, kind, player, speed) {
             this._super(id, type, kind);

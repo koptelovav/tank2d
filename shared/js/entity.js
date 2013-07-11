@@ -1,4 +1,4 @@
-define(['../../shared/js/model'], function (Model) {
+define(['model'], function (Model) {
     var entity = Model.extend({
         init: function (id, type, kind) {
             this.id = parseInt(id);

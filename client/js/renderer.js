@@ -1,4 +1,4 @@
-define(['../../shared/js/model'],
+define(['model'],
     function (Model) {
 
         var Renderer = Model.extend({

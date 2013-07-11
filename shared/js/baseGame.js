@@ -1,4 +1,4 @@
-define(['./model', '../../shared/js/tilefactory'],
+define(['model', 'tilefactory'],
     function (Model, TileFactory) {
 
         var BaseGame = Model.extend({

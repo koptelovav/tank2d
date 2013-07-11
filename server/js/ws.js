@@ -1,4 +1,4 @@
-define(['../../shared/js/model', 'utils', 'url', 'http', 'fs', 'express', 'express3-handlebars'],
+define(['model', 'utils', 'url', 'http', 'fs', 'express', 'express3-handlebars'],
     function (Model, Utils, url, http, fs, express, exphbs) {
 
     var  WS = {};
