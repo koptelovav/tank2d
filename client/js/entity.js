@@ -1,4 +1,4 @@
-define(['../../shared/js/entity'], function (BaseEntity) {
+define(['baseEntity'], function (BaseEntity) {
     var Entity = BaseEntity.extend({
         init: function (id, type, kind) {
             this._super(id, type, kind);

@@ -5,7 +5,9 @@ var requirejs = require('requirejs');
 requirejs.config({
     nodeRequire: require,
     paths: {
-        entity: ['../../shared/js/entity']
+        entity: '../../shared/js/entity',
+        tile: '../../shared/js/tile',
+        gametypes: '../../shared/js/gametypes'
     }
 });
 

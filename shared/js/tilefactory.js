@@ -1,4 +1,4 @@
-define(['./tile', './gametypes'],function (Tile) {
+define(['tile', 'gametypes'],function (Tile) {
 
     var Tiles = {};
 

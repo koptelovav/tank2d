@@ -1,4 +1,4 @@
-define(['ws','utils','fs','gameserver','log', '../../shared/js/gametypes'],function(ws, Utils, fs, GameServer, Log) {
+define(['ws','utils','fs','gameserver','log', 'gametypes'],function(ws, Utils, fs, GameServer, Log) {
     function main(config) {
         var server = new ws.WebsocketServer(config.port),
             games = [],
