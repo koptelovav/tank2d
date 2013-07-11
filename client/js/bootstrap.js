@@ -10,14 +10,14 @@ requirejs.config({
         events: '../../shared/js/lib/events',
         tilefactory: '../../shared/js/tilefactory',
         baseGame: '../../shared/js/baseGame',
+        tank: '../../shared/js/tank',
         bullet: '../../shared/js/bullet',
         map: '../../shared/js/map',
         player: '../../shared/js/player',
-        movableentity: '../../shared/js/movableentity',
-        tank: '../../shared/js/tank',
+        movableentity: '../../shared/js/movableentity'
     }
 });
 
-define(['lib/underscore.min', 'util'], function() {
+define(['tank','lib/underscore.min', 'util'], function() {
     require(["main"]);
 });

@@ -10,18 +10,17 @@ define(['baseEntity'], function (BaseEntity) {
 
             this.isLoaded = false;
             this.isDirty = false;
-            this.isAnimated = this.animated;
 
-            this.on('redraw', function(){
+            this.on('shift changeOrientation', function(){
                 this._setDirty();
             }, this);
 
             this.on('beginMove', function(){
-                this.isAnimated = true;
+                this.animated = true;
             }, this);
 
             this.on('endMove', function(){
-                this.isAnimated = false;
+                this.animated = false;
             }, this);
 
             this.on('changeOrientation',function(){

@@ -23,7 +23,6 @@ define(['entity'],function (Entity) {
                 this.setPosition(gridX, gridY);
 
                 this.emit('changeOrientation', this.orientation);
-                this.emit('redraw');
             }
         },
 
@@ -60,7 +59,6 @@ define(['entity'],function (Entity) {
 
                 this.emit('shift', this);
                 this.emit('afterMove', this);
-                this.emit('redraw');
             }
         },
 

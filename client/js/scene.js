@@ -14,7 +14,7 @@ define(['model','renderer'], function(Model, Renderer){
 
         forEachAnimatedEntities: function(callback){
             _.each(this.entities, function(entity){
-                if(entity.isAnimated) {
+                if(entity.animated) {
                     callback(entity);
                 }
             });
