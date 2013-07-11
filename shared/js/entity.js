@@ -1,5 +1,5 @@
-define(['./model'], function (Model) {
-    var BaseEntity = Model.extend({
+define(['../../shared/js/model'], function (Model) {
+    var entity = Model.extend({
         init: function (id, type, kind) {
             this.id = parseInt(id);
             this.kind = kind;
@@ -78,9 +78,7 @@ define(['./model'], function (Model) {
                 }
             }, this);
         },
-
-        onDestroy: function(){}
     });
 
-    return BaseEntity;
+    return entity;
 });

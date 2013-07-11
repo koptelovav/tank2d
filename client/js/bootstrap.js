@@ -1,3 +1,3 @@
-define(['entity','lib/underscore.min', 'util'], function() {
+define(['../../shared/js/entity','lib/underscore.min', 'util'], function() {
     require(["main"]);
 });
