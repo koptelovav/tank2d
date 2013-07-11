@@ -1,0 +1,13 @@
+{
+    "id": "bang",
+    "width": 74,
+    "height": 74,
+    "animations": {
+        "idle": {
+            "length": 5,
+            "row": 0
+        }
+    },
+    "offset_x": 0,
+    "offset_y": 0
+}

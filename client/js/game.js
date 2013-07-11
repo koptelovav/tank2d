@@ -1,5 +1,5 @@
-define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection', 'gametypes'],
-    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection) {
+define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection','effectFactory', 'gametypes'],
+    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection,EffectFactory) {
 
         var Game = baseGame.extend({
             init: function (app) {
@@ -24,7 +24,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
                 this.lastUpdateTime = 0;
 
-                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base"];
+                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang"];
             },
 
             setup: function (entities, background, foreground) {
@@ -169,8 +169,9 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
             addToScene: function (entity) {
                 entity.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
-                entity.setAnimation('idle', 800);
+                entity.setAnimation('idle', entity.speedAnimation);
                 this.scene.add(entity);
+                console.log(entity);
             },
 
             removeFromScene: function (entity) {
@@ -199,8 +200,11 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                                     return;
                                 }
                             }
-                            this.removeEntity(entity);
                             entity.player.bulletCount -= 1;
+                            console.log( entity.x, entity.y);
+                            var bang = EffectFactory.create(12321312312, Types.Entities.BANG, entity.x, entity.y);
+                            this.addToScene(bang);
+                            this.removeEntity(entity);
                         }
                     }
 

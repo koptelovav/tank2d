@@ -7,9 +7,11 @@ define(['baseEntity'], function (BaseEntity) {
             this.sprite = null;
             this.animations = null;
             this.currentAnimation = null;
+            this.speedAnimation = 800;
 
             this.isLoaded = false;
             this.isDirty = false;
+
 
             this.on('shift changeOrientation', function(){
                 this._setDirty();

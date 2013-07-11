@@ -61,7 +61,10 @@ Types = {
         RANDOM: 110,
 
         // Objects
-        FLAG: 160
+        FLAG: 160,
+
+        //effects
+        BANG: 300
     },
 
     Collections: {
@@ -90,6 +93,10 @@ Types = {
         VIEW: 1,
         COLLIDING: 2,
         FULL: 3
+    },
+
+    Effects: {
+        BANG: 1
     }
 };
 
@@ -149,6 +156,8 @@ var kinds = {
     ice: [Types.Entities.ICE, "tile"],
     water: [Types.Entities.WATER, "tile"],
     base: [Types.Entities.BASE, "tile"],
+
+    bang: [Types.Entities.BANG, "effect"],
 
     getType: function (kind) {
         return kinds[Types.getKindAsString(kind)][1];
