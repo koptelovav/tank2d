@@ -1,10 +1,10 @@
 {
-    "id": "bang",
-    "width": 32,
-    "height": 32,
+    "id": "bigbang",
+    "width": 64,
+    "height": 64,
     "animations": {
         "idle": {
-            "length": 3,
+            "length": 5,
             "row": 0
         }
     },

@@ -13,7 +13,8 @@ Types = {
         GAMESERVER: 2,
         CONNECTION: 3,
         TAIL: 4,
-        BASE: 5
+        BASE: 5,
+        EFFECT: 6
     },
 
     Messages: {
@@ -96,7 +97,8 @@ Types = {
     },
 
     Effects: {
-        BANG: 1
+        BANG: 1,
+        BIGBANG: 2
     }
 };
 
@@ -158,6 +160,7 @@ var kinds = {
     base: [Types.Entities.BASE, "tile"],
 
     bang: [Types.Entities.BANG, "effect"],
+    bigbang: [Types.Entities.BIGBANG, "effect"],
 
     getType: function (kind) {
         return kinds[Types.getKindAsString(kind)][1];

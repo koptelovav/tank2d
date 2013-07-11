@@ -202,7 +202,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                             }
                             entity.player.bulletCount -= 1;
                             console.log( entity.x, entity.y);
-                            var bang = EffectFactory.create(12321312312, Types.Entities.BANG, entity.x, entity.y);
+                            var bang = EffectFactory.create(Types.Entities.BANG, entity.x , entity.y);
                             this.addToScene(bang);
                             this.removeEntity(entity);
                         }

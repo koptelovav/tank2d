@@ -5,9 +5,9 @@ define(['entity'],function (Entity) {
             this._super(id, type, kind);
             this.life = 1;
             this.animated = true;
-            this.setSize(72);
-            this.x = x - this.width / 2;
-            this.y = y - this.height / 2;
+            this.setSize(32);
+            this.x = x - this.width / 2 + 4 ;
+            this.y = y - this.height / 2 + 4;
             this.speedAnimation = 50;
         }
     });
@@ -15,7 +15,11 @@ define(['entity'],function (Entity) {
     var Effects = {};
 
     var EffectFactory = {
-        create: function (id, kind, x, y) {
+        count: 0,
+        create: function (kind, x, y) {
+            var id = Types.Prefixes.EFFECT + ''+ this.count;
+            this.count++;
+
             return new Effects[kind](id, kind, x, y);
         }
     };

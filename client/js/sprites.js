@@ -7,7 +7,8 @@ define(['lib/text!../sprites/armoredwall.json',
         'lib/text!../sprites/tank.json',
         'lib/text!../sprites/bullet.json',
         'lib/text!../sprites/base.json',
-        'lib/text!../sprites/bang.json'], function() {
+        'lib/text!../sprites/bang.json',
+        'lib/text!../sprites/bigbang.json'], function() {
     
     var sprites = {};
     
