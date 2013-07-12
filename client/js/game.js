@@ -5,7 +5,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             init: function (app) {
                 this.app = app;
                 this.env = Types.Environment.CLIENT;
-                this.connection = new Connection('127.0.0.1', '8000');
+                this.connection = new Connection('172.17.3.58', '8000');
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -23,12 +23,14 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
                 this.lastUpdateTime = 0;
 
-                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang"];
+                this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang","bigbang"];
 
                 this.on('addEntity', function(entity){
+                    entity.setAnimation('idle', entity.speedAnimation);
                     Scene.add(entity);
 
                     entity.on('destroy',function(){
+                        console.log(entity);
                         EffectFactory.create(entity, 'destroy');
                     });
 

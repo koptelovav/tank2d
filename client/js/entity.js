@@ -13,7 +13,6 @@ define(['baseEntity', 'spritemanager'], function (BaseEntity, SpriteManager) {
             this.isDirty = false;
 
             this.setSprite(SpriteManager.getSprite(Types.getKindString(this.kind)));
-            this.setAnimation('idle', this.speedAnimation);
         },
 
         setSprite: function(sprite){

@@ -65,7 +65,8 @@ Types = {
         FLAG: 160,
 
         //effects
-        BANG: 300
+        BANG: 300,
+        BIGBANG: 301
     },
 
     Collections: {

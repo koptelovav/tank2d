@@ -69,7 +69,7 @@ define(['tile', 'gametypes'],function (Tile) {
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
             this.layer = Types.Layers.BACKGROUND;
-            this.animated = false;
+            this.animated = true;
             this.strength = 0;
             this.colliding = [Types.Entities.TANK];
 
