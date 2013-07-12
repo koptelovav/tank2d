@@ -17,8 +17,6 @@ define(
                 _.each(this.scene.layers, function (layer) {
                     this.renderLayer(layer);
                 }, this);
-
-//                console.log('Frame rendered');
             },
 
             drawFPS: function () {

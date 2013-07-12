@@ -26,19 +26,34 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang"];
 
                 this.on('addEntity', function(entity){
-                    this.addToScene(entity);
+                    Scene.add(entity);
 
                     entity.on('destroy',function(){
-                        if(entity.kind === Types.Entities.BULLET){
-                            var effect = EffectFactory.create(entity, 'destroy');
-                            /*if(effect)
-                                this.addToScene(effect);*/
-                        }
-                    },this);
+                        EffectFactory.create(entity, 'destroy');
+                    });
+
+                    entity.on('shift changeOrientation', function(){
+                        entity._setDirty();
+                    });
+
+                    entity.on('beginMove', function(){
+                        entity.animated = true;
+                    });
+
+                    entity.on('endMove', function(){
+                        entity.animated = false;
+                    });
+
+                    entity.on('changeOrientation',function(){
+                        if (entity.orientation === Types.Orientations.LEFT)  entity.setAnimation('move_left', 50);
+                        else if (entity.orientation === Types.Orientations.UP)  entity.setAnimation('move_up', 50);
+                        else if (entity.orientation === Types.Orientations.RIGHT)  entity.setAnimation('move_right', 50);
+                        else if (entity.orientation === Types.Orientations.DOWN)  entity.setAnimation('move_down', 50);
+                    });
                 }, this);
 
                 this.on('removeEntity', function(entity){
-                    this.removeFromScene(entity);
+                    Scene.remove(entity);
                 }, this);
             },
 
@@ -181,15 +196,6 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             loadMap: function (data) {
                 this.map = new Map(this);
                 this.map.setData(data);
-            },
-
-            addToScene: function (entity) {
-
-                Scene.add(entity);
-            },
-
-            removeFromScene: function (entity) {
-                Scene.remove(entity);
             },
 
             moveEntities: function (dt) {

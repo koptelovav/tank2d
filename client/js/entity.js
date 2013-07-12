@@ -14,25 +14,6 @@ define(['baseEntity', 'spritemanager'], function (BaseEntity, SpriteManager) {
 
             this.setSprite(SpriteManager.getSprite(Types.getKindString(this.kind)));
             this.setAnimation('idle', this.speedAnimation);
-
-            this.on('shift changeOrientation', function(){
-                this._setDirty();
-            }, this);
-
-            this.on('beginMove', function(){
-                this.animated = true;
-            }, this);
-
-            this.on('endMove', function(){
-                this.animated = false;
-            }, this);
-
-            this.on('changeOrientation',function(){
-                if (this.orientation === Types.Orientations.LEFT)  this.setAnimation('move_left', 50);
-                else if (this.orientation === Types.Orientations.UP)  this.setAnimation('move_up', 50);
-                else if (this.orientation === Types.Orientations.RIGHT)  this.setAnimation('move_right', 50);
-                else if (this.orientation === Types.Orientations.DOWN)  this.setAnimation('move_down', 50);
-            }, this);
         },
 
         setSprite: function(sprite){
