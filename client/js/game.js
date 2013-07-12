@@ -5,7 +5,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             init: function (app) {
                 this.app = app;
                 this.env = CONST.ENVIRONMENT.CLIENT;
-                this.connection = new Connection('172.17.3.58', '9000');
+                this.connection = new Connection('127.0.0.1', '9000');
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -47,15 +47,15 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                         entity.setAnimation('idle', entity.speedAnimation);
                     }
 
-                    Scene.add(entity);
-
                     entity.on('destroy',function(){
-                        EffectFactory.create(entity, 'destroy');
+                        EffectFactory.create(entity, CONST.ACTIONS.DESTROY);
                     });
 
                     entity.on('shift changeOrientation', function(){
                         entity._setDirty();
                     });
+
+                    Scene.add(entity);
                 }, this);
 
                 this.on('removeEntity', function(entity){

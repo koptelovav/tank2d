@@ -13,10 +13,9 @@ define(['entity', 'scene'],function (Entity, Scene) {
 
     var Effects = [];
     var EffectsArr = [];
-    EffectsArr['destroy'] = [];
-    EffectsArr['destroy'][CONST.ENTITIES.BULLET] = CONST.ENTITIES.BANG;
-    EffectsArr['destroy'][CONST.ENTITIES.BASE] = CONST.ENTITIES.BIGBANG;
-    EffectsArr['destroy'][CONST.ENTITIES.ARMOREDWALL] = CONST.ENTITIES.BIGBANG;
+    EffectsArr[CONST.ACTIONS.DESTROY] = [];
+    EffectsArr[CONST.ACTIONS.DESTROY][CONST.ENTITIES.BULLET] = CONST.ENTITIES.BANG;
+    EffectsArr[CONST.ACTIONS.DESTROY][CONST.ENTITIES.BASE] = CONST.ENTITIES.BIGBANG;
 
     var EffectFactory = {
         count: 0,

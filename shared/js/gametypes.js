@@ -102,6 +102,10 @@ CONST = {
     EFFECTS: {
         BANG: 1,
         BIGBANG: 2
+    },
+
+    ACTIONS: {
+        DESTROY: 1
     }
 };
 
