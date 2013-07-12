@@ -9,7 +9,7 @@ define(['movableentity'], function (MovableEntity) {
             this._super(id, type, kind, this.speed);
 
             this.layer = CONST.LAYERS.ENTITIES;
-            this.animated = true;
+            this.animated = false;
             this.strength = 1;
             this.life = 1;
             this.colliding =  [
@@ -19,8 +19,6 @@ define(['movableentity'], function (MovableEntity) {
                 CONST.ENTITIES.ARMOREDWALL,
                 CONST.ENTITIES.WATER
             ];
-
-            this.setSize(32);
         }
     });
 

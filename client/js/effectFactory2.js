@@ -4,7 +4,7 @@ define(['entity', 'scene'],function (Entity, Scene) {
         init: function (id, type, kind) {
             this.life = 1;
             this.animated = true;
-            this.layer = CONST.LAYERS.ENTITIES;
+            this.layer = CONST.LAYERS.EFFECTS;
             this._super(id, type, kind);
         }
     });

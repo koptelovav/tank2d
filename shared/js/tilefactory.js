@@ -16,7 +16,6 @@ define(['tile', 'gametypes'],function (Tile) {
             this.strength = 30;
             this.colliding = [CONST.ENTITIES.TANK, CONST.ENTITIES.BULLET];
             this.externalImpact = [CONST.IMPACT.DAMAGE];
-            this.setSize(16);
         }
     });
 
@@ -31,8 +30,6 @@ define(['tile', 'gametypes'],function (Tile) {
             this.destroy = [CONST.DESTROY.COLLIDING];
 
             this.team = null;
-
-            this.setSize(32);
         },
 
         setTeam: function(team){
@@ -60,8 +57,6 @@ define(['tile', 'gametypes'],function (Tile) {
             this.animated = false;
             this.strength = 0;
             this.colliding = [];
-
-            this.setSize(16);
         }
     });
 
@@ -72,8 +67,6 @@ define(['tile', 'gametypes'],function (Tile) {
             this.animated = true;
             this.strength = 0;
             this.colliding = [CONST.ENTITIES.TANK];
-
-            this.setSize(16);
         }
     });
 
@@ -84,8 +77,6 @@ define(['tile', 'gametypes'],function (Tile) {
             this.animated = false;
             this.strength = 0;
             this.colliding = [];
-
-            this.setSize(16);
         }
     });
 

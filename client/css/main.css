@@ -26,9 +26,13 @@ body{
     background: transparent;
     z-index: 2;
 }
-#foreground{
+#effects{
     background: transparent;
     z-index: 3;
+}
+#foreground{
+    background: transparent;
+    z-index: 4;
 }
 
 #connected-grid{

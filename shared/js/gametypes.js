@@ -7,7 +7,8 @@ CONST = {
     LAYERS: {
         ENTITIES: 1,
         BACKGROUND: 2,
-        FOREGROUND: 3
+        FOREGROUND: 3,
+        EFFECTS: 4
     },
     PREFIXES: {
         PLAYER: 1,

@@ -1,5 +1,5 @@
 {
-    "port": 8000,
+    "port": 9000,
     "debug_level": "debug",
     "players_per_game": 8,
     "game_name" : "level1",

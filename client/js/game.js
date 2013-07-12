@@ -5,7 +5,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             init: function (app) {
                 this.app = app;
                 this.env = CONST.ENVIRONMENT.CLIENT;
-                this.connection = new Connection('172.17.3.58', '8000');
+                this.connection = new Connection('172.17.3.58', '9000');
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -28,6 +28,21 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.on('addEntity', function(entity){
                     if(entity.movable){
                         entity.setAnimation('move_'+CONST.getOrientationString(entity.orientation), entity.speedAnimation);
+
+                        entity.on('beginMove', function(){
+                            entity.animated = true;
+                        });
+
+                        entity.on('endMove', function(){
+                            entity.animated = false;
+                        });
+
+                        entity.on('changeOrientation',function(){
+                            if (entity.orientation === CONST.ORIENTATIONS.LEFT)  entity.setAnimation('move_left', 50);
+                            else if (entity.orientation === CONST.ORIENTATIONS.UP)  entity.setAnimation('move_up', 50);
+                            else if (entity.orientation === CONST.ORIENTATIONS.RIGHT)  entity.setAnimation('move_right', 50);
+                            else if (entity.orientation === CONST.ORIENTATIONS.DOWN)  entity.setAnimation('move_down', 50);
+                        });
                     }else{
                         entity.setAnimation('idle', entity.speedAnimation);
                     }
@@ -41,21 +56,6 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                     entity.on('shift changeOrientation', function(){
                         entity._setDirty();
                     });
-
-                    entity.on('beginMove', function(){
-                        entity.animated = true;
-                    });
-
-                    entity.on('endMove', function(){
-                        entity.animated = false;
-                    });
-
-                    entity.on('changeOrientation',function(){
-                        if (entity.orientation === CONST.ORIENTATIONS.LEFT)  entity.setAnimation('move_left', 50);
-                        else if (entity.orientation === CONST.ORIENTATIONS.UP)  entity.setAnimation('move_up', 50);
-                        else if (entity.orientation === CONST.ORIENTATIONS.RIGHT)  entity.setAnimation('move_right', 50);
-                        else if (entity.orientation === CONST.ORIENTATIONS.DOWN)  entity.setAnimation('move_down', 50);
-                    });
                 }, this);
 
                 this.on('removeEntity', function(entity){
@@ -63,9 +63,10 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 }, this);
             },
 
-            setup: function (entities, background, foreground) {
+            setup: function (entities, effects, background, foreground) {
                 Scene.setSize(768, 768);
                 Scene.newLayer(CONST.LAYERS.ENTITIES, entities);
+                Scene.newLayer(CONST.LAYERS.EFFECTS, effects);
                 Scene.newLayer(CONST.LAYERS.BACKGROUND, background);
                 Scene.newLayer(CONST.LAYERS.FOREGROUND, foreground);
                 Renderer.setScene(Scene);

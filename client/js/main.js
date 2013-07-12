@@ -21,11 +21,12 @@ define(['jquery', 'app','input'], function ($, App) {
         require(['game'], function (Game) {
 
             var entities = document.getElementById("entities"),
+                effects = document.getElementById("effects"),
                 background = document.getElementById("background"),
                 foreground = document.getElementById("foreground");
 
             game = new Game(app);
-            game.setup(entities, background, foreground);
+            game.setup(entities, effects, background, foreground);
             app.setGame(game);
 
 
