@@ -33,7 +33,7 @@ define(['baseEntity', 'spritemanager'], function (BaseEntity, SpriteManager) {
                 animation = this.animations[name];
             }
             else {
-                log.error("No animation called "+ name);
+                animation = this.animations['idle'];
             }
             return animation;
         },

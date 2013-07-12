@@ -6,6 +6,22 @@
         "idle": {
             "length": 1,
             "row": 0
+        },
+        "move_up": {
+            "length": 1,
+            "row": 3
+        },
+        "move_right": {
+            "length": 1,
+            "row": 2
+        },
+        "move_down": {
+            "length": 1,
+            "row": 0
+        },
+        "move_left": {
+            "length": 1,
+            "row": 1
         }
     },
     "offset_x": 0,

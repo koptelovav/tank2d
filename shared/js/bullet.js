@@ -7,7 +7,7 @@ define(['movableentity'], function (MovableEntity) {
             this.damage = 70;
             this.isMovable = true;
             this.strength = 1;
-            this.orientation = player.orientation;
+            this.setOrientation(player.orientation);
             this.collections = this.collections.concat([CONST.COLLECTIONS.BULLET]);
             this.impact = [
                 {

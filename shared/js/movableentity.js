@@ -4,7 +4,7 @@ define(['entity'],function (Entity) {
             this._super(id, type, kind);
 
             this.movable = true;
-            this.orientation = 1;
+            this.orientation = CONST.ORIENTATIONS.UP;
             this.speed = speed;
             this.isMovable = false;
 

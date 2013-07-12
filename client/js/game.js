@@ -26,11 +26,15 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang","bigbang"];
 
                 this.on('addEntity', function(entity){
-                    entity.setAnimation('idle', entity.speedAnimation);
+                    if(entity.movable){
+                        entity.setAnimation('move_'+CONST.getOrientationString(entity.orientation), entity.speedAnimation);
+                    }else{
+                        entity.setAnimation('idle', entity.speedAnimation);
+                    }
+
                     Scene.add(entity);
 
                     entity.on('destroy',function(){
-                        console.log(entity);
                         EffectFactory.create(entity, 'destroy');
                     });
 

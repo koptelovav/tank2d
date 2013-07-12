@@ -188,6 +188,15 @@ CONST.getKindAsString = function (kind) {
     }
 };
 
+CONST.getOrientationString = function(orientation) {
+    switch(orientation) {
+        case CONST.ORIENTATIONS.LEFT: return "left"; break;
+        case CONST.ORIENTATIONS.RIGHT: return "right"; break;
+        case CONST.ORIENTATIONS.UP: return "up"; break;
+        case CONST.ORIENTATIONS.DOWN: return "down"; break;
+    }
+};
+
 if (!(typeof exports === 'undefined')) {
     module.exports = CONST;
 }
