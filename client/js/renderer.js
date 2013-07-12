@@ -33,7 +33,7 @@ define(
             },
 
             drawText: function (text, x, y, centered, color, strokeColor) {
-                var ctx = this.scene.layers[Types.Layers.FOREGROUND].ctx;
+                var ctx = this.scene.layers[CONST.LAYERS.FOREGROUND].ctx;
 
                 if (text && x && y) {
                     ctx.save();

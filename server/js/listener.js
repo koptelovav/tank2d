@@ -29,7 +29,7 @@ define(['model'], function (Model) {
         receiveMessage: function (message, entity) {
             var data = JSON.parse(message);
 
-            data[0] = Types.getMessageName(data[0]);
+            data[0] = CONST.getMessageName(data[0]);
             if (data[0] !== undefined) {
                 entity.emit.apply(entity, data);
             }

@@ -8,27 +8,27 @@ define(['tile', 'gametypes'],function (Tile) {
         }
     };
 
-    Tiles[Types.Entities.WALL] = Tile.extend({
+    Tiles[CONST.ENTITIES.WALL] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
-            this.layer = Types.Layers.BACKGROUND;
+            this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 30;
-            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
-            this.externalImpact = [Types.Impact.DAMAGE];
+            this.colliding = [CONST.ENTITIES.TANK, CONST.ENTITIES.BULLET];
+            this.externalImpact = [CONST.IMPACT.DAMAGE];
             this.setSize(16);
         }
     });
 
-    Tiles[Types.Entities.BASE] = Tile.extend({
+    Tiles[CONST.ENTITIES.BASE] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
-            this.layer = Types.Layers.BACKGROUND;
+            this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 1;
-            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
-            this.externalImpact = [Types.Impact.DAMAGE];
-            this.destroy = [Types.Destroy.COLLIDING];
+            this.colliding = [CONST.ENTITIES.TANK, CONST.ENTITIES.BULLET];
+            this.externalImpact = [CONST.IMPACT.DAMAGE];
+            this.destroy = [CONST.DESTROY.COLLIDING];
 
             this.team = null;
 
@@ -40,23 +40,23 @@ define(['tile', 'gametypes'],function (Tile) {
         }
     });
 
-    Tiles[Types.Entities.ARMOREDWALL] = Tile.extend({
+    Tiles[CONST.ENTITIES.ARMOREDWALL] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
-            this.layer = Types.Layers.BACKGROUND;
+            this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 60;
-            this.colliding = [Types.Entities.TANK, Types.Entities.BULLET];
-            this.externalImpact = [Types.Impact.DAMAGE];
+            this.colliding = [CONST.ENTITIES.TANK, CONST.ENTITIES.BULLET];
+            this.externalImpact = [CONST.IMPACT.DAMAGE];
 
             this.setSize(16);
         }
     });
 
-    Tiles[Types.Entities.TREES] = Tile.extend({
+    Tiles[CONST.ENTITIES.TREES] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
-            this.layer = Types.Layers.FOREGROUND;
+            this.layer = CONST.LAYERS.FOREGROUND;
             this.animated = false;
             this.strength = 0;
             this.colliding = [];
@@ -65,22 +65,22 @@ define(['tile', 'gametypes'],function (Tile) {
         }
     });
 
-    Tiles[Types.Entities.WATER] = Tile.extend({
+    Tiles[CONST.ENTITIES.WATER] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
-            this.layer = Types.Layers.BACKGROUND;
+            this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = true;
             this.strength = 0;
-            this.colliding = [Types.Entities.TANK];
+            this.colliding = [CONST.ENTITIES.TANK];
 
             this.setSize(16);
         }
     });
 
-    Tiles[Types.Entities.ICE] = Tile.extend({
+    Tiles[CONST.ENTITIES.ICE] = Tile.extend({
         init: function (id, kind, x, y) {
             this._super(id, 'tile', kind, x, y);
-            this.layer = Types.Layers.BACKGROUND;
+            this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 0;
             this.colliding = [];

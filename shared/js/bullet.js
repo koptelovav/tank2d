@@ -8,33 +8,33 @@ define(['movableentity'], function (MovableEntity) {
             this.isMovable = true;
             this.strength = 1;
             this.orientation = player.orientation;
-            this.collections = this.collections.concat([Types.Collections.BULLET]);
+            this.collections = this.collections.concat([CONST.COLLECTIONS.BULLET]);
             this.impact = [
                 {
-                    type: Types.Impact.DAMAGE,
+                    type: CONST.IMPACT.DAMAGE,
                     power: 70
                 }
             ];
 
-            this.layer = Types.Layers.ENTITIES;
+            this.layer = CONST.LAYERS.ENTITIES;
             this.animated = true;
             this.strength = 1;
             this.life = 1;
             this.colliding =  [
-                Types.Entities.TANK,
-                Types.Entities.BULLET,
-                Types.Entities.WALL,
-                Types.Entities.ARMOREDWALL
+                CONST.ENTITIES.TANK,
+                CONST.ENTITIES.BULLET,
+                CONST.ENTITIES.WALL,
+                CONST.ENTITIES.ARMOREDWALL
             ];
 
             this.setPosition(player.gridX, player.gridY);
 
-            if (this.orientation === Types.Orientations.LEFT ||
-                this.orientation === Types.Orientations.RIGHT) {
+            if (this.orientation === CONST.ORIENTATIONS.LEFT ||
+                this.orientation === CONST.ORIENTATIONS.RIGHT) {
                 this.setSize(16,8);
             }
-            else if (this.orientation === Types.Orientations.UP ||
-                this.orientation === Types.Orientations.DOWN) {
+            else if (this.orientation === CONST.ORIENTATIONS.UP ||
+                this.orientation === CONST.ORIENTATIONS.DOWN) {
                 this.setSize(8,16);
             }
             this.setStartPosition();
@@ -45,10 +45,10 @@ define(['movableentity'], function (MovableEntity) {
             this.x = this.player.x + this.player.height / 2 - dSize / 2;
             this.y = this.player.y + this.player.width / 2 - dSize / 2;
 
-            if (this.orientation === Types.Orientations.LEFT) this.x -= this.player.height / 2;
-            else if (this.orientation === Types.Orientations.UP) this.y -= this.player.width / 2;
-            else if (this.orientation === Types.Orientations.RIGHT) this.x += this.player.height / 2;
-            else if (this.orientation === Types.Orientations.DOWN) this.y += this.player.width / 2;
+            if (this.orientation === CONST.ORIENTATIONS.LEFT) this.x -= this.player.height / 2;
+            else if (this.orientation === CONST.ORIENTATIONS.UP) this.y -= this.player.width / 2;
+            else if (this.orientation === CONST.ORIENTATIONS.RIGHT) this.x += this.player.height / 2;
+            else if (this.orientation === CONST.ORIENTATIONS.DOWN) this.y += this.player.width / 2;
         }
     });
 

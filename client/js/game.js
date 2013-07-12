@@ -4,7 +4,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
         var Game = baseGame.extend({
             init: function (app) {
                 this.app = app;
-                this.env = Types.Environment.CLIENT;
+                this.env = CONST.ENVIRONMENT.CLIENT;
                 this.connection = new Connection('172.17.3.58', '8000');
                 this.ready = false;
                 this.started = false;
@@ -47,10 +47,10 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                     });
 
                     entity.on('changeOrientation',function(){
-                        if (entity.orientation === Types.Orientations.LEFT)  entity.setAnimation('move_left', 50);
-                        else if (entity.orientation === Types.Orientations.UP)  entity.setAnimation('move_up', 50);
-                        else if (entity.orientation === Types.Orientations.RIGHT)  entity.setAnimation('move_right', 50);
-                        else if (entity.orientation === Types.Orientations.DOWN)  entity.setAnimation('move_down', 50);
+                        if (entity.orientation === CONST.ORIENTATIONS.LEFT)  entity.setAnimation('move_left', 50);
+                        else if (entity.orientation === CONST.ORIENTATIONS.UP)  entity.setAnimation('move_up', 50);
+                        else if (entity.orientation === CONST.ORIENTATIONS.RIGHT)  entity.setAnimation('move_right', 50);
+                        else if (entity.orientation === CONST.ORIENTATIONS.DOWN)  entity.setAnimation('move_down', 50);
                     });
                 }, this);
 
@@ -61,9 +61,9 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
             setup: function (entities, background, foreground) {
                 Scene.setSize(768, 768);
-                Scene.newLayer(Types.Layers.ENTITIES, entities);
-                Scene.newLayer(Types.Layers.BACKGROUND, background);
-                Scene.newLayer(Types.Layers.FOREGROUND, foreground);
+                Scene.newLayer(CONST.LAYERS.ENTITIES, entities);
+                Scene.newLayer(CONST.LAYERS.BACKGROUND, background);
+                Scene.newLayer(CONST.LAYERS.FOREGROUND, foreground);
                 Renderer.setScene(Scene);
             },
 
@@ -79,7 +79,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                     var waitStartGame = setInterval(function () {
                         if (self.map && self.map.isLoaded && self.started) {
                             self.start();
-                            self.connection.send(Types.Messages.LOADMAP);
+                            self.connection.send(CONST.MESSAGES.LOADMAP);
                             clearInterval(waitStartGame);
                         }
                     }, 1000);
@@ -111,7 +111,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.connection.connect();
 
                 this.connection.on('connect', function () {
-                    this.connection.send(Types.Messages.HELLO);
+                    this.connection.send(CONST.MESSAGES.HELLO);
                 }, this);
 
                 this.connection.on('welcome', function (playerData) {
@@ -160,7 +160,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 }, this);
 
                 this.connection.on('gamePlay', function () {
-//                    this.connection.send(Types.Messages.SENDMAP);
+//                    this.connection.send(CONST.MESSAGES.SENDMAP);
                     this.emit('play');
                 }, this);
 
@@ -201,7 +201,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             moveEntities: function (dt) {
-                _.each(this.collections[Types.Collections.MOVABLE], function (entity) {
+                _.each(this.collections[CONST.COLLECTIONS.MOVABLE], function (entity) {
                     if (entity.isMovable) {
                         if (entity instanceof Player) {
                             if (this.isValidPlayerMove(entity)) {
@@ -239,19 +239,19 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             sendReady: function () {
-                this.connection.send(Types.Messages.IREADY);
+                this.connection.send(CONST.MESSAGES.IREADY);
             },
 
             playerFire: function (id) {
                 if (this.player.canFire()) {
                     this.player.bulletCount += 1;
-                    var bullet = new Bullet(Date.now(), 'easy', Types.Entities.BULLET, this.player, 300);
+                    var bullet = new Bullet(Date.now(), 'easy', CONST.ENTITIES.BULLET, this.player, 300);
                     this.addEntity(bullet);
                 }
             },
 
             playerStopMove: function (id) {
-                var player = id ? this.collections[Types.Collections.PLAYER][id] : this.player;
+                var player = id ? this.collections[CONST.COLLECTIONS.PLAYER][id] : this.player;
 
                 if (player.isMovable) {
                     player.toggleMovable();
@@ -261,16 +261,16 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 }
             },
             playerMoveUp: function (id) {
-                this.playerMove(id, Types.Orientations.UP);
+                this.playerMove(id, CONST.ORIENTATIONS.UP);
             },
             playerMoveLeft: function (id) {
-                this.playerMove(id, Types.Orientations.LEFT);
+                this.playerMove(id, CONST.ORIENTATIONS.LEFT);
             },
             playerMoveRight: function (id) {
-                this.playerMove(id, Types.Orientations.RIGHT);
+                this.playerMove(id, CONST.ORIENTATIONS.RIGHT);
             },
             playerMoveDown: function (id) {
-                this.playerMove(id, Types.Orientations.DOWN);
+                this.playerMove(id, CONST.ORIENTATIONS.DOWN);
             },
 
             playerMove: function (id, orientation) {
@@ -280,7 +280,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 if (!player.isMovable) {
                     player.toggleMovable();
                     if (!id) {
-                        this.connection.send(Types.Messages.MOVE, orientation);
+                        this.connection.send(CONST.MESSAGES.MOVE, orientation);
                     }
                 }
             },
@@ -293,7 +293,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                                 return true;
                             }
                             for (var id in this.entityGrid[tile.x][tile.y]) {
-                                if (player.id != id && this.entityGrid[tile.x][tile.y][id].colliding.indexOf(Types.Entities.TANK) >= 0)
+                                if (player.id != id && this.entityGrid[tile.x][tile.y][id].colliding.indexOf(CONST.ENTITIES.TANK) >= 0)
                                     return true;
                             }
                             return false;
@@ -304,7 +304,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             sendChatMessage: function (message) {
-                this.connection.send(Types.Messages.CHAT, message);
+                this.connection.send(CONST.MESSAGES.CHAT, message);
             }
         });
 

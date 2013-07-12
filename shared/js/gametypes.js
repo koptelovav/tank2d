@@ -1,14 +1,15 @@
-Types = {
-    Environment: {
+CONST = {
+
+    ENVIRONMENT: {
         CLIENT: 1,
         SERVER: 2
     },
-    Layers: {
+    LAYERS: {
         ENTITIES: 1,
         BACKGROUND: 2,
         FOREGROUND: 3
     },
-    Prefixes: {
+    PREFIXES: {
         PLAYER: 1,
         GAMESERVER: 2,
         CONNECTION: 3,
@@ -17,7 +18,7 @@ Types = {
         EFFECT: 6
     },
 
-    Messages: {
+    MESSAGES: {
         HELLO: 0,
         WELCOME: 1,
         POPULATION: 2,
@@ -37,7 +38,7 @@ Types = {
         SENDMAP: 16
     },
 
-    Entities: {
+    ENTITIES: {
         //Map elements
         WALL: 1,
         ARMOREDWALL: 2,
@@ -69,7 +70,7 @@ Types = {
         BIGBANG: 301
     },
 
-    Collections: {
+    COLLECTIONS: {
         ENTITY: 0,
         MOVABLE: 1,
         PLAYER: 2,
@@ -77,56 +78,56 @@ Types = {
         TILE: 4
     },
 
-    Orientations: {
+    ORIENTATIONS: {
         UP: 1,
         DOWN: 2,
         LEFT: 3,
         RIGHT: 4
     },
 
-    Impact: {
+    IMPACT: {
         DAMAGE: 1,
         FIRE: 2,
         ICE: 3,
         BANG: 4
     },
 
-    Destroy: {
+    DESTROY: {
         VIEW: 1,
         COLLIDING: 2,
         FULL: 3
     },
 
-    Effects: {
+    EFFECTS: {
         BANG: 1,
         BIGBANG: 2
     }
 };
 
 var messages = {
-    'hello': [Types.Messages.HELLO],
-    'welcome': [Types.Messages.WELCOME],
-    'population': [Types.Messages.POPULATION],
-    'joinGame': [Types.Messages.JOINGAME],
-    'leftGame': [Types.Messages.LEFTGAME],
-    'move': [Types.Messages.MOVE],
-    'gameStart': [Types.Messages.GAMESTART],
-    'ready': [Types.Messages.IREADY],
-    'gameData': [Types.Messages.GAMEDATA],
-    'gameFull': [Types.Messages.GAMEFULL],
-    'gamePlay': [Types.Messages.GAMEPLAY],
-    'gameLoad': [Types.Messages.LOADMAP],
-    'spawn': [Types.Messages.SPAWN],
-    'chat': [Types.Messages.CHAT],
-    'connect': [Types.Messages.CONNECT],
-    'sendMap': [Types.Messages.SENDMAP],
+    'hello': [CONST.MESSAGES.HELLO],
+    'welcome': [CONST.MESSAGES.WELCOME],
+    'population': [CONST.MESSAGES.POPULATION],
+    'joinGame': [CONST.MESSAGES.JOINGAME],
+    'leftGame': [CONST.MESSAGES.LEFTGAME],
+    'move': [CONST.MESSAGES.MOVE],
+    'gameStart': [CONST.MESSAGES.GAMESTART],
+    'ready': [CONST.MESSAGES.IREADY],
+    'gameData': [CONST.MESSAGES.GAMEDATA],
+    'gameFull': [CONST.MESSAGES.GAMEFULL],
+    'gamePlay': [CONST.MESSAGES.GAMEPLAY],
+    'gameLoad': [CONST.MESSAGES.LOADMAP],
+    'spawn': [CONST.MESSAGES.SPAWN],
+    'chat': [CONST.MESSAGES.CHAT],
+    'connect': [CONST.MESSAGES.CONNECT],
+    'sendMap': [CONST.MESSAGES.SENDMAP],
 
     getType: function (message) {
-        return messages[Types.getMessageName(message)][1];
+        return messages[CONST.getMessageName(message)][1];
     }
 };
 
-Types.getMessageName = function (code) {
+CONST.getMessageName = function (code) {
     for (var name in messages) {
         if (messages[name][0] === code) {
             return name;
@@ -134,37 +135,37 @@ Types.getMessageName = function (code) {
     }
 };
 
-Types.getMessageCode = function (name) {
+CONST.getMessageCode = function (name) {
     return messages[name][0];
 };
 
 var kinds = {
-    tank: [Types.Entities.TANK, "player"],
-    bullet: [Types.Entities.BULLET, "bullet"],
+    tank: [CONST.ENTITIES.TANK, "player"],
+    bullet: [CONST.ENTITIES.BULLET, "bullet"],
 
 
-    live: [Types.Entities.LIVE, "bonus"],
-    medal: [Types.Entities.MEDAL, "bonus"],
-    bomb: [Types.Entities.BOMB, "bonus"],
-    watch: [Types.Entities.WATCH, "bonus"],
-    helmet: [Types.Entities.HELMET, "bonus"],
-    boat: [Types.Entities.BOAT, "bonus"],
-    pistol: [Types.Entities.PISTOL, "bonus"],
+    live: [CONST.ENTITIES.LIVE, "bonus"],
+    medal: [CONST.ENTITIES.MEDAL, "bonus"],
+    bomb: [CONST.ENTITIES.BOMB, "bonus"],
+    watch: [CONST.ENTITIES.WATCH, "bonus"],
+    helmet: [CONST.ENTITIES.HELMET, "bonus"],
+    boat: [CONST.ENTITIES.BOAT, "bonus"],
+    pistol: [CONST.ENTITIES.PISTOL, "bonus"],
 
-    flag: [Types.Entities.FLAG, "object"],
+    flag: [CONST.ENTITIES.FLAG, "object"],
 
-    wall: [Types.Entities.WALL, "tile"],
-    armoredwall: [Types.Entities.ARMOREDWALL, "tile"],
-    trees: [Types.Entities.TREES, "tile"],
-    ice: [Types.Entities.ICE, "tile"],
-    water: [Types.Entities.WATER, "tile"],
-    base: [Types.Entities.BASE, "tile"],
+    wall: [CONST.ENTITIES.WALL, "tile"],
+    armoredwall: [CONST.ENTITIES.ARMOREDWALL, "tile"],
+    trees: [CONST.ENTITIES.TREES, "tile"],
+    ice: [CONST.ENTITIES.ICE, "tile"],
+    water: [CONST.ENTITIES.WATER, "tile"],
+    base: [CONST.ENTITIES.BASE, "tile"],
 
-    bang: [Types.Entities.BANG, "effect"],
-    bigbang: [Types.Entities.BIGBANG, "effect"],
+    bang: [CONST.ENTITIES.BANG, "effect"],
+    bigbang: [CONST.ENTITIES.BIGBANG, "effect"],
 
     getType: function (kind) {
-        return kinds[Types.getKindAsString(kind)][1];
+        return kinds[CONST.getKindAsString(kind)][1];
     },
     getKindString: function (kind) {
         for (var name in kinds) {
@@ -174,12 +175,12 @@ var kinds = {
     }
 };
 
-Types.getKindString = function (kind) {
+CONST.getKindString = function (kind) {
     return kinds.getKindString(kind);
 };
 
 
-Types.getKindAsString = function (kind) {
+CONST.getKindAsString = function (kind) {
     for (var k in kinds) {
         if (kinds[k][0] === kind) {
             return k;
@@ -188,5 +189,5 @@ Types.getKindAsString = function (kind) {
 };
 
 if (!(typeof exports === 'undefined')) {
-    module.exports = Types;
+    module.exports = CONST;
 }

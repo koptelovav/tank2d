@@ -40,7 +40,7 @@ define(function() {
         },
 
         receiveAction: function (data) {
-            data[0] = Types.getMessageName(data[0]);
+            data[0] = CONST.getMessageName(data[0]);
             if (data[0] !== undefined) {
                 console.log(data);
                 this.emit.apply(this, data);

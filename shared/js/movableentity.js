@@ -8,7 +8,7 @@ define(['entity'],function (Entity) {
             this.speed = speed;
             this.isMovable = false;
 
-            this.collections = this.collections.concat([Types.Collections.MOVABLE]);
+            this.collections = this.collections.concat([CONST.COLLECTIONS.MOVABLE]);
         },
 
         setOrientation: function (newOrientation) {
@@ -33,18 +33,18 @@ define(['entity'],function (Entity) {
                 y = this.y,
                 dPosition = (0.5 + this.speed * dt) << 0;
 
-            if (this.orientation === Types.Orientations.LEFT) x -= dPosition;
-            else if (this.orientation === Types.Orientations.UP) y -= dPosition;
-            else if (this.orientation === Types.Orientations.RIGHT) x += dPosition;
-            else if (this.orientation === Types.Orientations.DOWN) y += dPosition;
+            if (this.orientation === CONST.ORIENTATIONS.LEFT) x -= dPosition;
+            else if (this.orientation === CONST.ORIENTATIONS.UP) y -= dPosition;
+            else if (this.orientation === CONST.ORIENTATIONS.RIGHT) x += dPosition;
+            else if (this.orientation === CONST.ORIENTATIONS.DOWN) y += dPosition;
 
             if (x / 16 <= gridX-1 || x / 16 >= gridX+1 ||
                 y / 16 <= gridY-1 || y / 16 >= gridY+1) {
 
-                if (this.orientation === Types.Orientations.LEFT) gridX--;
-                else if (this.orientation === Types.Orientations.UP) gridY--;
-                else if (this.orientation === Types.Orientations.RIGHT) gridX++;
-                else if (this.orientation === Types.Orientations.DOWN) gridY++;
+                if (this.orientation === CONST.ORIENTATIONS.LEFT) gridX--;
+                else if (this.orientation === CONST.ORIENTATIONS.UP) gridY--;
+                else if (this.orientation === CONST.ORIENTATIONS.RIGHT) gridX++;
+                else if (this.orientation === CONST.ORIENTATIONS.DOWN) gridY++;
             }
 
             if(predict){

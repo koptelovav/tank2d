@@ -4,7 +4,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
     var GameServer = GameBase.extend({
         init: function (id, name, websocketServer) {
             this.id = id;
-            this.env = Types.Environment.SERVER;
+            this.env = CONST.ENVIRONMENT.SERVER;
             this.server = websocketServer;
             this.listener = new Listener();
 
@@ -27,7 +27,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
 
 
             this.on('connect', function (connection) {
-                var player = new Player(connection.id, 'players', Types.Entities.TANK, this.getFreeTeamNumber(), false);
+                var player = new Player(connection.id, 'players', CONST.ENTITIES.TANK, this.getFreeTeamNumber(), false);
                 this.addPlayer(player);
 
                 this.listener.addConnection(connection);
@@ -35,16 +35,16 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
             }, this);
 
             this.listener.on('assigned', function(player){
-                this.pushToPlayer(player.id, Types.Messages.CONNECT);
+                this.pushToPlayer(player.id, CONST.MESSAGES.CONNECT);
 
                 player.on('hello', function () {
                     log.info("Player has joined " + this.id);
                     this.incrementPopulation();
 
-                    this.pushToPlayer(player.id, Types.Messages.WELCOME, player.getState());
-                    this.pushToBroadcast(player.id, Types.Messages.JOINGAME, player.getState());
+                    this.pushToPlayer(player.id, CONST.MESSAGES.WELCOME, player.getState());
+                    this.pushToBroadcast(player.id, CONST.MESSAGES.JOINGAME, player.getState());
                     this.pushToPlayer(player.id,
-                        Types.Messages.GAMEDATA,
+                        CONST.MESSAGES.GAMEDATA,
                         this.id,
                         this.population,
                         this.teamCount,
@@ -57,7 +57,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
                 player.on('exit', function () {
                     console.log('exit: '+player.id);
 
-                    this.pushToBroadcast(player.id, Types.Messages.LEFTGAME,  player.id);
+                    this.pushToBroadcast(player.id, CONST.MESSAGES.LEFTGAME,  player.id);
 
                     this.removePlayer(player);
                     this.decrementPopulation();
@@ -72,12 +72,12 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
                 player.on('ready', function () {
                     player.isReady = true;
 
-                    this.pushToBroadcast(player.id, Types.Messages.IREADY,  player.id);
+                    this.pushToBroadcast(player.id, CONST.MESSAGES.IREADY,  player.id);
 
                     if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
                         this.isStart = true;
-                        this.pushToAll(Types.Messages.GAMESTART, this.id);
-                        this.pushToAll(Types.Messages.SENDMAP, this.map.getData());
+                        this.pushToAll(CONST.MESSAGES.GAMESTART, this.id);
+                        this.pushToAll(CONST.MESSAGES.SENDMAP, this.map.getData());
                     }
                 }, this);
 
@@ -88,7 +88,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
                     if (this._checkAllLoaded() && !this.isPlay) {
                         this.isPlay = true;
 
-                        this.pushToAll(Types.Messages.GAMEPLAY,  this.id);
+                        this.pushToAll(CONST.MESSAGES.GAMEPLAY,  this.id);
 
                         this.spawnAll();
                     }
@@ -99,7 +99,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
 
                     if(!player.isMovable){
                         player.toggleMovable();
-                        this.pushToBroadcast(player.id, Types.Messages.MOVE,  player.id,  player.orientation);
+                        this.pushToBroadcast(player.id, CONST.MESSAGES.MOVE,  player.id,  player.orientation);
                     }
                 }, this);
 
@@ -152,15 +152,15 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
 
         _checkAllStarted: function () {
             var result = true;
-            for (var id in this.collections[Types.Collections.PLAYER]) {
-                result = result && (this.collections[Types.Collections.PLAYER][id].isReady === true);
+            for (var id in this.collections[CONST.COLLECTIONS.PLAYER]) {
+                result = result && (this.collections[CONST.COLLECTIONS.PLAYER][id].isReady === true);
             }
             return result;
         },
 
         _checkAllLoaded: function () {
             var result = true;
-            _.each(this.collections[Types.Collections.PLAYER], function (player) {
+            _.each(this.collections[CONST.COLLECTIONS.PLAYER], function (player) {
                 if (player.isLoad !== true) {
                     console.log(player.id);
                 }
@@ -171,7 +171,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
         },
 
         moveEntities: function(){
-            _.each(this.collections[Types.Collections.ENTITY], function(entity){
+            _.each(this.collections[CONST.COLLECTIONS.ENTITY], function(entity){
                 if(entity.isMovable){
 
                 }
@@ -199,7 +199,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
         playerSpawn: function (id) {
             var player = this.getEntityById(id);
 
-            this.pushToAll(Types.Messages.SPAWN,
+            this.pushToAll(CONST.MESSAGES.SPAWN,
                 player.id,
                 player.gridX,
                 player.gridY,
@@ -208,7 +208,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
         },
 
         spawnAll: function () {
-            for (var id in this.collections[Types.Collections.PLAYER]) {
+            for (var id in this.collections[CONST.COLLECTIONS.PLAYER]) {
                 this.playerSpawn(id);
             }
         },
@@ -232,7 +232,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
 
         getPlayersInfo: function (ignoreId) {
             var playersInfo = [];
-            _.each(this.collections[Types.Collections.PLAYER], function (player) {
+            _.each(this.collections[CONST.COLLECTIONS.PLAYER], function (player) {
                 if(player.id !== ignoreId)
                     playersInfo.push(player.getState());
             });

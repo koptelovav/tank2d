@@ -139,7 +139,7 @@ define(['model', 'utils', 'url', 'http', 'fs', 'express', 'express3-handlebars']
         },
 
         _createId: function () {
-            return Types.Prefixes.CONNECTION + '' + Utils.random(99) + '' + (this._counter++);
+            return CONST.PREFIXES.CONNECTION + '' + Utils.random(99) + '' + (this._counter++);
         }
     });
 

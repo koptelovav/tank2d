@@ -5,7 +5,7 @@ define(['entity'], function (Entity) {
             this._super(id, type, kind);
 
             this.life = 1;
-            this.collections = this.collections.concat([Types.Collections.TILE]);
+            this.collections = this.collections.concat([CONST.COLLECTIONS.TILE]);
         }
     });
 

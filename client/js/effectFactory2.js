@@ -4,7 +4,7 @@ define(['entity', 'scene'],function (Entity, Scene) {
         init: function (id, type, kind) {
             this.life = 1;
             this.animated = true;
-            this.layer = Types.Layers.ENTITIES;
+            this.layer = CONST.LAYERS.ENTITIES;
             this._super(id, type, kind);
         }
     });
@@ -12,14 +12,14 @@ define(['entity', 'scene'],function (Entity, Scene) {
     var Effects = [];
     var EffectsArr = [];
     EffectsArr['destroy'] = [];
-    EffectsArr['destroy'][Types.Entities.BULLET] = Types.Entities.BANG;
-    EffectsArr['destroy'][Types.Entities.BASE] = Types.Entities.BIGBANG;
+    EffectsArr['destroy'][CONST.ENTITIES.BULLET] = CONST.ENTITIES.BANG;
+    EffectsArr['destroy'][CONST.ENTITIES.BASE] = CONST.ENTITIES.BIGBANG;
 
     var EffectFactory = {
         count: 0,
         create: function (entity, action) {
             if(EffectsArr[action][entity.kind] !== undefined){
-                var id = Types.Prefixes.EFFECT + ''+ this.count;
+                var id = CONST.PREFIXES.EFFECT + ''+ this.count;
                 this.count++;
                 var effect = new Effects[EffectsArr[action][entity.kind]](id, EffectsArr[action][entity.kind], entity.x, entity.y);
                 effect.setAnimation('idle', effect.speedAnimation, 1, function(){
@@ -31,7 +31,7 @@ define(['entity', 'scene'],function (Entity, Scene) {
         }
     };
 
-    Effects[Types.Entities.BANG] = Effect.extend({
+    Effects[CONST.ENTITIES.BANG] = Effect.extend({
         init: function (id, kind, x, y) {
             this.setSize(32);
             this.x = x - this.width / 2 + 4 ;
@@ -41,7 +41,7 @@ define(['entity', 'scene'],function (Entity, Scene) {
         }
     });
 
-    Effects[Types.Entities.BIGBANG] = Effect.extend({
+    Effects[CONST.ENTITIES.BIGBANG] = Effect.extend({
         init: function (id, kind, x, y) {
             this.setSize(32);
             this.x = x - this.width / 2;

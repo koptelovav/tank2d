@@ -7,9 +7,9 @@ define(['model'], function (Model) {
 
             this.strength = 0;
             this.life = 1;
-            this.destroy = [Types.Destroy.FULL, Types.Destroy.VIEW, Types.Destroy.COLLIDING];
+            this.destroy = [CONST.DESTROY.FULL, CONST.DESTROY.VIEW, CONST.DESTROY.COLLIDING];
 
-            this.collections = [Types.Collections.ENTITY];
+            this.collections = [CONST.COLLECTIONS.ENTITY];
             this.externalImpact = [];
         },
 
@@ -37,10 +37,10 @@ define(['model'], function (Model) {
                 chunk = [];
 
             if (predict) {
-                if (this.orientation === Types.Orientations.LEFT) gridX--;
-                else if (this.orientation === Types.Orientations.UP) gridY--;
-                else if (this.orientation === Types.Orientations.RIGHT) gridX++;
-                else if (this.orientation === Types.Orientations.DOWN) gridY++;
+                if (this.orientation === CONST.ORIENTATIONS.LEFT) gridX--;
+                else if (this.orientation === CONST.ORIENTATIONS.UP) gridY--;
+                else if (this.orientation === CONST.ORIENTATIONS.RIGHT) gridX++;
+                else if (this.orientation === CONST.ORIENTATIONS.DOWN) gridY++;
             }
 
             for (i = 0; i < (this.height / 16 >> 0); i++)
@@ -64,15 +64,15 @@ define(['model'], function (Model) {
             _.each(impactArray, function (impact) {
                 if (this.externalImpact.indexOf(impact.type) >= 0) {
                     switch (impact.type) {
-                        case Types.Impact.DAMAGE:
+                        case CONST.IMPACT.DAMAGE:
                             if (this.strength !== 0 && this.strength < impact.power)
                                 this.life = this.life - impact.power;
                             break;
-                        case Types.Impact.FIRE:
+                        case CONST.IMPACT.FIRE:
                             break;
-                        case Types.Impact.ICE:
+                        case CONST.IMPACT.ICE:
                             break;
-                        case Types.Impact.BANG:
+                        case CONST.IMPACT.BANG:
                             break;
                     }
                 }

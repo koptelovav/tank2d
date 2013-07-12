@@ -5,7 +5,7 @@ define(['ws','utils','fs','gameserver','log', 'gametypes'],function(ws, Utils, f
             gameCount = 0;
 
         var GameServerID = function(){
-            return parseInt(Types.Prefixes.GAMESERVER + '' +Utils.random(99) + '' + gameCount);
+            return parseInt(CONST.PREFIXES.GAMESERVER + '' +Utils.random(99) + '' + gameCount);
         };
 
         switch(config.debug_level) {

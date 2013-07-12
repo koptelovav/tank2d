@@ -8,7 +8,7 @@ define(['tank', 'bullet'], function (Tank) {
             });
 
             this.team = team;
-            this.collections = this.collections.concat([Types.Collections.PLAYER]);
+            this.collections = this.collections.concat([CONST.COLLECTIONS.PLAYER]);
             this.isReady = isReady;
             this.hasEnteredGame = false;
             this.isLoad = false;

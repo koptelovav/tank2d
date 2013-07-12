@@ -8,16 +8,16 @@ define(['movableentity'], function (MovableEntity) {
             this.bullet = this._params['bullet'];
             this._super(id, type, kind, this.speed);
 
-            this.layer = Types.Layers.ENTITIES;
+            this.layer = CONST.LAYERS.ENTITIES;
             this.animated = true;
             this.strength = 1;
             this.life = 1;
             this.colliding =  [
-                Types.Entities.TANK,
-                Types.Entities.BULLET,
-                Types.Entities.WALL,
-                Types.Entities.ARMOREDWALL,
-                Types.Entities.WATER
+                CONST.ENTITIES.TANK,
+                CONST.ENTITIES.BULLET,
+                CONST.ENTITIES.WALL,
+                CONST.ENTITIES.ARMOREDWALL,
+                CONST.ENTITIES.WATER
             ];
 
             this.setSize(32);

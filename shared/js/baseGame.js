@@ -37,17 +37,17 @@ define(['model', 'tilefactory'],
             removeEntity: function (entity) {
                 entity.emit('destroy');
 
-                if (_.indexOf(entity.destroy, Types.Destroy.COLLIDING) !== -1) {
+                if (_.indexOf(entity.destroy, CONST.DESTROY.COLLIDING) !== -1) {
                     entity.colliding = [];
                 }
 
-                if (_.indexOf(entity.destroy, Types.Destroy.FULL) !== -1) {
+                if (_.indexOf(entity.destroy, CONST.DESTROY.FULL) !== -1) {
                     this.unRegisterEntityPosition(entity);
 
-                    if (entity.kind === Types.Entities.BASE) {
+                    if (entity.kind === CONST.ENTITIES.BASE) {
                         delete this.teams[entity.team].base;
                     }
-                    else if (entity.kind === Types.Entities.PLAYER) {
+                    else if (entity.kind === CONST.ENTITIES.PLAYER) {
                         delete this.teams.players[entity.id];
                     }
                     this.removeFromCollection(entity);
@@ -85,12 +85,12 @@ define(['model', 'tilefactory'],
             },
 
             entityIdExists: function (id) {
-                return id in this.collections[Types.Collections.ENTITY];
+                return id in this.collections[CONST.COLLECTIONS.ENTITY];
             },
 
             getEntityById: function (id) {
-                if (id in this.collections[Types.Collections.ENTITY]) {
-                    return this.collections[Types.Collections.ENTITY][id];
+                if (id in this.collections[CONST.COLLECTIONS.ENTITY]) {
+                    return this.collections[CONST.COLLECTIONS.ENTITY][id];
                 }
                 else {
                     log.error("Unknown entity id : " + id, true);
@@ -103,8 +103,8 @@ define(['model', 'tilefactory'],
 
                 for (var j, i = 0; i < this.map.height; i++) {
                     for (j = 0; j < this.map.width; j++) {
-                        if (Types.getKindAsString(this.map.tiles[i][j])) {
-                            tile = TileFactory.create((Types.Prefixes.TAIL + '' + count), this.map.tiles[i][j], i, j);
+                        if (CONST.getKindAsString(this.map.tiles[i][j])) {
+                            tile = TileFactory.create((CONST.PREFIXES.TAIL + '' + count), this.map.tiles[i][j], i, j);
                             this.addEntity(tile, true);
                             count++;
                         }
@@ -123,7 +123,7 @@ define(['model', 'tilefactory'],
             },
 
             addBase: function (teamNumber, x, y) {
-                var tile = TileFactory.create((Types.Prefixes.BASE + '' + teamNumber), Types.Entities.BASE, x, y);
+                var tile = TileFactory.create((CONST.PREFIXES.BASE + '' + teamNumber), CONST.ENTITIES.BASE, x, y);
                 tile.setTeam(teamNumber);
 
                 _.each(tile.getChunk(), function (tile) {

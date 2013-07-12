@@ -12,7 +12,7 @@ define(['baseEntity', 'spritemanager'], function (BaseEntity, SpriteManager) {
             this.isLoaded = false;
             this.isDirty = false;
 
-            this.setSprite(SpriteManager.getSprite(Types.getKindString(this.kind)));
+            this.setSprite(SpriteManager.getSprite(CONST.getKindString(this.kind)));
         },
 
         setSprite: function(sprite){
