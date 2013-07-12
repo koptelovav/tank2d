@@ -31,8 +31,8 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                     entity.on('destroy',function(){
                         if(entity.kind === Types.Entities.BULLET){
                             var effect = EffectFactory.create(entity, 'destroy');
-                            if(effect)
-                                this.addToScene(effect);
+                            /*if(effect)
+                                this.addToScene(effect);*/
                         }
                     },this);
                 }, this);
@@ -184,8 +184,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             addToScene: function (entity) {
-                entity.setSprite(SpriteManager.getSprite(Types.getKindString(entity.kind)));
-                entity.setAnimation('idle', entity.speedAnimation);
+
                 Scene.add(entity);
             },
 

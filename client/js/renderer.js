@@ -12,7 +12,6 @@ define(
             },
 
             renderFrame: function () {
-                console.log(this.scene);
                 this.drawDebugInfo();
 
                 _.each(this.scene.layers, function (layer) {
@@ -32,8 +31,6 @@ define(
                     this.lastRenderTime = nowTime;
                 }
                 this.frameCount++;
-
-                //this.drawText("FPS: " + this.realFPS + " / " + this.maxFPS, 30, 30, false);
                 this.drawText("FPS: " + this.realFPS, 15, 15, false);
             },
 
@@ -89,7 +86,6 @@ define(
             renderLayer: function (layer) {
                 var self = this,
                     now = Date.now();
-                ;
 
                 layer.forEachAnimatedEntities(function (entity) {
                     entity.currentAnimation.update(now);

@@ -1,4 +1,4 @@
-define(['baseEntity'], function (BaseEntity) {
+define(['baseEntity', 'spritemanager'], function (BaseEntity, SpriteManager) {
     var Entity = BaseEntity.extend({
         init: function (id, type, kind) {
             this._super(id, type, kind);
@@ -7,11 +7,13 @@ define(['baseEntity'], function (BaseEntity) {
             this.sprite = null;
             this.animations = null;
             this.currentAnimation = null;
-            this.speedAnimation = 800;
+            this.speedAnimation = this.speedAnimation || 800;
 
             this.isLoaded = false;
             this.isDirty = false;
 
+            this.setSprite(SpriteManager.getSprite(Types.getKindString(this.kind)));
+            this.setAnimation('idle', this.speedAnimation);
 
             this.on('shift changeOrientation', function(){
                 this._setDirty();
