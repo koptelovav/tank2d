@@ -12,15 +12,21 @@ define(['entity'],function (Entity) {
         }
     });
 
-    var Effects = {};
+    var Effects = [];
+    var EffectsArr = [];
+    EffectsArr['destroy'] = [];
+    EffectsArr['destroy'][Types.Entities.BULLET] = Types.Entities.BANG;
 
     var EffectFactory = {
         count: 0,
-        create: function (kind, x, y) {
-            var id = Types.Prefixes.EFFECT + ''+ this.count;
-            this.count++;
+        create: function (entity, action) {
 
-            return new Effects[kind](id, kind, x, y);
+            if(EffectsArr[action][entity.kind] !== undefined){
+                var id = Types.Prefixes.EFFECT + ''+ this.count;
+                this.count++;
+                return new Effects[EffectsArr[action][entity.kind]](id, EffectsArr[action][entity.kind], entity.x, entity.y);
+            }
+            return false;
         }
     };
 
@@ -33,3 +39,5 @@ define(['entity'],function (Entity) {
 
     return EffectFactory;
 });
+
+

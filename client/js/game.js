@@ -24,6 +24,22 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.lastUpdateTime = 0;
 
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang"];
+
+                this.on('addEntity', function(entity){
+                    this.addToScene(entity);
+
+                    entity.on('destroy',function(){
+                        if(entity.kind === Types.Entities.BULLET){
+                            var effect = EffectFactory.create(entity, 'destroy');
+                            if(effect)
+                                this.addToScene(effect);
+                        }
+                    },this);
+                }, this);
+
+                this.on('removeEntity', function(entity){
+                    this.removeFromScene(entity);
+                }, this);
             },
 
             setup: function (entities, background, foreground) {
@@ -199,8 +215,6 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                                 }
                             }
                             entity.player.bulletCount -= 1;
-                            var bang = EffectFactory.create(Types.Entities.BANG, entity.x , entity.y);
-                            this.addToScene(bang);
                             this.removeEntity(entity);
                         }
                     }

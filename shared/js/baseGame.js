@@ -26,22 +26,16 @@ define(['model', 'tilefactory'],
             },
 
             addEntity: function (entity, registerPosition) {
-                if (this.env === Types.Environment.CLIENT)
-                    this.addToScene(entity);
-
                 if (registerPosition === true)
                     this.registerEntityPosition(entity);
 
                 this.addToCollection(entity);
+
+                this.emit('addEntity', entity);
             },
 
             removeEntity: function (entity) {
                 entity.emit('destroy');
-
-                if (_.indexOf(entity.destroy, Types.Destroy.VIEW) !== -1) {
-                    if (this.env === Types.Environment.CLIENT)
-                        this.removeFromScene(entity);
-                }
 
                 if (_.indexOf(entity.destroy, Types.Destroy.COLLIDING) !== -1) {
                     entity.colliding = [];
@@ -58,6 +52,8 @@ define(['model', 'tilefactory'],
                     }
                     this.removeFromCollection(entity);
                 }
+
+                this.emit('removeEntity', entity);
             },
 
             addToCollection: function (entity) {
