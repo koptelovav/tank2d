@@ -5,6 +5,7 @@ define(['model', 'renderer'], function (Model, Renderer) {
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
             this.entities = {};
+            this.grid = [];
         },
 
         setSize: function (width, height) {
@@ -45,12 +46,12 @@ define(['model', 'renderer'], function (Model, Renderer) {
         },
 
         add: function (entity) {
-            this.layers[entity.layer]['entities'][entity.id] = entity;
+            this.layers[entity.layer].entities[entity.id] = entity;
         },
 
         remove: function (entity) {
             Renderer.clearDirtyRect(this.layers[entity.layer], this.layers[entity.layer]['entities'][entity.id].oldDirtyRect);
-            delete this.layers[entity.layer]['entities'][entity.id];
+            delete this.layers[entity.layer].entities[entity.id];
         }
     };
 
