@@ -1,5 +1,5 @@
-define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection','effectFactory', 'gametypes'],
-    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection,EffectFactory) {
+define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection','effectFactory', 'renderer','gametypes'],
+    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection,EffectFactory,Renderer) {
 
         var Game = baseGame.extend({
             init: function (app) {
@@ -43,10 +43,11 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             setup: function (entities, background, foreground) {
-                this.scene = new Scene(768, 768);
-                this.scene.newLayer(Types.Layers.ENTITIES, entities);
-                this.scene.newLayer(Types.Layers.BACKGROUND, background);
-                this.scene.newLayer(Types.Layers.FOREGROUND, foreground);
+                Scene.setSize(768, 768);
+                Scene.newLayer(Types.Layers.ENTITIES, entities);
+                Scene.newLayer(Types.Layers.BACKGROUND, background);
+                Scene.newLayer(Types.Layers.FOREGROUND, foreground);
+                Renderer.setScene(Scene);
             },
 
             run: function () {
@@ -82,7 +83,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
                     this.emit('tick');
                     this.moveEntities(dt);
-                    this.scene.refreshFrame();
+                    Renderer.renderFrame();
 
                     this.lastUpdateTime = now;
                 }
@@ -185,11 +186,11 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             addToScene: function (entity) {
                 entity.setSprite(SpriteManager.getSprite(Types.getKindString(entity.kind)));
                 entity.setAnimation('idle', entity.speedAnimation);
-                this.scene.add(entity);
+                Scene.add(entity);
             },
 
             removeFromScene: function (entity) {
-                this.scene.remove(entity);
+                Scene.remove(entity);
             },
 
             moveEntities: function (dt) {

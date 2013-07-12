@@ -1,20 +1,21 @@
-define(['model'],
-    function (Model) {
+define(
+    function () {
 
-        var Renderer = Model.extend({
-            init: function (scene) {
+        var Renderer = {
+
+            lastRenderTime: Date.now(),
+            frameCount: 0,
+            realFPS: 0,
+
+            setScene: function (scene) {
                 this.scene = scene;
-
-                //debug
-                this.lastRenderTime = Date.now();
-                this.frameCount = 0;
-                this.realFPS = 0;
             },
 
             renderFrame: function () {
+                console.log(this.scene);
                 this.drawDebugInfo();
 
-                _.each(this.scene.layers, function(layer){
+                _.each(this.scene.layers, function (layer) {
                     this.renderLayer(layer);
                 }, this);
 
@@ -57,16 +58,16 @@ define(['model'],
                 this.drawFPS();
             },
 
-            drawEntity: function (entity,layer) {
-                this.drawImage(entity,layer);
+            drawEntity: function (entity, layer) {
+                this.drawImage(entity, layer);
             },
 
-            drawImage: function(entity,layer){
+            drawImage: function (entity, layer) {
                 var sprite = entity.sprite,
                     anim = entity.currentAnimation;
 
-                if(anim && sprite) {
-                    var	frame = anim.currentFrame,
+                if (anim && sprite) {
+                    var frame = anim.currentFrame,
                         x = frame.x,
                         y = frame.y,
                         w = sprite.width,
@@ -81,42 +82,43 @@ define(['model'],
                 }
             },
 
-            clearDirtyRect: function(layer,r) {
+            clearDirtyRect: function (layer, r) {
                 layer.ctx.clearRect(r.x, r.y, r.w, r.h);
             },
 
-            renderLayer: function(layer){
+            renderLayer: function (layer) {
                 var self = this,
-                    now = Date.now();;
+                    now = Date.now();
+                ;
 
-                layer.forEachAnimatedEntities(function(entity){
+                layer.forEachAnimatedEntities(function (entity) {
                     entity.currentAnimation.update(now);
                 });
 
-               this.clearLayerDirtyRects(layer);
+                this.clearLayerDirtyRects(layer);
 
                 layer.ctx.save();
-                layer.forEachDirtyEntities(function(entity){
+                layer.forEachDirtyEntities(function (entity) {
                     if (entity.sprite.isLoaded) {
-                            self.drawEntity(entity, layer);
-                            entity.isDirty = false;
-                            entity.oldDirtyRect = entity.dirtyRect;
-                            entity.dirtyRect = null;
-                        }
+                        self.drawEntity(entity, layer);
+                        entity.isDirty = false;
+                        entity.oldDirtyRect = entity.dirtyRect;
+                        entity.dirtyRect = null;
+                    }
                 });
                 layer.ctx.restore();
             },
 
-            clearLayerDirtyRects: function(layer) {
+            clearLayerDirtyRects: function (layer) {
                 var self = this;
 
-                layer.forEachDirtyEntities(function(entity){
-                    if(entity.oldDirtyRect) {
-                        self.clearDirtyRect(layer,entity.oldDirtyRect);
+                layer.forEachDirtyEntities(function (entity) {
+                    if (entity.oldDirtyRect) {
+                        self.clearDirtyRect(layer, entity.oldDirtyRect);
                     }
                 });
             }
-        });
+        };
 
         return Renderer;
     });

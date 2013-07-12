@@ -15,10 +15,11 @@ requirejs.config({
         map: '../../shared/js/map',
         player: '../../shared/js/player',
         movableentity: '../../shared/js/movableentity',
-        effectFactory: 'effectFactory2'
+        effectFactory: 'effectFactory2',
+        scene: 'scene'
     }
 });
 
-define(['tank','gametypes','effectFactory','lib/underscore.min', 'util'], function() {
+define(['scene','tank','gametypes','effectFactory','lib/underscore.min', 'util'], function() {
     require(["main"]);
 });
