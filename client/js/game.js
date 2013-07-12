@@ -5,7 +5,6 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             init: function (app) {
                 this.app = app;
                 this.env = Types.Environment.CLIENT;
-                this.spriteManager = new SpriteManager();
                 this.connection = new Connection('127.0.0.1', '8000');
                 this.ready = false;
                 this.started = false;
@@ -40,7 +39,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.ready = true;
                 this.connect();
 
-                this.spriteManager.addResource(this.spriteNames).load();
+                SpriteManager.addResource(this.spriteNames).load();
 
                 var waitGameLoadData = setInterval(function () {
                     var waitStartGame = setInterval(function () {
@@ -168,10 +167,9 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             addToScene: function (entity) {
-                entity.setSprite(this.spriteManager.getSprite(Types.getKindString(entity.kind)));
+                entity.setSprite(SpriteManager.getSprite(Types.getKindString(entity.kind)));
                 entity.setAnimation('idle', entity.speedAnimation);
                 this.scene.add(entity);
-                console.log(entity);
             },
 
             removeFromScene: function (entity) {
@@ -201,7 +199,6 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                                 }
                             }
                             entity.player.bulletCount -= 1;
-                            console.log( entity.x, entity.y);
                             var bang = EffectFactory.create(Types.Entities.BANG, entity.x , entity.y);
                             this.addToScene(bang);
                             this.removeEntity(entity);

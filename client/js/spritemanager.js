@@ -1,10 +1,7 @@
-define(['model','sprite'], function(Model, Sprite){
-    var SpriteManager = Model.extend({
-        init: function(){
-            this.sprites = {};
-            this.spriteNames = [];
-        },
-
+define(['sprite'], function(Sprite){
+    var SpriteManager = {
+        sprites: {},
+        spriteNames: [],
         addResource: function(data){
 
             if(_.isArray(data)){
@@ -34,7 +31,7 @@ define(['model','sprite'], function(Model, Sprite){
         _loadSprite: function (name) {
             this.sprites[name] = new Sprite(name, 3);
         }
-    });
+    };
 
     return SpriteManager;
 });
