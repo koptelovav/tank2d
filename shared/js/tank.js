@@ -2,11 +2,10 @@ define(['movableentity'], function (MovableEntity) {
 
     var Tank = MovableEntity.extend({
         init: function (id, type, kind, config) {
-            this._params = config;
-            this.speed = this._params['speed'];
-            this.strength = this._params['armor'];
-            this.bullet = this._params['bullet'];
-            this._super(id, type, kind, this.speed);
+            for(var parameter in config){
+                this[parameter] = config[parameter];
+            }
+            this._super(id, type, kind);
 
             this.layer = CONST.LAYERS.ENTITIES;
             this.animated = false;

@@ -3,7 +3,7 @@ define(['tank', 'bullet'], function (Tank) {
         init: function (id, type, kind, team, isReady) {
             this._super(id, type, kind, {
                 "speed": 100,
-                "armor": 1,
+                "strength": 1,
                 "bullet": 1
             });
 
@@ -22,8 +22,6 @@ define(['tank', 'bullet'], function (Tank) {
             this.maxBulletCount = 1;
             this.lastFireTime = Date.now();
             this.bullets = {};
-
-
         },
 
         getState: function () {

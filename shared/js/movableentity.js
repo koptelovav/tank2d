@@ -1,11 +1,10 @@
 define(['entity'],function (Entity) {
     var MovableEntity = Entity.extend({
-        init: function (id, type, kind, speed){
+        init: function (id, type, kind){
             this._super(id, type, kind);
 
             this.movable = true;
             this.orientation = CONST.ORIENTATIONS.UP;
-            this.speed = speed;
             this.isMovable = false;
 
             this.collections = this.collections.concat([CONST.COLLECTIONS.MOVABLE]);
