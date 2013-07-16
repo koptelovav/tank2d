@@ -1,4 +1,4 @@
-define([CONST.TYPES.TILE, 'gametypes'],function (Tile) {
+define(['tile', 'gametypes'],function (Tile) {
 
     var Tiles = {};
 
