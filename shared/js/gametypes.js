@@ -71,6 +71,12 @@ CONST = {
         BIGBANG: 301
     },
 
+    TYPES: {
+        PLAYER: 1,
+        TILE: 2,
+        EFFECT: 3
+    },
+
     COLLECTIONS: {
         ENTITY: 0,
         MOVABLE: 1,

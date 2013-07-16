@@ -1,4 +1,4 @@
-define(['tile', 'gametypes'],function (Tile) {
+define([CONST.TYPES.TILE, 'gametypes'],function (Tile) {
 
     var Tiles = {};
 
@@ -10,7 +10,7 @@ define(['tile', 'gametypes'],function (Tile) {
 
     Tiles[CONST.ENTITIES.WALL] = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y);
+            this._super(id, CONST.TYPES.TILE, kind, x, y);
             this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 30;
@@ -21,7 +21,7 @@ define(['tile', 'gametypes'],function (Tile) {
 
     Tiles[CONST.ENTITIES.BASE] = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y);
+            this._super(id, CONST.TYPES.TILE, kind, x, y);
             this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 1;
@@ -39,7 +39,7 @@ define(['tile', 'gametypes'],function (Tile) {
 
     Tiles[CONST.ENTITIES.ARMOREDWALL] = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y);
+            this._super(id, CONST.TYPES.TILE, kind, x, y);
             this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 60;
@@ -52,7 +52,7 @@ define(['tile', 'gametypes'],function (Tile) {
 
     Tiles[CONST.ENTITIES.TREES] = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y);
+            this._super(id, CONST.TYPES.TILE, kind, x, y);
             this.layer = CONST.LAYERS.FOREGROUND;
             this.animated = false;
             this.strength = 0;
@@ -62,7 +62,7 @@ define(['tile', 'gametypes'],function (Tile) {
 
     Tiles[CONST.ENTITIES.WATER] = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y);
+            this._super(id, CONST.TYPES.TILE, kind, x, y);
             this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = true;
             this.strength = 0;
@@ -72,7 +72,7 @@ define(['tile', 'gametypes'],function (Tile) {
 
     Tiles[CONST.ENTITIES.ICE] = Tile.extend({
         init: function (id, kind, x, y) {
-            this._super(id, 'tile', kind, x, y);
+            this._super(id, CONST.TYPES.TILE, kind, x, y);
             this.layer = CONST.LAYERS.BACKGROUND;
             this.animated = false;
             this.strength = 0;
