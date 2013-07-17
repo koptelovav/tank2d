@@ -27,7 +27,6 @@ define(['tile', 'gametypes'],function (Tile) {
             this.strength = 1;
             this.colliding = [CONST.ENTITIES.TANK, CONST.ENTITIES.BULLET];
             this.externalImpact = [CONST.IMPACT.DAMAGE];
-            this.destroy = [CONST.DESTROY.COLLIDING];
 
             this.team = null;
         },

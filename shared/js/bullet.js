@@ -4,7 +4,7 @@ define(['movableentity'], function (MovableEntity) {
             this._super(id, type, kind);
             this.player = player;
             this.speed = speed;
-            this.damage = 70;
+            this.damage = 40;
             this.isMovable = true;
             this.strength = 1;
             this.setOrientation(player.orientation);
@@ -12,7 +12,7 @@ define(['movableentity'], function (MovableEntity) {
             this.impact = [
                 {
                     type: CONST.IMPACT.DAMAGE,
-                    power: 70
+                    power: 40
                 }
             ];
 

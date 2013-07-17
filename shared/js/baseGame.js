@@ -45,6 +45,7 @@ define(['model', 'tilefactory'],
                     this.unRegisterEntityPosition(entity);
 
                     if (entity.kind === CONST.ENTITIES.BASE) {
+                        this.emit('baseDestroy',entity.team);
                         delete this.teams[entity.team].base;
                     }
                     else if (entity.kind === CONST.ENTITIES.PLAYER) {

@@ -1,11 +1,12 @@
-define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection','effectFactory', 'renderer','gametypes'],
-    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection,EffectFactory,Renderer) {
+define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection','effectFactory', 'renderer', 'audioManager','gametypes'],
+    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection,EffectFactory,Renderer,AudioManager) {
 
         var Game = baseGame.extend({
             init: function (app) {
                 this.app = app;
                 this.env = CONST.ENVIRONMENT.CLIENT;
                 this.connection = new Connection('127.0.0.1', '9000');
+                this.audioManager = new AudioManager();
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -49,7 +50,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
                     entity.on('destroy',function(){
                         EffectFactory.create(entity, CONST.ACTIONS.DESTROY);
-                    });
+                    }, this);
 
                     entity.on('shift changeOrientation', function(){
                         entity._setDirty();
@@ -61,6 +62,10 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.on('removeEntity', function(entity){
                     Scene.remove(entity);
                 }, this);
+
+                this.on('baseDestroy',function(team){
+                    this.audioManager.playSound("game_over");
+                });
             },
 
             setup: function (entities, effects, background, foreground) {
@@ -96,6 +101,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.initEntityGrid();
                 this.initMap();
                 this.tick();
+                this.audioManager.playSound("stage_start");
             },
 
             tick: function () {
@@ -218,8 +224,12 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                                 if (_.isObject(hit) && !_.isEmpty(hit)) {
                                     _.each(hit, function (item) {
                                         item.processImpact(entity.impact);
-                                        if(item.life <= 0)
+                                        if(item.life <= 0){
                                             this.removeEntity(item);
+                                            this.audioManager.playSound("bullet_hit_2");
+                                        }else{
+                                            this.audioManager.playSound("bullet_hit_1");
+                                        }
                                     }, this);
                                 }
                                 else {
