@@ -72,6 +72,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.audioManager = new AudioManager();
                 this.renderer = new Renderer();
                 this.scene = new Scene(this.renderer);
+                this.renderer.setScene(this.scene);
                 this.effectFactory = new EffectFactory(this);
 
                 this.scene.setSize(768, 768);
@@ -79,7 +80,6 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.scene.newLayer(CONST.LAYERS.EFFECTS, effects);
                 this.scene.newLayer(CONST.LAYERS.BACKGROUND, background);
                 this.scene.newLayer(CONST.LAYERS.FOREGROUND, foreground);
-                this.renderer.setScene(this.scene);
             },
 
             run: function () {
