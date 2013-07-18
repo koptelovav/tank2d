@@ -49,7 +49,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                     }
 
                     entity.on('destroy',function(){
-                        EffectFactory.create(entity, CONST.ACTIONS.DESTROY);
+                        this.effectFactory.create(entity, CONST.ACTIONS.DESTROY);
                     }, this);
 
                     entity.on('shift changeOrientation', function(){
@@ -72,6 +72,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.audioManager = new AudioManager();
                 this.renderer = new Renderer();
                 this.scene = new Scene(this.renderer);
+                this.effectFactory = new EffectFactory(this);
 
                 this.scene.setSize(768, 768);
                 this.scene.newLayer(CONST.LAYERS.ENTITIES, entities);
@@ -79,8 +80,6 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.scene.newLayer(CONST.LAYERS.BACKGROUND, background);
                 this.scene.newLayer(CONST.LAYERS.FOREGROUND, foreground);
                 this.renderer.setScene(this.scene);
-
-                EffectFactory.setGame(this);
             },
 
             run: function () {

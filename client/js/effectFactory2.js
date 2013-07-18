@@ -1,4 +1,4 @@
-define(['entity', 'scene'],function (Entity, Scene) {
+define(['model','entity'],function (Model,Entity) {
 
     var Effect = Entity.extend({
         init: function (id, kind, e) {
@@ -17,11 +17,12 @@ define(['entity', 'scene'],function (Entity, Scene) {
     EffectConfig[CONST.ACTIONS.DESTROY][CONST.ENTITIES.BULLET] = CONST.ENTITIES.BANG;
     EffectConfig[CONST.ACTIONS.DESTROY][CONST.ENTITIES.BASE] = CONST.ENTITIES.BIGBANG;
 
-    var EffectFactory = {
-        count: 0,
-        setGame: function(game){
-          this.game = game;
+    var EffectFactory = Model.extend({
+        init: function (game) {
+            this.game = game;
+            this.count = 0;
         },
+
         create: function (entity, action) {
             if(EffectConfig[action][entity.kind] !== undefined){
                 var id = CONST.PREFIXES.EFFECT + ''+ this.count,
@@ -35,7 +36,7 @@ define(['entity', 'scene'],function (Entity, Scene) {
             }
             return false;
         }
-    };
+    });
 
     Effects[CONST.ENTITIES.BANG] = Effect.extend({
         init: function (id, kind, e) {
