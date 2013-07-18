@@ -6,7 +6,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.app = app;
                 this.env = CONST.ENVIRONMENT.CLIENT;
                 this.connection = new Connection('127.0.0.1', '9000');
-                this.audioManager = new AudioManager();
+
                 this.ready = false;
                 this.started = false;
                 this.connected = false;
@@ -56,11 +56,11 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                         entity._setDirty();
                     });
 
-                    Scene.add(entity);
+                    this.scene.add(entity);
                 }, this);
 
                 this.on('removeEntity', function(entity){
-                    Scene.remove(entity);
+                    this.scene.remove(entity);
                 }, this);
 
                 this.on('baseDestroy',function(team){
@@ -69,12 +69,18 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             setup: function (entities, effects, background, foreground) {
-                Scene.setSize(768, 768);
-                Scene.newLayer(CONST.LAYERS.ENTITIES, entities);
-                Scene.newLayer(CONST.LAYERS.EFFECTS, effects);
-                Scene.newLayer(CONST.LAYERS.BACKGROUND, background);
-                Scene.newLayer(CONST.LAYERS.FOREGROUND, foreground);
-                Renderer.setScene(Scene);
+                this.audioManager = new AudioManager();
+                this.renderer = new Renderer();
+                this.scene = new Scene(this.renderer);
+
+                this.scene.setSize(768, 768);
+                this.scene.newLayer(CONST.LAYERS.ENTITIES, entities);
+                this.scene.newLayer(CONST.LAYERS.EFFECTS, effects);
+                this.scene.newLayer(CONST.LAYERS.BACKGROUND, background);
+                this.scene.newLayer(CONST.LAYERS.FOREGROUND, foreground);
+                this.renderer.setScene(this.scene);
+
+                EffectFactory.setGame(this);
             },
 
             run: function () {
@@ -111,7 +117,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
                     this.emit('tick');
                     this.moveEntities(dt);
-                    Renderer.renderFrame();
+                    this.renderer.renderFrame();
 
                     this.lastUpdateTime = now;
                 }

@@ -1,4 +1,4 @@
-define(['model', 'renderer'], function (Model, Renderer) {
+define(['model'], function (Model) {
     var Layer = Model.extend({
         init: function (id, canvas) {
             this.id = id;
@@ -30,8 +30,12 @@ define(['model', 'renderer'], function (Model, Renderer) {
         }
     });
 
-    var Scene = {
-        layers: {},
+    var Scene = Model.extend({
+        init: function (renderer) {
+            this.renderer = renderer;
+            this.layers = {};
+        },
+
         setSize: function (width, height) {
             this.width = width;
             this.height = height;
@@ -50,10 +54,10 @@ define(['model', 'renderer'], function (Model, Renderer) {
         },
 
         remove: function (entity) {
-            Renderer.clearDirtyRect(this.layers[entity.layer], this.layers[entity.layer]['entities'][entity.id].oldDirtyRect);
+            this.renderer.clearDirtyRect(this.layers[entity.layer], this.layers[entity.layer]['entities'][entity.id].oldDirtyRect);
             delete this.layers[entity.layer].entities[entity.id];
         }
-    };
+    });
 
     return Scene;
 });

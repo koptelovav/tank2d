@@ -1,11 +1,12 @@
-define(
-    function () {
+define(['model'],
+    function (Model) {
 
-        var Renderer = {
-
-            lastRenderTime: Date.now(),
-            frameCount: 0,
-            realFPS: 0,
+        var Renderer = Model.extend({
+            init: function() {
+                this.lastRenderTime = Date.now();
+                this.frameCount = 0;
+                this.realFPS = 0;
+            },
 
             setScene: function (scene) {
                 this.scene = scene;
@@ -112,7 +113,7 @@ define(
                     }
                 });
             }
-        };
+        });
 
         return Renderer;
     });

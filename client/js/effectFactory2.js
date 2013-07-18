@@ -19,15 +19,19 @@ define(['entity', 'scene'],function (Entity, Scene) {
 
     var EffectFactory = {
         count: 0,
+        setGame: function(game){
+          this.game = game;
+        },
         create: function (entity, action) {
             if(EffectConfig[action][entity.kind] !== undefined){
-                var id = CONST.PREFIXES.EFFECT + ''+ this.count;
+                var id = CONST.PREFIXES.EFFECT + ''+ this.count,
+                    self = this;
                 this.count++;
                 var effect = new Effects[EffectConfig[action][entity.kind]](id, EffectConfig[action][entity.kind], entity);
                 effect.setAnimation('idle', effect.speedAnimation, 1, function(){
-                    Scene.remove(effect);
+                    self.game.scene.remove(effect);
                 });
-                Scene.add(effect);
+                this.game.scene.add(effect);
             }
             return false;
         }

@@ -20,6 +20,6 @@ requirejs.config({
     }
 });
 
-define(['scene','tank','gametypes','effectFactory','lib/underscore.min', 'util'], function() {
+define(['class','scene','tank','gametypes','effectFactory','lib/underscore.min', 'util'], function() {
     require(["main"]);
 });
