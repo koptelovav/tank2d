@@ -61,7 +61,7 @@ define(function() {
 
             sound.addEventListener('canplaythrough', function (e) {
                 this.removeEventListener('canplaythrough', arguments.callee, false);
-                console.log(path + " is ready to play.");
+               // console.log(path + " is ready to play.");
                 if(loaded_callback) {
                     loaded_callback();
                 }

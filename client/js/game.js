@@ -1,5 +1,5 @@
-define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection','effectFactory', 'renderer', 'audioManager','gametypes'],
-    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection,EffectFactory,Renderer,AudioManager) {
+define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'player', 'connection','effectFactory', 'audioManager','gametypes'],
+    function (baseGame, Bullet, SpriteManager, Scene, Map, TileFactory, Player, Connection,EffectFactory,AudioManager) {
 
         var Game = baseGame.extend({
             init: function (app) {
@@ -27,6 +27,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang","bigbang"];
 
                 this.on('addEntity', function(entity){
+
                     if(entity.movable){
                         entity.setAnimation('move_'+CONST.getOrientationString(entity.orientation), entity.speedAnimation);
 
@@ -70,10 +71,8 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
             setup: function (entities, effects, background, foreground) {
                 this.audioManager = new AudioManager();
-                this.renderer = new Renderer();
-                this.scene = new Scene(this.renderer);
-                this.renderer.setScene(this.scene);
-                this.effectFactory = new EffectFactory(this);
+                this.scene = new Scene();
+                this.effectFactory = new EffectFactory(this.scene);
 
                 this.scene.setSize(768, 768);
                 this.scene.newLayer(CONST.LAYERS.ENTITIES, entities);
@@ -116,7 +115,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
                     this.emit('tick');
                     this.moveEntities(dt);
-                    this.renderer.renderFrame();
+                    this.scene.refresh();
 
                     this.lastUpdateTime = now;
                 }

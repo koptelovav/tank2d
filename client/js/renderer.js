@@ -2,13 +2,10 @@ define(['model'],
     function (Model) {
 
         var Renderer = Model.extend({
-            init: function() {
+            init: function(scene) {
                 this.lastRenderTime = Date.now();
                 this.frameCount = 0;
                 this.realFPS = 0;
-            },
-
-            setScene: function (scene) {
                 this.scene = scene;
             },
 
