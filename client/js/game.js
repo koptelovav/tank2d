@@ -54,6 +54,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 }, this);
 
                 this.on('baseDestroy',function(team){
+                    this.audioManager.playSound("explosion_2");
                     this.audioManager.playSound("game_over");
                 });
             },

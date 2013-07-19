@@ -10,7 +10,7 @@ define(function() {
             this.currentMusic = null;
             this.areas = [];
             this.musicNames = [];
-            this.soundNames = ["bullet_hit_1","bullet_hit_2","stage_start","game_over"];
+            this.soundNames = ["bullet_hit_1","bullet_hit_2","stage_start","game_over","explosion_1","explosion_2"];
 
             var loadSoundFiles = function() {
                 var counter = _.size(self.soundNames);
