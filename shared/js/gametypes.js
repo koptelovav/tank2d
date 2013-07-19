@@ -74,7 +74,8 @@ CONST = {
     TYPES: {
         PLAYER: 1,
         TILE: 2,
-        EFFECT: 3
+        EFFECT: 3,
+        BULLET: 4
     },
 
     COLLECTIONS: {

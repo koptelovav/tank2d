@@ -1,7 +1,7 @@
 define(['tank', 'bullet'], function (Tank) {
     var Player = Tank.extend({
         init: function (id, type, kind, team, isReady) {
-            this._super(id, type, kind, {
+            this._super(id, CONST.TYPES.PLAYER, kind, {
                 "speed": 100,
                 "strength": 1,
                 "bullet": 1

@@ -27,7 +27,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
 
 
             this.on('connect', function (connection) {
-                var player = new Player(connection.id, 'players', CONST.ENTITIES.TANK, this.getFreeTeamNumber(), false);
+                var player = new Player(connection.id, CONST.ENTITIES.PLAYER, CONST.ENTITIES.TANK, this.getFreeTeamNumber(), false);
                 this.addPlayer(player);
 
                 this.listener.addConnection(connection);

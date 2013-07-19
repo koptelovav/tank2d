@@ -18,8 +18,8 @@ define(['model','entity'],function (Model,Entity) {
     EffectConfig[CONST.ACTIONS.DESTROY][CONST.ENTITIES.BASE] = CONST.ENTITIES.BIGBANG;
 
     var EffectFactory = Model.extend({
-        init: function (scene) {
-            this.scene = scene;
+        init: function (game) {
+            this.game = game;
             this.count = 0;
         },
 
@@ -30,9 +30,9 @@ define(['model','entity'],function (Model,Entity) {
                 this.count++;
                 var effect = new Effects[EffectConfig[action][entity.kind]](id, EffectConfig[action][entity.kind], entity);
                 effect.setAnimation('idle', effect.speedAnimation, 1, function(){
-                    self.scene.remove(effect);
+                    self.game.emit('removeEntity',effect);
                 });
-                this.scene.add(effect);
+                this.game.emit('addEntity',effect);
             }
             return false;
         }

@@ -27,35 +27,19 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang","bigbang"];
 
                 this.on('addEntity', function(entity){
-
-                    if(entity.movable){
-                        entity.setAnimation('move_'+CONST.getOrientationString(entity.orientation), entity.speedAnimation);
-
-                        entity.on('beginMove', function(){
-                            entity.animated = true;
-                        });
-
-                        entity.on('endMove', function(){
-                            entity.animated = false;
-                        });
-
-                        entity.on('changeOrientation',function(){
-                            if (entity.orientation === CONST.ORIENTATIONS.LEFT)  entity.setAnimation('move_left', 50);
-                            else if (entity.orientation === CONST.ORIENTATIONS.UP)  entity.setAnimation('move_up', 50);
-                            else if (entity.orientation === CONST.ORIENTATIONS.RIGHT)  entity.setAnimation('move_right', 50);
-                            else if (entity.orientation === CONST.ORIENTATIONS.DOWN)  entity.setAnimation('move_down', 50);
-                        });
-                    }else{
-                        entity.setAnimation('idle', entity.speedAnimation);
+                    switch(entity.type){
+                        case CONST.TYPES.PLAYER:
+                        case CONST.TYPES.BULLET:
+                                this.initMovableEntity(entity);
+                            break;
+                        case CONST.TYPES.TILE:
+                            this.initStaticEntity(entity);
+                            break;
                     }
 
                     entity.on('destroy',function(){
                         this.effectFactory.create(entity, CONST.ACTIONS.DESTROY);
                     }, this);
-
-                    entity.on('shift changeOrientation', function(){
-                        entity._setDirty();
-                    });
 
                     this.scene.add(entity);
                 }, this);
@@ -69,10 +53,37 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 });
             },
 
+            initMovableEntity: function(entity){
+                entity.setAnimation('move_'+CONST.getOrientationString(entity.orientation), entity.speedAnimation);
+
+                entity.on('beginMove', function(){
+                    entity.animated = true;
+                });
+
+                entity.on('endMove', function(){
+                    entity.animated = false;
+                });
+
+                entity.on('changeOrientation',function(){
+                    if (entity.orientation === CONST.ORIENTATIONS.LEFT)  entity.setAnimation('move_left', 50);
+                    else if (entity.orientation === CONST.ORIENTATIONS.UP)  entity.setAnimation('move_up', 50);
+                    else if (entity.orientation === CONST.ORIENTATIONS.RIGHT)  entity.setAnimation('move_right', 50);
+                    else if (entity.orientation === CONST.ORIENTATIONS.DOWN)  entity.setAnimation('move_down', 50);
+                });
+
+                entity.on('shift changeOrientation', function(){
+                    entity._setDirty();
+                });
+            },
+
+            initStaticEntity: function(entity){
+                entity.setAnimation('idle', entity.speedAnimation);
+            },
+
             setup: function (entities, effects, background, foreground) {
                 this.audioManager = new AudioManager();
                 this.scene = new Scene();
-                this.effectFactory = new EffectFactory(this.scene);
+                this.effectFactory = new EffectFactory(this);
 
                 this.scene.setSize(768, 768);
                 this.scene.newLayer(CONST.LAYERS.ENTITIES, entities);
@@ -264,7 +275,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             playerFire: function (id) {
                 if (this.player.canFire()) {
                     this.player.bulletCount += 1;
-                    var bullet = new Bullet(Date.now(), 'easy', CONST.ENTITIES.BULLET, this.player, 300);
+                    var bullet = new Bullet(Date.now(), CONST.TYPES.BULLET, CONST.ENTITIES.BULLET, this.player, 300);
                     this.addEntity(bullet);
                 }
             },
