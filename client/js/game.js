@@ -31,7 +31,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                         switch(entity.type){
                             case CONST.TYPES.PLAYER:
                             case CONST.TYPES.BULLET:
-                                    this.initMovableEntity(entity);
+                                this.initMovableEntity(entity);
                                 break;
                             case CONST.TYPES.EFFECT:
                                 this.initEffectEntity(entity);

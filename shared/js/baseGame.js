@@ -1,5 +1,5 @@
-define(['model', 'tilefactory','spritemanager'],
-    function (Model, TileFactory, SpriteManager) {
+define(['model', 'tilefactory'],
+    function (Model, TileFactory) {
 
         var BaseGame = Model.extend({
             init: function () {
