@@ -12,8 +12,9 @@ define(['baseEntity', 'spritemanager'], function (BaseEntity, SpriteManager) {
             this.isLoaded = false;
             this.isDirty = false;
 
-            this.setSprite(SpriteManager.getSprite(CONST.getKindString(this.kind)));
-            this.setSize(this.sprite.width, this.sprite.height);
+            var sprite = SpriteManager.getSprite(CONST.getKindString(this.kind));
+            this.setSprite(sprite);
+            this.setSize(sprite.width, sprite.height);
         },
 
         setSprite: function(sprite){

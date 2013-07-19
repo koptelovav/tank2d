@@ -27,21 +27,26 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.spriteNames = ["armoredwall", "ice", "trees", "wall", "water", "tank", "bullet", "base","bang","bigbang"];
 
                 this.on('addEntity', function(entity){
-                    switch(entity.type){
-                        case CONST.TYPES.PLAYER:
-                        case CONST.TYPES.BULLET:
-                                this.initMovableEntity(entity);
-                            break;
-                        case CONST.TYPES.TILE:
-                            this.initStaticEntity(entity);
-                            break;
+                    if(this.ready){
+                        switch(entity.type){
+                            case CONST.TYPES.PLAYER:
+                            case CONST.TYPES.BULLET:
+                                    this.initMovableEntity(entity);
+                                break;
+                            case CONST.TYPES.EFFECT:
+                                this.initEffectEntity(entity);
+                                break;
+                            case CONST.TYPES.TILE:
+                                this.initStaticEntity(entity);
+                                break;
+                        }
+
+                        entity.on('destroy',function(){
+                            this.effectFactory.create(entity, CONST.ACTIONS.DESTROY);
+                        }, this);
+                    console.log(entity);
+                        this.scene.add(entity);
                     }
-
-                    entity.on('destroy',function(){
-                        this.effectFactory.create(entity, CONST.ACTIONS.DESTROY);
-                    }, this);
-
-                    this.scene.add(entity);
                 }, this);
 
                 this.on('removeEntity', function(entity){
@@ -78,6 +83,13 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
             initStaticEntity: function(entity){
                 entity.setAnimation('idle', entity.speedAnimation);
+            },
+
+            initEffectEntity: function(entity){
+                var self = this;
+                entity.setAnimation('idle', entity.speedAnimation, 1, function(){
+                    self.emit('removeEntity',entity);
+                });
             },
 
             setup: function (entities, effects, background, foreground) {

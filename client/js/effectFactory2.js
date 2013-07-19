@@ -25,13 +25,9 @@ define(['model','entity'],function (Model,Entity) {
 
         create: function (entity, action) {
             if(EffectConfig[action][entity.kind] !== undefined){
-                var id = CONST.PREFIXES.EFFECT + ''+ this.count,
-                    self = this;
+                var id = CONST.PREFIXES.EFFECT + ''+ this.count;
                 this.count++;
                 var effect = new Effects[EffectConfig[action][entity.kind]](id, EffectConfig[action][entity.kind], entity);
-                effect.setAnimation('idle', effect.speedAnimation, 1, function(){
-                    self.game.emit('removeEntity',effect);
-                });
                 this.game.emit('addEntity',effect);
             }
             return false;
