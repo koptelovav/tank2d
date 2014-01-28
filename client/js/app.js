@@ -9,6 +9,25 @@ define(['jquery','model'], function($,Model) {
             this.gameFrame = $('#canvas');
             this.$chatInput = $('#chat-input textarea');
             this.$chatHistory = $('#chat-history');
+
+            this.on('onConnectingGame', function(starting_callback) {
+                var self = this;
+
+                if(!this.ready) {
+                    var watchCanStart = setInterval(function() {
+//                    console.debug("waiting...");
+                        if(self.canConnectingGame()) {
+                            setTimeout(function() {
+                                //тут должен быть загрузчик
+                            }, 1500);
+                            clearInterval(watchCanStart);
+                            self.startGame(starting_callback);
+                        }
+                    }, 100);
+                } else {
+                    this.startGame(starting_callback);
+                }
+            });
         },
         
         setGame: function(game) {
@@ -29,10 +48,6 @@ define(['jquery','model'], function($,Model) {
         addChatMessage: function(playerId, message){
             this.$chatHistory.append("<div>"+playerId+": "+message+"</div>");
             this.$chatHistory.scrollTop(this.$chatHistory[0].scrollHeight);
-        },
-
-        onJoinPlayer: function(callback){
-            this.joinplayer_callback = callback;
         },
 
         addPlayer:function(player){
@@ -60,25 +75,6 @@ define(['jquery','model'], function($,Model) {
 
         getTeamById: function(id){
             return $('#team'+id);
-        },
-
-        tryConnectingGame: function(starting_callback) {
-            var self = this;
-
-            if(!this.ready) {
-                var watchCanStart = setInterval(function() {
-//                    console.debug("waiting...");
-                    if(self.canConnectingGame()) {
-                        setTimeout(function() {
-                            //тут должен быть загрузчик
-                        }, 1500);
-                        clearInterval(watchCanStart);
-                        self.startGame(starting_callback);
-                    }
-                }, 100);
-            } else {
-                this.startGame(starting_callback);
-            }
         }
     });
 

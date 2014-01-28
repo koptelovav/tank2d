@@ -44,7 +44,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                         entity.on('destroy',function(){
                             this.effectFactory.create(entity, CONST.ACTIONS.DESTROY);
                         }, this);
-                    console.log(entity);
+
                         this.scene.add(entity);
                     }
                 }, this);

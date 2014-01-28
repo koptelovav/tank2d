@@ -4,15 +4,6 @@ define(['jquery', 'app','input'], function ($, App) {
     var initApp = function () {
         $(document).ready(function () {
             app = new App();
-
-            app.tryConnectingGame(function(){
-
-            });
-
-            app.onJoinPlayer(function(id, spawnPlace, team){
-                app.getTeamById(team).append('<div data-place="'+spawnPlace+'" id="'+id+'">'+id+'</div>');
-            });
-
             initGame();
         });
     };
@@ -28,7 +19,7 @@ define(['jquery', 'app','input'], function ($, App) {
             game = new Game(app);
             game.setup(entities, effects, background, foreground);
             app.setGame(game);
-
+            app.emit('onConnectingGame');
 
             game.on('load',function(){
                 for(var i = 0; i < app.game.teamCount; i++){
