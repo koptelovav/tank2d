@@ -19,7 +19,7 @@ define(['jquery', 'app','input'], function ($, App) {
             game = new Game(app);
             game.setup(entities, effects, background, foreground);
             app.setGame(game);
-            app.emit('onConnectingGame');
+            app.connectingGame();
 
             game.on('load',function(){
                 for(var i = 0; i < app.game.teamCount; i++){
