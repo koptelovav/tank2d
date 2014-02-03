@@ -29,6 +29,7 @@ define(['jquery', 'app','input'], function ($, App) {
                     }
                 }
 
+                app.gridLoad = true;
                 app.playerGrid.show();
 
                 _.each(app.game.entities, function(player){
@@ -49,7 +50,6 @@ define(['jquery', 'app','input'], function ($, App) {
             });
 
             game.on('playerJoin',function(playerConfig){
-
                 app.addPlayer(playerConfig);
             });
 
@@ -81,7 +81,7 @@ define(['jquery', 'app','input'], function ($, App) {
                     keyFire = false;
                 }else{
                     keyMove = false;
-                     app.game.playerStopMove()
+                     app.game.clientEndMove();
                 }
 
             }, false);
@@ -101,7 +101,7 @@ define(['jquery', 'app','input'], function ($, App) {
                 }
 
                 if(input.isDown('SPACE')) {
-                    app.game.playerFire();
+                    app.game.clientFire();
                 }
             });
         });

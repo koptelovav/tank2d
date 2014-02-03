@@ -103,13 +103,27 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
                     }
                 }, this);
 
-                player.on('playerEndMove', function () {
+                player.on('endMove', function () {
+                    if(player.isMovable){
+                        player.toggleMovable();
+                        this.pushToAll(CONST.MESSAGES.ENDMOVE,  player.id);
+                    }
                 }, this);
 
                 player.on('beforeMove', function () {
                 }, this);
 
-                player.on('move', function () {
+                player.on('move', function (orientation) {
+                    player.setOrientation(orientation);
+
+                    if(!player.isMovable){
+                        player.toggleMovable();
+                        this.pushToAll(CONST.MESSAGES.MOVE,  player.id,  player.orientation);
+                    }
+                }, this);
+
+                player.on('fire', function () {
+                    this.pushToAll(CONST.MESSAGES.FIRE,  player.id);
                 }, this);
 
                 player.on('chatMessage', function (message) {

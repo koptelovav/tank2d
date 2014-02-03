@@ -4,6 +4,7 @@ define(['jquery', 'model'], function ($, Model) {
         init: function () {
             this.game = false;
             this.ready = false;
+            this.gridLoad = false;
             this.$readyButton = $('#ready-button');
             this.playerGrid = $('#connected-grid');
             this.gameFrame = $('#canvas');
@@ -49,6 +50,21 @@ define(['jquery', 'model'], function ($, Model) {
         },
 
         addPlayer: function (player) {
+            var self = this;
+
+            if(!self.gridLoad){
+                var watchLoadGrid = setInterval(function () {
+                    if (self.gridLoad) {
+                        self._addPlayer(player);
+                        clearInterval(watchLoadGrid);
+                    }
+                }, 100);
+            }else{
+                self._addPlayer(player);
+            }
+        },
+
+        _addPlayer: function(player){
             this.getTeamById(player.team).find('.place span:empty:first').html('<div class="player" id="' + player.id + '">' + player.id + '</div>');
             if (player.isReady) this.setReady(player.id);
         },

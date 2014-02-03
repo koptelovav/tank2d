@@ -40,8 +40,7 @@ define(['tank', 'bullet'], function (Tank) {
         canFire: function(){
             var dateNow = Date.now();
 
-            if((dateNow - this.lastFireTime > this.fireDelay) && this.bulletCount < this.maxBulletCount){
-                this.lastFireTime = dateNow;
+            if((Date.now() - this.lastFireTime > this.fireDelay) && this.bulletCount < this.maxBulletCount){
                 return true
             }
             return false;

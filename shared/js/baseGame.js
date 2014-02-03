@@ -85,6 +85,16 @@ define(['model', 'tilefactory'],
                 this.emit('changePopulation', this.population);
             },
 
+            setTeamCount: function (teamCount) {
+                this.teamCount = teamCount;
+                this.emit('setTeamCount', this.teamCount);
+            },
+
+            setMaxPlayers: function (maxPlayers) {
+                this.maxPlayers = maxPlayers;
+                this.emit('setMaxPlayers', this.maxPlayers);
+            },
+
             entityIdExists: function (id) {
                 return id in this.collections[CONST.COLLECTIONS.ENTITY];
             },

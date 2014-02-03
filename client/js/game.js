@@ -162,9 +162,9 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.connection.on('gameData', function (id, population, teamCount, minPlayers, maxPlayers, players) {
                     this.id = id;
                     this.setPopulation(population);
-                    this.teamCount = teamCount;
+                    this.setTeamCount(teamCount);
+                    this.setMaxPlayers(maxPlayers);
                     this.minPlayers = minPlayers;
-                    this.maxPlayers = maxPlayers;
 
                     _.each(players, function (playerData) {
                         this.addPlayer(playerData);
@@ -230,6 +230,10 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                     this.playerStopMove(id);
                 }, this);
 
+                this.connection.on('fire', function (id) {
+                    this.playerFire(id);
+                }, this);
+
                 this.connection.on('syncPos', function (id, x, y, gridX, gridY) {
                 }, this);
             },
@@ -286,45 +290,61 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             },
 
             playerFire: function (id) {
-                if (this.player.canFire()) {
-                    this.player.bulletCount += 1;
-                    var bullet = new Bullet(Date.now(), CONST.TYPES.BULLET, CONST.ENTITIES.BULLET, this.player, 300);
+                var player = this.getEntityById(id);
+                if (player.canFire()) {
+                    player.bulletCount += 1;
+                    player.lastFireTime = Date.now();
+                    var bullet = new Bullet(Date.now(), CONST.TYPES.BULLET, CONST.ENTITIES.BULLET, player, 300);
                     this.addEntity(bullet);
                 }
             },
 
             playerStopMove: function (id) {
-                var player = id ? this.collections[CONST.COLLECTIONS.PLAYER][id] : this.player;
-
+                var player = this.getEntityById(id);
                 if (player.isMovable) {
                     player.toggleMovable();
-                    if (!id) {
-//                        this.listener.sendEndMove();
-                    }
                 }
             },
-            playerMoveUp: function (id) {
-                this.playerMove(id, CONST.ORIENTATIONS.UP);
+            playerMoveUp: function () {
+                this.clientMove(CONST.ORIENTATIONS.UP);
             },
-            playerMoveLeft: function (id) {
-                this.playerMove(id, CONST.ORIENTATIONS.LEFT);
+            playerMoveLeft: function () {
+                this.clientMove(CONST.ORIENTATIONS.LEFT);
             },
-            playerMoveRight: function (id) {
-                this.playerMove(id, CONST.ORIENTATIONS.RIGHT);
+            playerMoveRight: function () {
+                this.clientMove(CONST.ORIENTATIONS.RIGHT);
             },
-            playerMoveDown: function (id) {
-                this.playerMove(id, CONST.ORIENTATIONS.DOWN);
+            playerMoveDown: function () {
+                this.clientMove(CONST.ORIENTATIONS.DOWN);
+            },
+
+            clientFire: function(){
+                if (this.player.canFire()) {
+                    console.log('fire');
+                    this.connection.send(CONST.MESSAGES.FIRE);
+                }
+            },
+
+            clientEndMove: function(){
+                if (this.player.isMovable) {
+                    console.log('stop');
+                    this.connection.send(CONST.MESSAGES.ENDMOVE);
+                }
+            },
+
+            clientMove: function(orientation){
+                if (!this.player.isMovable) {
+                    console.log('move');
+                    this.connection.send(CONST.MESSAGES.MOVE, orientation);
+                }
             },
 
             playerMove: function (id, orientation) {
-                var player = id ? this.getEntityById(id) : this.player;
+                var player = this.getEntityById(id);
                 player.setOrientation(orientation);
 
                 if (!player.isMovable) {
                     player.toggleMovable();
-                    if (!id) {
-                        this.connection.send(CONST.MESSAGES.MOVE, orientation);
-                    }
                 }
             },
 
