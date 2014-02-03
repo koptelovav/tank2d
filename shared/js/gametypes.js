@@ -36,7 +36,8 @@ CONST = {
         CHAT: 13,
         ENDMOVE: 14,
         CONNECT: 15,
-        SENDMAP: 16
+        SENDMAP: 16,
+        FIRE: 17
     },
 
     ENTITIES: {
@@ -123,6 +124,7 @@ var messages = {
     'joinGame': [CONST.MESSAGES.JOINGAME],
     'leftGame': [CONST.MESSAGES.LEFTGAME],
     'move': [CONST.MESSAGES.MOVE],
+    'endMove': [CONST.MESSAGES.ENDMOVE],
     'gameStart': [CONST.MESSAGES.GAMESTART],
     'ready': [CONST.MESSAGES.IREADY],
     'gameData': [CONST.MESSAGES.GAMEDATA],
@@ -133,6 +135,7 @@ var messages = {
     'chat': [CONST.MESSAGES.CHAT],
     'connect': [CONST.MESSAGES.CONNECT],
     'sendMap': [CONST.MESSAGES.SENDMAP],
+    'fire': [CONST.MESSAGES.FIRE],
 
     getType: function (message) {
         return messages[CONST.getMessageName(message)][1];
