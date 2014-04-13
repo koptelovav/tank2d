@@ -2,7 +2,8 @@ define(['model'],
     function (Model) {
 
         var Renderer = Model.extend({
-            init: function(scene) {
+            init: function(game,scene) {
+                this.game = game;
                 this.lastRenderTime = Date.now();
                 this.frameCount = 0;
                 this.realFPS = 0;
@@ -28,6 +29,9 @@ define(['model'],
                 }
                 this.frameCount++;
                 this.drawText("FPS: " + this.realFPS, 15, 15, false);
+
+               /* if(this.game.gameTick % 60 ==0)
+                    this.drawText(this.game.oldTime+' '+this.game.gameTick+' '+this.game.speedFactor, 15, 30, false);*/
             },
 
             drawText: function (text, x, y, centered, color, strokeColor) {

@@ -3,7 +3,15 @@ define(['model', 'tilefactory'],
 
         var BaseGame = Model.extend({
             init: function () {
+                this.oldTime = null;
+                this.gameClockReal = null;
+                this.gameClock = null;
+                this.gameTick = null;
+                this.speedFactor = 1;
+                this.intervalFramerate = null;
             },
+
+
 
             registerEntityPosition: function (entity) {
                 if (entity) {

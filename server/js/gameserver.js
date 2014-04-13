@@ -26,6 +26,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
             this.population = 0;
 
 
+
             this.on('connect', function (connection) {
                 var player = new Player(connection.id, CONST.ENTITIES.PLAYER, CONST.ENTITIES.TANK, this.getFreeTeamNumber(), false);
                 this.addPlayer(player);
@@ -76,7 +77,7 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
 
                     if (this._checkAllStarted() && this.population >= this.minPlayers && !this.isStart) {
                         this.isStart = true;
-                        this.pushToAll(CONST.MESSAGES.GAMESTART, this.id);
+                        this.pushToAll(CONST.MESSAGES.GAMESTART, this.gameTick);
                         this.pushToAll(CONST.MESSAGES.SENDMAP, this.map.getData());
                     }
                 }, this);
@@ -131,6 +132,32 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
             }, this);
         },
 
+        initLoop: function(){
+            var self = this;
+
+            this.intervalFramerate = 1000 / this.ups;
+            this.oldTime = Date.now();
+            this.gameTick = 0;
+            var gameLoop = function () {
+                var now = Date.now();
+                if (self.oldTime + self.intervalFramerate <= now) {
+                    self.speedFactor = (now - self.oldTime) / 1000.0;
+                    self.oldTime = now;
+                    self.tick();
+                    self.gameTick++;
+                    if(self.gameTick % 180 == 0)
+                        console.log([self.oldTime,self.gameTick, self.speedFactor]);
+                    // console.log('speedFactor', self.speedFactor, '(target: ' + self.intervalFramerate +' ms)', 'node ticks', self.gameTick);
+                }
+                if (Date.now() - self.oldTime < self.intervalFramerate - 16) {
+                    setTimeout(gameLoop);
+                } else {
+                    setImmediate(gameLoop);
+                }
+            };
+            gameLoop();
+        },
+
         run: function (filePath) {
             var data = fs.readFileSync(filePath, 'utf-8');
 
@@ -146,13 +173,12 @@ define(['../../shared/js/baseGame', '../../shared/js/map', 'tilefactory','fs','l
             }, this);
 
             this.map.setData(JSON.parse(data));
+            this.initLoop();
+        },
 
-            var self = this;
-
-            setInterval(function () {
-                self.moveEntities();
-                self.processQueues();
-            }, 1000 / this.ups);
+        tick: function(){
+            this.moveEntities();
+            this.processQueues();
         },
 
         restart: function () {

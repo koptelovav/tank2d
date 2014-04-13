@@ -31,9 +31,10 @@ define(['model','renderer'], function (Model,Renderer) {
     });
 
     var Scene = Model.extend({
-        init: function () {
+        init: function (game) {
+            this.game = game;
             this.layers = {};
-            this.renderer = new Renderer(this);
+            this.renderer = new Renderer(game, this);
         },
 
         setSize: function (width, height) {

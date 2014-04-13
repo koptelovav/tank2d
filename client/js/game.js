@@ -95,7 +95,7 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
 
             setup: function (entities, effects, background, foreground) {
                 this.audioManager = new AudioManager();
-                this.scene = new Scene();
+                this.scene = new Scene(this);
                 this.effectFactory = new EffectFactory(this);
 
                 this.scene.setSize(768, 768);
@@ -128,20 +128,26 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
             start: function () {
                 this.initEntityGrid();
                 this.initMap();
-                this.tick();
+                this.initLoop();
                 this.audioManager.playSound("stage_start");
+            },
+
+            initLoop: function(){
+               this.tick();
             },
 
             tick: function () {
                 if (this.started) {
                     var now = Date.now();
-                    var dt = (now - this.lastUpdateTime) / 1000.0;
-
+                    this.speedFactor = (now - this.lastUpdateTime) / 1000.0;
+                    this.oldTime = now;
                     this.emit('tick');
-                    this.moveEntities(dt);
+                    this.moveEntities();
                     this.scene.refresh();
-
                     this.lastUpdateTime = now;
+                    this.gameTick++;
+                    if(this.gameTick % 180 ==0)
+                        console.log([this.oldTime,this.gameTick, this.speedFactor]);
                 }
                 requestAnimFrame(this.tick.bind(this));
             },
@@ -173,7 +179,8 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                     this.emit('load');
                 }, this);
 
-                this.connection.on('gameStart', function () {
+                this.connection.on('gameStart', function (tick) {
+                    this.gameTick = tick;
                     this.started = true;
                     this.emit('start');
                 }, this);
@@ -243,7 +250,8 @@ define(['baseGame', 'bullet', 'spritemanager', 'scene', 'map', 'tilefactory', 'p
                 this.map.setData(data);
             },
 
-            moveEntities: function (dt) {
+            moveEntities: function () {
+                var dt = this.speedFactor;
                 _.each(this.collections[CONST.COLLECTIONS.MOVABLE], function (entity) {
                     if (entity.isMovable) {
                         if (entity instanceof Player) {
